@@ -1,0 +1,143 @@
+{
+  "projectType": "saas",
+  "projectName": "Mantis",
+  "projectDescription": "A comprehensive project and equipment management system for service operations and resource tracking",
+  "theme": "linden",
+  "primaryColor": "#2563eb",
+  "lightColor": "#3b82f6",
+  "darkColor": "#1e40af",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quickstart",
+              "installation"
+            ]
+          },
+          {
+            "group": "Core Concepts",
+            "pages": [
+              "core-concepts/architecture",
+              "core-concepts/projects",
+              "core-concepts/equipment",
+              "core-concepts/users-roles"
+            ]
+          },
+          {
+            "group": "Features",
+            "pages": [
+              "features/project-management",
+              "features/resource-tracking",
+              "features/work-orders",
+              "features/custody-chains",
+              "features/maintenance-sheets",
+              "features/shipping-guides",
+              "features/calendar-events"
+            ]
+          },
+          {
+            "group": "User Guides",
+            "pages": [
+              "guides/creating-projects",
+              "guides/managing-equipment",
+              "guides/work-order-workflow",
+              "guides/document-management",
+              "guides/reports"
+            ]
+          },
+          {
+            "group": "Administration",
+            "pages": [
+              "admin/configuration",
+              "admin/user-management",
+              "admin/database-setup",
+              "admin/deployment"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "API Reference",
+        "groups": [
+          {
+            "group": "Overview",
+            "pages": [
+              "api/introduction",
+              "api/authentication"
+            ]
+          },
+          {
+            "group": "Projects",
+            "pages": [
+              "api/projects/resources",
+              "api/projects/close-project"
+            ]
+          },
+          {
+            "group": "Work Orders",
+            "pages": [
+              "api/workorders/sheets",
+              "api/workorders/custody-chains",
+              "api/workorders/items"
+            ]
+          },
+          {
+            "group": "Equipment",
+            "pages": [
+              "api/equipment/resources",
+              "api/equipment/vehicles",
+              "api/equipment/technicals"
+            ]
+          },
+          {
+            "group": "Documents",
+            "pages": [
+              "api/documents/upload",
+              "api/documents/merge",
+              "api/documents/tree"
+            ]
+          },
+          {
+            "group": "Other Endpoints",
+            "pages": [
+              "api/shipping/guides",
+              "api/maintenance/sheets",
+              "api/calendar/events"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Project and partner management with contact tracking",
+    "Equipment inventory with availability and status tracking",
+    "Work order sheets with custody chain documentation",
+    "Resource allocation and scheduling with calendar integration",
+    "Maintenance tracking and shipping guide management",
+    "Document management with PDF generation and merging",
+    "User authentication with role-based access (Administrative/Technical)",
+    "RESTful API with comprehensive endpoints"
+  ],
+  "publicApiSurface": [
+    "POST /api/projects/resources/add/",
+    "GET /api/projects/<project_id>/resources/",
+    "POST /api/projects/<project_id>/close/",
+    "GET /api/workorders/sheets/project/<project_id>/",
+    "POST /api/workorders/custody_chain/create/",
+    "GET /api/workorders/custody_chain/detail/<id>/",
+    "POST /api/resources/update/",
+    "GET /api/vehicles/avaliables/",
+    "GET /api/technicals/avaliables/",
+    "POST /api/load_files/",
+    "GET /api/load_files/project/<project_id>/tree/",
+    "POST /api/shipping/guides/",
+    "POST /api/maintenance/sheets/",
+    "POST /api/calendar/events/"
+  ]
+}
