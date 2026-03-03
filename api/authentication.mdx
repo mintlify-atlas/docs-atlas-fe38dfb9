@@ -1,0 +1,242 @@
+---
+title: Authentication
+description: Learn how to authenticate with the Mantis API using session-based authentication
+---
+
+## Overview
+
+The Mantis API uses **session-based authentication** with Django's built-in authentication system. Users must log in through the web interface to establish a session before making API requests.
+
+<Note>
+While `djangorestframework-simplejwt` is included in the project dependencies, the current API implementation uses Django session authentication rather than JWT tokens.
+</Note>
+
+## Authentication Method
+
+### Session Authentication
+
+The API relies on Django's session framework. Authentication is handled through:
+
+1. **Web Login** - Users authenticate via the web interface at `/accounts/login/`
+2. **Session Cookie** - Upon successful login, a session cookie is set
+3. **Automatic Authentication** - The session cookie is automatically included in subsequent API requests
+
+### Login Flow
+
+**Step 1:** Navigate to the login page
+
+```
+GET https://mantis.peisol.com.ec/accounts/login/
+```
+
+**Step 2:** Submit credentials via POST
+
+<ParamField path="email" type="string" required>
+  User's email address (used as username)
+</ParamField>
+
+<ParamField path="password" type="string" required>
+  User's password
+</ParamField>
+
+**Step 3:** Session cookie is set automatically by the browser
+
+The server responds with a `Set-Cookie` header containing the session ID:
+
+```
+Set-Cookie: sessionid=abc123xyz...; HttpOnly; Path=/
+```
+
+## Making Authenticated Requests
+
+### Browser Requests
+
+When making requests from a web browser, the session cookie is automatically included:
+
+```javascript
+fetch('https://mantis.peisol.com.ec/api/vehicles/cert_vehicle/', {
+  method: 'GET',
+  credentials: 'include', // Important: Include cookies
+  headers: {
+    'Content-Type': 'application/json'
+  }
+})
+.then(response => response.json())
+.then(data => console.log(data));
+```
+
+### Python Requests
+
+When using the `requests` library in Python, use a session to persist cookies:
+
+```python
+import requests
+
+# Create a session
+session = requests.Session()
+
+# Login to establish session
+login_url = 'https://mantis.peisol.com.ec/accounts/login/'
+login_data = {
+    'email': 'user@example.com',
+    'password': 'your_password'
+}
+session.post(login_url, data=login_data)
+
+# Make authenticated API requests
+api_url = 'https://mantis.peisol.com.ec/api/vehicles/cert_vehicle/'
+response = session.get(api_url)
+data = response.json()
+print(data)
+```
+
+### cURL Requests
+
+With cURL, you need to handle cookies manually:
+
+**Step 1:** Login and save cookies
+
+```bash
+curl -c cookies.txt -X POST \
+  https://mantis.peisol.com.ec/accounts/login/ \
+  -d "email=user@example.com&password=your_password"
+```
+
+**Step 2:** Use saved cookies for API requests
+
+```bash
+curl -b cookies.txt \
+  https://mantis.peisol.com.ec/api/vehicles/cert_vehicle/
+```
+
+## CSRF Protection
+
+<Warning>
+CSRF middleware is currently disabled in the Mantis API configuration (`django.middleware.csrf.CsrfViewMiddleware` is commented out). Most API endpoints use the `@csrf_exempt` decorator.
+</Warning>
+
+If CSRF protection is enabled in the future, you will need to:
+
+1. Obtain a CSRF token from the login page or via a GET request
+2. Include the token in POST/PUT/DELETE requests
+
+```javascript
+fetch('https://mantis.peisol.com.ec/api/vehicles/cert_vehicle/', {
+  method: 'POST',
+  credentials: 'include',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-CSRFToken': csrfToken // Include if CSRF is enabled
+  },
+  body: JSON.stringify(data)
+});
+```
+
+## User Model
+
+Mantis uses a custom user model (`CustomUserModel`) with the following characteristics:
+
+<ResponseField name="email" type="string">
+  User's email address (used as the username field)
+</ResponseField>
+
+<ResponseField name="first_name" type="string">
+  User's first name
+</ResponseField>
+
+<ResponseField name="last_name" type="string">
+  User's last name
+</ResponseField>
+
+<ResponseField name="is_staff" type="boolean">
+  Whether user can access the admin interface
+</ResponseField>
+
+<ResponseField name="is_superuser" type="boolean">
+  Whether user has all permissions
+</ResponseField>
+
+## Session Management
+
+Mantis uses `django-user-sessions` for enhanced session management:
+
+- Sessions are stored in the database
+- Users can view and manage active sessions
+- Sessions include user agent and IP tracking
+
+### Logout
+
+To end a session and logout:
+
+```
+GET https://mantis.peisol.com.ec/accounts/logout/
+```
+
+This will invalidate the session and clear the session cookie.
+
+## Testing Authentication
+
+For testing purposes, you can use Django's test client to force authentication:
+
+```python
+import pytest
+from django.test import Client
+from accounts.models import CustomUserModel
+
+@pytest.fixture
+def authenticated_client():
+    user = CustomUserModel.objects.create_user(
+        email='test@example.com',
+        password='testpass123',
+        first_name='Test',
+        last_name='User'
+    )
+    client = Client()
+    client.force_login(user)
+    return client
+
+def test_api_endpoint(authenticated_client):
+    response = authenticated_client.get('/api/vehicles/cert_vehicle/')
+    assert response.status_code == 200
+```
+
+## Authentication Errors
+
+### Unauthorized (401)
+
+If you're not authenticated, you may receive:
+
+```json
+{
+  "success": false,
+  "error": "Authentication required"
+}
+```
+
+### Forbidden (403)
+
+If you lack permissions for a resource:
+
+```json
+{
+  "success": false,
+  "error": "You don't have permission to access this resource"
+}
+```
+
+<Note>
+Note: The current API implementation may not enforce strict authentication on all endpoints. Check specific endpoint documentation for authentication requirements.
+</Note>
+
+## Future: JWT Token Support
+
+The project includes `djangorestframework-simplejwt==5.3.0`, which could be configured in the future to support JWT token authentication. If implemented, the workflow would be:
+
+1. Obtain access and refresh tokens via `/api/token/`
+2. Include access token in the `Authorization` header:
+   ```
+   Authorization: Bearer <access_token>
+   ```
+3. Refresh tokens when they expire using the refresh endpoint
+
+This functionality is not currently active but may be enabled in future versions.

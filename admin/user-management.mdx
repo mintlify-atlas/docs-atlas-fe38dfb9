@@ -1,0 +1,308 @@
+---
+title: User Management
+description: Managing users, roles, and permissions in Mantis
+---
+
+## Overview
+
+Mantis uses a custom user model with email-based authentication. User management is handled through the Django admin interface and REST API.
+
+## Custom User Model
+
+Mantis implements a custom user model located in the `accounts` app:
+
+```python
+AUTH_USER_MODEL = 'accounts.CustomUserModel'
+```
+
+## Authentication Backend
+
+Mantis uses email-based authentication instead of username:
+
+```python
+AUTHENTICATION_BACKENDS = [
+    'common.EmailBackEndAuth.EmailBackEndAuth'
+]
+```
+
+Users log in with their email address and password.
+
+## Accessing the Admin Interface
+
+The Django admin interface is enhanced with Grappelli and accessible at:
+
+```
+https://your-domain.com/admin/
+```
+
+### Admin Login
+
+1. Navigate to `/admin/`
+2. Enter your email address
+3. Enter your password
+4. Click "Log in"
+
+## Creating Users
+
+### Via Django Admin
+
+<Steps>
+  <Step title="Access Admin">
+    Log in to the Django admin interface
+  </Step>
+  <Step title="Navigate to Users">
+    Click on "Custom User Models" under the Accounts section
+  </Step>
+  <Step title="Add New User">
+    Click the "Add Custom User Model" button
+  </Step>
+  <Step title="Enter Details">
+    Fill in the required fields:
+    - Email address (required)
+    - Password (will be hashed automatically)
+    - First name
+    - Last name
+    - Any custom fields
+  </Step>
+  <Step title="Set Permissions">
+    Configure user permissions and groups
+  </Step>
+  <Step title="Save">
+    Click "Save" to create the user
+  </Step>
+</Steps>
+
+### Via Django Shell
+
+Create users programmatically using the Django shell:
+
+<CodeGroup>
+```bash Unix
+./manage.py shell
+```
+
+```bash Windows
+python manage.py shell
+```
+</CodeGroup>
+
+Then in the Python shell:
+
+```python
+from accounts.models import CustomUserModel
+
+# Create a regular user
+user = CustomUserModel.objects.create_user(
+    email='user@example.com',
+    password='securepassword123',
+    first_name='John',
+    last_name='Doe'
+)
+
+# Create a superuser
+superuser = CustomUserModel.objects.create_superuser(
+    email='admin@example.com',
+    password='securepassword123',
+    first_name='Admin',
+    last_name='User'
+)
+```
+
+### Via Management Command
+
+Create a superuser from the command line:
+
+<CodeGroup>
+```bash Unix
+./manage.py createsuperuser
+```
+
+```bash Windows
+python manage.py createsuperuser
+```
+</CodeGroup>
+
+Follow the prompts to enter the email and password.
+
+## Password Management
+
+### Password Validation
+
+Mantis enforces Django's default password validation:
+
+- Similarity to user attributes
+- Minimum length (default: 8 characters)
+- Not a commonly used password
+- Not entirely numeric
+
+### Changing Passwords
+
+#### Via Admin Interface
+
+1. Navigate to the user in the admin interface
+2. Click "this form" next to the password field
+3. Enter the new password twice
+4. Click "Change password"
+
+#### Via Command Line
+
+<CodeGroup>
+```bash Unix
+./manage.py changepassword user@example.com
+```
+
+```bash Windows
+python manage.py changepassword user@example.com
+```
+</CodeGroup>
+
+## Permissions and Roles
+
+### Permission Types
+
+Django provides four default permissions per model:
+
+- **Add**: Can create new instances
+- **Change**: Can modify existing instances
+- **Delete**: Can delete instances
+- **View**: Can view instances
+
+### Groups
+
+Organize users into groups with shared permissions:
+
+<Steps>
+  <Step title="Create Group">
+    In admin, go to Authentication and Authorization > Groups
+  </Step>
+  <Step title="Name the Group">
+    Give the group a descriptive name (e.g., "Project Managers")
+  </Step>
+  <Step title="Assign Permissions">
+    Select the permissions this group should have
+  </Step>
+  <Step title="Add Users">
+    Assign users to the group via the user edit page
+  </Step>
+</Steps>
+
+### Superuser Status
+
+Superusers have all permissions automatically:
+
+```python
+user.is_superuser = True
+user.is_staff = True  # Required for admin access
+user.save()
+```
+
+### Staff Status
+
+Users need staff status to access the admin interface:
+
+```python
+user.is_staff = True
+user.save()
+```
+
+## Session Management
+
+Mantis uses django-user-sessions for enhanced session tracking:
+
+```python
+SESSION_ENGINE = 'user_sessions.backends.db'
+```
+
+### Viewing Active Sessions
+
+1. Navigate to "User Sessions" in the admin interface
+2. View all active user sessions
+3. See IP addresses, user agents, and last activity
+
+### Terminating Sessions
+
+1. Find the session in the admin interface
+2. Delete the session to force logout
+
+Or via command line:
+
+<CodeGroup>
+```bash Unix
+./manage.py clearsessions
+```
+
+```bash Windows
+python manage.py clearsessions
+```
+</CodeGroup>
+
+## User History Tracking
+
+Mantis uses django-simple-history to track changes to user records:
+
+```python
+INSTALLED_APPS = [
+    'simple_history',
+]
+
+MIDDLEWARE = [
+    'simple_history.middleware.HistoryRequestMiddleware',
+]
+```
+
+View user history in the admin interface to see:
+
+- Who made changes
+- When changes were made
+- What was changed
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Use Strong Passwords">
+    Enforce strong password policies and consider implementing two-factor authentication.
+  </Accordion>
+  
+  <Accordion title="Principle of Least Privilege">
+    Grant users only the permissions they need to perform their job functions.
+  </Accordion>
+  
+  <Accordion title="Regular Audits">
+    Periodically review user accounts and remove inactive users.
+  </Accordion>
+  
+  <Accordion title="Group Management">
+    Use groups to manage permissions instead of assigning individual permissions.
+  </Accordion>
+  
+  <Accordion title="Session Security">
+    Regularly clear expired sessions and monitor active sessions for suspicious activity.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+### User Cannot Log In
+
+1. Verify the email address is correct
+2. Check if the user account is active (`is_active = True`)
+3. Verify the password is correct
+4. Check if the user has staff status for admin access
+
+### Permission Denied Errors
+
+1. Verify the user has the required permissions
+2. Check group memberships
+3. Ensure `is_staff` is set for admin access
+4. Check if custom permissions are properly configured
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Configuration" icon="gear" href="/admin/configuration">
+    Configure Django settings and environment
+  </Card>
+  <Card title="Database Setup" icon="database" href="/admin/database-setup">
+    Set up PostgreSQL and run migrations
+  </Card>
+</CardGroup>

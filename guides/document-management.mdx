@@ -1,0 +1,362 @@
+---
+title: Document Management
+description: Upload, organize, and generate documents in Mantis projects
+---
+
+This guide covers document management capabilities in Mantis, including shipping guides, PDF uploads, and document organization.
+
+## Overview
+
+Mantis supports comprehensive document management:
+- **Shipping Guides** (Guías de Remisión): Track equipment and materials movement
+- **PDF Uploads**: Attach supporting documents to work orders
+- **Document Generation**: Auto-generate PDFs from custody chains and maintenance sheets
+- **Project Documents**: Centralized document repository per project
+
+## Document Types
+
+### Shipping Guides (Guías de Remisión)
+
+Shipping guides document the movement of equipment and materials between locations.
+
+**Types:**
+- **EXIT** (SALIDA A PROYECTO): Equipment leaving to project site
+- **IN** (ENTRADA A BASE): Equipment returning to base
+- **TRANSFER** (TRANSFERENCIA ENTRE PROYECTOS): Inter-project transfers
+
+### Custody Chain Documents
+
+Generated from custody chains, documenting service delivery and waste management.
+
+### Maintenance Sheet Documents
+
+Generated from maintenance sheets, documenting equipment maintenance activities.
+
+## Creating a Shipping Guide
+
+<Steps>
+  <Step title="Access Shipping Guides">
+    From your project:
+    1. Click the **Guías de Remisión** tab (teal tab)
+    2. Click **New Shipping Guide** or the create button
+  </Step>
+
+  <Step title="Set General Information">
+    In **Información General**:
+
+    **Required:**
+    - **Tipo de Guía**: Select EXIT, IN, or TRANSFER
+    - **Fecha de Emisión**: Issue date (defaults to today)
+
+    **Optional:**
+    - **Guía Nro.**: Guide number (shown in top-right, can be auto-generated)
+    - **Fecha Inicio Transporte**: Transport start date
+    - **Fecha Fin Transporte**: Transport end date
+    - **Lugar de Origen**: Origin location (e.g., "Quito, Bodega Central")
+    - **Lugar de Destino**: Destination location (e.g., "Campamento Norte")
+    - **Motivo del Transporte**: Select:
+      - UTILIZACIÓN EN PROYECTO (Use in Project)
+      - ALQUILER (Rental)
+      - DEVOLUCIÓN (Return)
+      - VENTA (Sale)
+    - **Vehículo**: Select from available vehicles
+  </Step>
+
+  <Step title="Enter Transporter Details">
+    In **Información del Transportista**:
+    - **Nombre del Transportista**: Full name of transporter
+    - **Cédula del Transportista**: ID number (max 20 characters)
+    - **Placa del Vehículo**: Vehicle plate (e.g., "ABC-1234", max 20 characters)
+
+    <Tip>
+    When you select a vehicle from the dropdown, the plate number auto-fills.
+    </Tip>
+  </Step>
+
+  <Step title="Add Dispatcher Information">
+    In **Despachador** section:
+    - **Nombre del Despachador**: Dispatcher name
+    - **Cédula del Despachador**: Dispatcher ID (max 20 characters)
+  </Step>
+
+  <Step title="Enter Contact Information">
+    In **Contacto en el Proyecto**:
+    - **Nombre de Contacto**: Contact name (defaults from project)
+    - **Teléfono de Contacto**: Contact phone (defaults from project, max 15 characters)
+  </Step>
+
+  <Step title="Add Reception Details">
+    In **Recepción** section:
+    - **Recibido Por**: Name of person receiving
+    - **Cédula de Quien Recibe**: Receiver ID (max 20 characters)
+  </Step>
+
+  <Step title="Configure Costs and Concepts">
+    In **Costos y Conceptos**:
+    - **Costo del Transporte**: Transport cost (decimal)
+    - **Concepto Logístico**: Logistics concept description
+    - **Costo de Estiba**: Stowage/loading cost (decimal)
+    - **Concepto de Estiba**: Stowage concept description
+  </Step>
+
+  <Step title="Add Items to Shipping Guide">
+    In **Detalle de Ítems**, you have two options:
+
+    ### Option A: Add from Project Equipment
+    1. Review the equipment list in the table
+    2. Click the **+** button next to equipment to add
+    3. Equipment is added with format: "CODE / TYPE"
+    4. Default quantity is 1
+
+    ### Option B: Add Manual Items
+    1. In the "Agregar Ítem Manual" section:
+    2. Enter **Descripción**: Item description
+    3. Enter **Cantidad**: Quantity (min: 1)
+    4. Enter **Unidad**: Unit (e.g., UND, KG, M3)
+    5. Click **Agregar** or press Enter
+
+    <Note>
+    You can mix both methods - add equipment AND manual items to the same guide.
+    </Note>
+  </Step>
+
+  <Step title="Review and Edit Items Table">
+    In the items table, you can:
+    - Edit **Descripción** for each item
+    - Modify **Cantidad** (quantity)
+    - Update **Unidad** (unit)
+    - Click the trash icon to remove items
+
+    The badge shows total items: e.g., "5 ítems"
+  </Step>
+
+  <Step title="Add Observations and Save">
+    1. Add any notes in **Observaciones** (3 rows)
+    2. Click **Guardar Guía** to save
+    3. System creates the guide and returns to the list
+  </Step>
+</Steps>
+
+## Editing Shipping Guides
+
+<Steps>
+  <Step title="Open Guide for Editing">
+    1. Navigate to **Guías de Remisión** tab
+    2. Click on the shipping guide to edit
+  </Step>
+
+  <Step title="Check Edit Status">
+    You can only edit guides in **BORRADOR** (DRAFT) status.
+
+    Guides in **CLOSED** or **VOID** status show:
+    - Warning alert: "Esta guía está en estado CERRADA/ANULADA y no permite modificaciones"
+    - All fields are disabled
+    - Only "Volver" (Back) button is available
+  </Step>
+
+  <Step title="Modify Guide">
+    Make changes following the same process as creation.
+  </Step>
+
+  <Step title="Update Guide">
+    Click **Actualizar Guía** to save changes.
+  </Step>
+</Steps>
+
+## Uploading PDF Documents
+
+You can attach PDF files to maintenance sheets and shipping guides.
+
+<Steps>
+  <Step title="Open Document in Edit Mode">
+    You must first save the document (custody chain, maintenance sheet, or shipping guide), then edit it to access upload.
+  </Step>
+
+  <Step title="Locate Upload Section">
+    Scroll to the PDF upload section:
+    - Maintenance sheets: **Archivo PDF de la Hoja**
+    - Shipping guides: **Archivo PDF de la Guía**
+  </Step>
+
+  <Step title="Select PDF File">
+    1. Click **Choose File** in the file input
+    2. Select a PDF file from your computer
+    3. Only PDF format is accepted
+
+    <Warning>
+    If you select a non-PDF file, you'll see: "Solo se permiten archivos PDF"
+    </Warning>
+  </Step>
+
+  <Step title="Upload File">
+    1. The system uploads the file automatically
+    2. You'll see a loading spinner during upload
+    3. Success message: "Archivo subido correctamente" (green)
+    4. Error message appears in red if upload fails
+  </Step>
+
+  <Step title="View or Delete Uploaded File">
+    Once uploaded:
+    - Green badge shows: "Archivo cargado: filename.pdf"
+    - Click **Ver** to open PDF in new tab
+    - Click **Eliminar** to delete (requires confirmation)
+  </Step>
+</Steps>
+
+## Document Status Indicators
+
+### Shipping Guide Status
+
+| Status | Badge Color | Editable | Description |
+|--------|-------------|----------|-------------|
+| DRAFT | Yellow (warning) | Yes | Guide is being created/edited |
+| CLOSED | Green (success) | No | Guide is finalized |
+| VOID | Red (error) | No | Guide has been cancelled |
+
+### Maintenance Sheet Status
+
+| Status | Badge Color | Editable | Description |
+|--------|-------------|----------|-------------|
+| DRAFT | Yellow | Yes | Sheet can be modified |
+| CLOSED | Green | No | Sheet is finalized |
+| VOID | Red | No | Sheet is void |
+
+### Custody Chain Status
+
+| Status | Badge Color | Editable | Description |
+|--------|-------------|----------|-------------|
+| BORRADOR | Yellow | Yes | Draft, can be edited |
+| CERRADO | Green | No | Closed and locked |
+
+## Accessing Project Documents
+
+All documents are organized in the project's **Documentos** tab (violet tab).
+
+<Steps>
+  <Step title="Open Documents Tab">
+    From your project detail page:
+    1. Click the **Documentos** tab (last tab, violet color)
+    2. View all project-related documents
+  </Step>
+
+  <Step title="Browse Documents">
+    Documents are organized by type:
+    - Custody chains
+    - Maintenance sheets
+    - Shipping guides
+    - Other project documents
+  </Step>
+
+  <Step title="Download or View">
+    Click on any document to view or download.
+  </Step>
+</Steps>
+
+## Document Generation
+
+Mantis automatically generates PDF documents from:
+
+### Custody Chains
+- Created when custody chain is closed
+- Includes all form data, signatures, and waste tracking
+- Available for download from the work order
+
+### Maintenance Sheets
+- Generated when maintenance sheet is closed
+- Contains complete maintenance record
+- Includes parts replaced, observations, and approvals
+
+### Shipping Guides
+- PDF can be uploaded manually
+- System tracks guide number and all items
+- Export functionality generates formatted guide
+
+<Tip>
+Documents are automatically linked to the project and can be accessed from multiple locations for convenience.
+</Tip>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Complete Information" icon="check-circle">
+    Fill all relevant fields before closing documents. Closed documents cannot be easily edited.
+  </Card>
+
+  <Card title="PDF Documentation" icon="file-pdf">
+    Always upload supporting PDF documents, especially signed copies of shipping guides and maintenance sheets.
+  </Card>
+
+  <Card title="Consistent Numbering" icon="hashtag">
+    Use consistent guide numbering for easy reference and tracking across the system.
+  </Card>
+
+  <Card title="Timely Uploads" icon="clock">
+    Upload PDF documents promptly after activities are completed for accurate record-keeping.
+  </Card>
+</CardGroup>
+
+## Field Reference
+
+### Shipping Guide Fields
+
+| Field | Type | Required | Max Length | Notes |
+|-------|------|----------|------------|-------|
+| type_shipping_guide | Select | Yes | - | EXIT, IN, TRANSFER |
+| guide_number | Number | No | - | Auto or manual |
+| issue_date | Date | Yes | - | Defaults to today |
+| origin_place | Text | No | - | Free text |
+| destination_place | Text | No | - | Free text |
+| carrier_name | Text | No | - | Transporter name |
+| carrier_ci | Text | No | 20 | ID number |
+| vehicle_plate | Text | No | 20 | Plate format |
+| reason_transport | Select | No | - | 4 options |
+| cost_transport | Decimal | No | - | 0.01 step |
+
+### Item Detail Fields
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| description | Text | Yes | Item description |
+| quantity | Number | Yes | Min: 1 |
+| unit | Text | No | e.g., UND, KG, M3 |
+
+## Common Issues
+
+### Cannot Upload File
+**Problem**: Upload fails or file input is disabled.
+
+**Solution**:
+- Ensure the document is saved first (edit mode required)
+- Check that status is DRAFT
+- Verify file is PDF format
+- Check file size limits
+
+### PDF Upload Error
+**Problem**: "Solo se permiten archivos PDF" message.
+
+**Solution**: Only PDF files are accepted. Convert your document to PDF before uploading.
+
+### Cannot Edit Shipping Guide
+**Problem**: All fields are disabled.
+
+**Solution**: Check guide status. Only DRAFT guides can be edited. CLOSED or VOID guides are locked.
+
+### Missing Items in Guide
+**Problem**: Equipment list is empty when adding items.
+
+**Solution**: 
+- Ensure the project has equipment assigned
+- Check that resources are not deleted
+- Use manual item entry as an alternative
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Generate Reports" icon="chart-bar" href="/guides/reports">
+    Create comprehensive reports from your documented activities
+  </Card>
+
+  <Card title="Work Order Workflow" icon="clipboard-list" href="/guides/work-order-workflow">
+    Learn more about the complete work order process
+  </Card>
+</CardGroup>

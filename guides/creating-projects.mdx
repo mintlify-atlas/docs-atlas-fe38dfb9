@@ -1,0 +1,211 @@
+---
+title: Creating Projects
+description: Step-by-step guide to create and configure projects in Mantis
+---
+
+This guide walks you through creating and configuring projects in the Mantis application.
+
+## Overview
+
+Projects are the foundation of Mantis. Each project represents a client engagement where you track equipment, manage work orders, generate documents, and monitor activities.
+
+## Creating a New Project
+
+<Steps>
+  <Step title="Navigate to Projects">
+    Click on **Projects** in the main navigation menu to access the projects list.
+  </Step>
+
+  <Step title="Click Create Project">
+    Click the **New Project** or **Create** button to open the project creation form.
+  </Step>
+
+  <Step title="Fill in Basic Information">
+    Complete the following required fields:
+
+    - **Partner**: Select the client/partner from the dropdown
+    - **Location**: Enter the camp or location name (e.g., "Campamento Norte")
+    - **Cardinal Point**: Select the cardinal direction (North, South, East, West)
+    - **Contact Name**: Enter the primary contact person's name
+    - **Contact Phone**: Enter the contact phone number (format: +593...)
+    - **Start Date**: Select the project start date using the date picker
+  </Step>
+
+  <Step title="Add Notes (Optional)">
+    In the **Notes** field, add any additional information about the project:
+    - Special requirements
+    - Project scope details
+    - Important considerations
+
+    This field supports up to 4 rows of text.
+  </Step>
+
+  <Step title="Save the Project">
+    Click **Save** to create the project. The system will:
+    - Assign a unique project ID
+    - Set the project status to "Abierto" (Open)
+    - Initialize the project for equipment assignment
+  </Step>
+</Steps>
+
+## Project Details Overview
+
+Once created, the project detail page displays:
+
+### Project Information (3 Columns)
+
+**Column 1 - Project Data:**
+- Client name (Partner)
+- Location with cardinal point badge
+
+**Column 2 - Dates:**
+- Start date
+- End date (shows "EN CURSO" if project is ongoing)
+
+**Column 3 - Client Contact:**
+- Contact name
+- Contact phone
+
+### Project Tabs
+
+The project is organized into 5 tabs:
+
+1. **Recursos Asignados** (Assigned Resources) - Amber tab
+2. **Planillas de Trabajo** (Work Orders) - Cyan tab
+3. **Calendario Mantenimientos** (Maintenance Calendar) - Lime tab
+4. **Guías de Remisión** (Shipping Guides) - Teal tab
+5. **Documentos** (Documents) - Violet tab
+
+<Tip>
+The active tab is persisted in the URL, so you can bookmark or share links to specific tabs.
+</Tip>
+
+## Editing a Project
+
+<Steps>
+  <Step title="Access Project Details">
+    Navigate to the project from the projects list by clicking on the project row.
+  </Step>
+
+  <Step title="Click Edit">
+    Click the **Edit** button (if available in your interface) to modify project details.
+  </Step>
+
+  <Step title="Update Fields">
+    Modify any of the editable fields:
+    - Location
+    - Cardinal point
+    - Contact information
+    - Notes
+
+    <Warning>
+    The **Partner** and **Start Date** may be restricted from editing depending on your configuration.
+    </Warning>
+  </Step>
+
+  <Step title="Save Changes">
+    Click **Save** to update the project information.
+  </Step>
+</Steps>
+
+## Closing a Project
+
+When a project is complete, you can close it to prevent further modifications.
+
+<Steps>
+  <Step title="Open Close Project Modal">
+    From the project detail page, click the **Cerrar Proyecto** (Close Project) button in the top-right corner.
+
+    <Note>
+    This button is only visible for open projects.
+    </Note>
+  </Step>
+
+  <Step title="Review Validation Alerts">
+    The system validates the project and displays alerts:
+    - **Error alerts** (red): Critical issues that prevent closing
+    - **Warning alerts** (yellow): Warnings that should be reviewed
+    - **Info alerts** (blue): Informational messages
+
+    Each alert may include a link to view details.
+  </Step>
+
+  <Step title="Confirm Closure">
+    If validation passes (`can_close` is true):
+    1. Review all alerts and warnings
+    2. Click **Confirmar Cierre** (Confirm Closure)
+    3. Wait for the system to process the closure
+
+    The system will:
+    - Set the project status to "Cerrado" (Closed)
+    - Set the end date
+    - Release/retire assigned resources as needed
+  </Step>
+
+  <Step title="Verify Closure">
+    After closure:
+    - The project badge shows "Cerrado" in red
+    - The "Cerrar Proyecto" button is hidden
+    - Most edit functions are disabled
+  </Step>
+</Steps>
+
+<Warning>
+Closing a project is a significant action. Ensure all work orders, documents, and equipment assignments are finalized before closing.
+</Warning>
+
+## Project Status Indicators
+
+- **Abierto** (Open) - Green badge: Project is active and can be modified
+- **Cerrado** (Closed) - Red badge: Project is closed and locked from editing
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Accurate Contact Info" icon="phone">
+    Always provide complete and accurate contact information. This is used throughout the system for work orders and documents.
+  </Card>
+
+  <Card title="Meaningful Locations" icon="map-marker">
+    Use clear, descriptive location names that include camp names or site identifiers.
+  </Card>
+
+  <Card title="Regular Updates" icon="clock">
+    Keep project notes updated with any changes in scope, requirements, or special conditions.
+  </Card>
+
+  <Card title="Proper Closure" icon="check-circle">
+    Always close projects through the system rather than leaving them orphaned. This ensures proper resource tracking.
+  </Card>
+</CardGroup>
+
+## Common Issues
+
+### Cannot Save Project
+**Problem**: The save button is disabled or form shows validation errors.
+
+**Solution**: Ensure all required fields are filled:
+- Partner is selected
+- Location is entered
+- Contact name and phone are provided
+- Start date is selected
+
+### Cannot Close Project
+**Problem**: The "Confirmar Cierre" button is disabled.
+
+**Solution**: Review the validation alerts displayed. Common blockers include:
+- Active work orders that need to be closed first
+- Equipment not properly retired or returned
+- Incomplete documentation
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Manage Equipment" icon="toolbox" href="/guides/managing-equipment">
+    Learn how to assign and track equipment in your project
+  </Card>
+
+  <Card title="Work Order Workflow" icon="clipboard-list" href="/guides/work-order-workflow">
+    Create and manage work orders for your project
+  </Card>
+</CardGroup>

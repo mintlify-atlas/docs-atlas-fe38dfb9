@@ -1,0 +1,171 @@
+---
+title: API Introduction
+description: Overview of the Mantis API, including base URL, request/response formats, and general conventions
+---
+
+## Overview
+
+The Mantis API provides programmatic access to manage equipment, projects, work orders, vehicles, technicals, and more. The API is built using Django and follows RESTful conventions.
+
+## Base URL
+
+All API requests should be made to:
+
+**Production:**
+```
+https://mantis.peisol.com.ec/api/
+```
+
+**Development:**
+```
+http://localhost:8000/api/
+```
+
+All endpoints described in this documentation are relative to this base URL. For example, to access vehicle certifications, you would use:
+
+```
+GET https://mantis.peisol.com.ec/api/vehicles/cert_vehicle/
+```
+
+## Request Format
+
+### HTTP Methods
+
+The API uses standard HTTP methods:
+
+- `GET` - Retrieve resources
+- `POST` - Create new resources
+- `PUT` - Update existing resources
+- `DELETE` - Delete resources
+
+### Content Type
+
+All POST and PUT requests must include a JSON body with the `Content-Type` header:
+
+```http
+Content-Type: application/json
+```
+
+### Request Example
+
+```json
+{
+  "vehicle_id": 1,
+  "name": "SOAT",
+  "date_start": "2024-01-01",
+  "date_end": "2024-12-31",
+  "description": "Annual insurance"
+}
+```
+
+## Response Format
+
+### Success Response
+
+All successful API responses follow this structure:
+
+<ResponseField name="success" type="boolean" required>
+  Indicates whether the request was successful
+</ResponseField>
+
+<ResponseField name="data" type="object | array">
+  Contains the response data. Can be an object for single resources or an array for collections
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Optional success message describing the operation performed
+</ResponseField>
+
+**Example:**
+
+```json
+{
+  "success": true,
+  "message": "Certificación de vehículo creada exitosamente",
+  "data": {
+    "id": 1,
+    "vehicle_id": 1,
+    "name": "SOAT",
+    "date_start": "2024-01-01",
+    "date_end": "2024-12-31"
+  }
+}
+```
+
+### Error Response
+
+Error responses include an error message:
+
+<ResponseField name="success" type="boolean" required>
+  Always `false` for errors
+</ResponseField>
+
+<ResponseField name="error" type="string" required>
+  Description of the error that occurred
+</ResponseField>
+
+**Example:**
+
+```json
+{
+  "success": false,
+  "error": "El campo vehicle_id es requerido"
+}
+```
+
+### HTTP Status Codes
+
+The API uses standard HTTP status codes:
+
+| Status Code | Description |
+|------------|-------------|
+| `200` | Success - Request completed successfully |
+| `400` | Bad Request - Invalid parameters or validation error |
+| `404` | Not Found - Resource not found |
+| `500` | Internal Server Error - Server-side error |
+
+## Date Format
+
+All dates must be provided in ISO 8601 format:
+
+```
+YYYY-MM-DD
+```
+
+**Example:**
+```
+2024-03-15
+```
+
+Datetime fields are returned in ISO 8601 format with timezone:
+
+```
+2024-03-15T14:30:00.000Z
+```
+
+## Pagination
+
+Currently, the API returns all results without pagination. Large collections may return many records.
+
+## CORS
+
+The API has CORS enabled for trusted origins including:
+
+- `https://mantis.peisol.com.ec`
+- `http://localhost:8000`
+- `http://localhost:3000`
+- `http://localhost:5173`
+
+## API Sections
+
+The API is organized into the following sections:
+
+- **Vehicles** - Manage vehicle certifications and passes
+- **Technicals** - Manage technical certifications, passes, and vaccines
+- **Resources** - Manage equipment and resource items
+- **Projects** - Manage projects and project resources
+- **Work Orders** - Manage work sheets and custody chains
+- **Files** - Upload and manage documents
+- **Shipping** - Manage shipping guides
+- **Maintenance** - Manage maintenance sheets
+- **Calendar** - Manage calendar events

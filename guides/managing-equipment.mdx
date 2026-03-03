@@ -1,0 +1,262 @@
+---
+title: Managing Equipment
+description: How to add, track, and manage equipment inventory in Mantis projects
+---
+
+This guide covers the complete workflow for managing equipment and service resources in your Mantis projects.
+
+## Overview
+
+Mantis tracks two types of resources:
+- **EQUIPO** (Physical Equipment): Vehicles, machinery, tools, and physical assets
+- **SERVICIO** (Services): Labor, technical services, and ongoing service contracts
+
+Each resource assigned to a project includes cost tracking, maintenance scheduling, and operational date management.
+
+## Adding Resources to a Project
+
+<Steps>
+  <Step title="Navigate to Project Resources">
+    1. Open your project from the Projects list
+    2. Click on the **Recursos Asignados** (Assigned Resources) tab - the amber-colored tab
+    3. Click **Add Resources** or the add button
+  </Step>
+
+  <Step title="Select Resources">
+    Use the **Autocomplete Resource** search field to find available resources:
+    1. Type to search by code or description
+    2. The system shows only available resources (not assigned elsewhere)
+    3. Click on a resource to select it
+
+    The selected resource will be added to the list below.
+  </Step>
+
+  <Step title="Configure Resource Details">
+    For each resource in the table, configure:
+
+    ### Basic Configuration
+    - **Fecha Inicio** (Start Date): **Required** - When the resource begins operation
+    - **Costo Alq** (Rental Cost): Daily rental cost (only for EQUIPO)
+    - **Frec. Alquiler** (Rental Frequency): Set to "Diario" (Daily) for equipment
+
+    ### Maintenance Configuration
+    - **Mant** checkbox: Check to enable maintenance scheduling
+    - **Frec. Mant** (Maintenance Frequency): Choose frequency type:
+      - **Por intervalo de días**: Every X days (enter interval in days field)
+      - **Días de la semana**: Specific weekdays (click day buttons: Lun, Mar, Mié, Jue, Vie, Sáb, Dom)
+      - **Días del mes**: Specific days of month (click day numbers 1-31)
+    - **Costo Mnt** (Maintenance Cost): Cost per maintenance service
+
+    ### Service-Specific Fields
+    - **Equipo Físico**: For services, optionally link to a physical equipment
+  </Step>
+
+  <Step title="Review and Save">
+    1. Verify all resources have required start dates
+    2. Review costs and frequencies
+    3. Click **Guardar Recursos (X)** where X is the number of resources
+
+    The system will:
+    - Create project resource assignments
+    - Schedule maintenance events if configured
+    - Return you to the project detail view
+  </Step>
+</Steps>
+
+## Understanding the Resource Table
+
+The resource assignment table shows these columns:
+
+| Column | Description |
+|--------|-------------|
+| # | Sequential number |
+| Detalle | Resource code and description |
+| Tipo | EQUIPO or SERVICIO |
+| Equipo Físico | For services, the linked physical equipment |
+| Fecha Inicio | Operation start date (**required**) |
+| Costo Alq | Daily rental cost |
+| Frec. Alquiler | Rental frequency (Daily for equipment) |
+| Mant | Maintenance enabled (checkbox) |
+| Frec. Mant | Maintenance frequency configuration |
+| Costo Mnt | Maintenance cost |
+| Acciones | Delete button to remove from list |
+
+## Editing Assigned Resources
+
+<Steps>
+  <Step title="Access Edit Modal">
+    From the **Recursos Asignados** tab:
+    1. Locate the resource in the list
+    2. Click the edit icon or button for that resource
+  </Step>
+
+  <Step title="Modify Details">
+    You can update:
+    - Operation dates (start/end)
+    - Costs (rental and maintenance)
+    - Maintenance frequency and intervals
+    - Retirement status
+  </Step>
+
+  <Step title="Save Changes">
+    Click **Save** to update the resource assignment.
+  </Step>
+</Steps>
+
+## Retiring Resources
+
+When equipment is no longer needed in the project:
+
+<Steps>
+  <Step title="Mark as Retired">
+    In the resource edit form:
+    1. Check the **is_retired** checkbox
+    2. Enter the **Retirement Date**
+    3. Provide a **Retirement Reason** in the text area
+  </Step>
+
+  <Step title="Set End Date">
+    Enter the **operation_end_date** to mark when the resource stopped operating in the project.
+  </Step>
+
+  <Step title="Save Retirement">
+    Click **Save**. The resource will be marked as retired and become available for other projects.
+  </Step>
+</Steps>
+
+<Warning>
+The **operation_end_date** must not be earlier than the **operation_start_date**. The form will show a validation error if dates are invalid.
+</Warning>
+
+## Maintenance Scheduling
+
+### Setting Up Maintenance Intervals
+
+**Daily Interval (Por intervalo de días)**
+- Enter the number of days between maintenance (e.g., 3 for every 3 days)
+- System schedules maintenance events automatically
+- Default: 3 days for services, 1 day for equipment
+
+**Weekly Schedule (Días de la semana)**
+- Click the buttons for desired weekdays
+- Selected days appear highlighted (primary blue)
+- Example: Select Mon, Wed, Fri for three times per week
+
+**Monthly Schedule (Días del mes)**
+- Click the day numbers (1-31) for maintenance
+- Multiple days can be selected
+- Example: Select 1, 15 for bi-monthly maintenance
+
+### Viewing Maintenance Calendar
+
+Navigate to the **Calendario Mantenimientos** tab (lime green) to:
+- View all scheduled maintenance events
+- See upcoming maintenance due dates
+- Track maintenance completion status
+
+## Resource Status Indicators
+
+- **Active**: Resource is currently assigned and operational
+- **Retired**: Resource has been retired from the project
+- **Available**: Resource can be assigned to projects
+- **Selected**: Resource is marked for assignment (in add flow)
+
+## Working with Services
+
+Services have special handling:
+
+<AccordionGroup>
+  <Accordion title="Service Configuration">
+    When adding a **SERVICIO** resource:
+    - Rental cost (Costo Alq) is marked as "N/A"
+    - Rental frequency shows "N/A"
+    - Maintenance is enabled by default
+    - Default maintenance interval is 3 days
+  </Accordion>
+
+  <Accordion title="Linking Physical Equipment">
+    Services can be linked to physical equipment:
+    1. In the **Equipo Físico** dropdown, select from available equipment
+    2. This associates the service with specific machinery
+    3. Useful for tracking maintenance services on equipment
+  </Accordion>
+
+  <Accordion title="Service Maintenance">
+    For services with maintenance:
+    - The maintenance checkbox is pre-enabled
+    - Default frequency type is "Por intervalo de días"
+    - Default interval is 3 days
+    - You can customize frequency and costs
+  </Accordion>
+</AccordionGroup>
+
+## Field Reference
+
+### ProjectResourceForm Fields
+
+| Field Name | Label | Type | Required | Notes |
+|------------|-------|------|----------|-------|
+| project | Project | Select | Yes | Auto-populated |
+| resource_item | Resource | Select | Yes | Selected from autocomplete |
+| cost | Costo Alq | Number | No | Daily rental cost (0.01 step) |
+| interval_days | Interval | Number | Conditional | Days between events (min: 1) |
+| operation_start_date | Fecha Inicio | Date | Yes | When resource starts |
+| operation_end_date | Fecha Fin | Date | No | When resource ends |
+| is_retired | Retired | Checkbox | No | Mark as retired |
+| retirement_date | Retirement Date | Date | Conditional | Required if retired |
+| retirement_reason | Retirement Reason | Textarea | Conditional | Required if retired |
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Accurate Start Dates" icon="calendar">
+    Always set accurate operation start dates. These are used for billing and scheduling calculations.
+  </Card>
+
+  <Card title="Maintenance Planning" icon="tools">
+    Enable maintenance for critical equipment to ensure proper scheduling and cost tracking.
+  </Card>
+
+  <Card title="Cost Tracking" icon="dollar-sign">
+    Enter accurate rental and maintenance costs for proper project budgeting and invoicing.
+  </Card>
+
+  <Card title="Retirement Documentation" icon="clipboard">
+    Always provide clear retirement reasons when removing equipment from projects.
+  </Card>
+</CardGroup>
+
+## Common Issues
+
+### Cannot Add Resource
+**Problem**: Resource doesn't appear in autocomplete.
+
+**Solution**: 
+- Resource may already be assigned to another project
+- Resource may be marked as deleted
+- Check if resource is available in the system
+
+### Cannot Save - Missing Start Date
+**Problem**: "Todos los recursos deben tener una fecha de inicio de operaciones" error.
+
+**Solution**: Ensure every resource in the table has a value in the **Fecha Inicio** column.
+
+### Maintenance Frequency Confusion
+**Problem**: Unclear how to set maintenance schedule.
+
+**Solution**:
+- For "every 3 days": Select "Por intervalo de días" and enter "3"
+- For "Monday and Friday": Select "Días de la semana" and click Mon and Fri buttons
+- For "1st and 15th of month": Select "Días del mes" and click "1" and "15"
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Work Order Workflow" icon="clipboard-list" href="/guides/work-order-workflow">
+    Learn how to create work orders using assigned resources
+  </Card>
+
+  <Card title="Document Management" icon="folder" href="/guides/document-management">
+    Manage documents related to your equipment and services
+  </Card>
+</CardGroup>

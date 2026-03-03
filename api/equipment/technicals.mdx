@@ -1,0 +1,643 @@
+---
+title: "Technicals"
+description: "Technical staff management endpoints"
+---
+
+## Get Available Technicals
+
+<RequestExample>
+```bash cURL
+curl -X GET https://api.mantis.com/api/technicals/avaliables/
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+  "data": [
+    {
+      "id": 1,
+      "first_name": "John",
+      "last_name": "Doe",
+      "email": "john.doe@example.com",
+      "work_area": "FIELD",
+      "work_area_display": "Field Operations",
+      "dni": "1234567890",
+      "nro_phone": "+593991234567",
+      "date_joined": "2023-01-15",
+      "birth_date": "1990-05-20",
+      "license_issue_date": "2022-01-01",
+      "license_expiry_date": "2027-01-01",
+      "defensive_driving_certificate_issue_date": "2023-06-01",
+      "defensive_driving_certificate_expiry_date": "2024-06-01",
+      "mae_certificate_issue_date": "2023-03-15",
+      "mae_certificate_expiry_date": "2024-03-15",
+      "medical_certificate_issue_date": "2024-01-10",
+      "medical_certificate_expiry_date": "2025-01-10",
+      "is_iess_affiliated": true,
+      "has_life_insurance_policy": true,
+      "quest_ncst_code": "QUEST-001",
+      "quest_instructor": "Instructor Name",
+      "quest_start_date": "2023-02-01",
+      "quest_end_date": "2024-02-01",
+      "notes": null,
+      "is_active": true,
+      "is_deleted": false,
+      "id_user_created": 1,
+      "id_user_updated": 1,
+      "passes": [
+        {
+          "id": 1,
+          "bloque": "A",
+          "bloque_display": "Bloque A",
+          "fecha_caducidad": "2025-06-30",
+          "meta": {
+            "notes": null,
+            "created_at": "2024-01-01T10:00:00Z",
+            "updated_at": "2024-01-01T10:00:00Z",
+            "is_active": true,
+            "is_deleted": false,
+            "id_user_created": 1,
+            "id_user_updated": 1
+          }
+        }
+      ],
+      "vaccination_records": [
+        {
+          "id": 1,
+          "vaccine_type": "COVID19",
+          "vaccine_type_display": "COVID-19",
+          "batch_number": "BATCH-2024-001",
+          "application_date": "2024-01-15",
+          "dose_number": 3,
+          "next_dose_date": "2024-07-15",
+          "days_to_next_dose": 180,
+          "notes": "Booster dose",
+          "meta": {
+            "notes": "Booster dose",
+            "created_at": "2024-01-15T10:00:00Z",
+            "updated_at": "2024-01-15T10:00:00Z",
+            "is_active": true,
+            "is_deleted": false,
+            "id_user_created": 1,
+            "id_user_updated": 1
+          }
+        }
+      ],
+      "meta": {
+        "notes": null,
+        "created_at": "2023-01-15T10:00:00Z",
+        "updated_at": "2024-01-01T10:00:00Z",
+        "is_active": true,
+        "is_deleted": false,
+        "id_user_created": 1,
+        "id_user_updated": 1
+      }
+    }
+  ]
+}
+```
+</ResponseExample>
+
+Retrieves a list of all active technical staff with their passes and vaccination records.
+
+### Endpoint
+```
+GET /api/technicals/avaliables/
+```
+
+### Response
+
+<ResponseField name="data" type="array">
+  Array of technical staff objects with their passes and vaccination records
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="integer">
+      Technical staff ID
+    </ResponseField>
+    
+    <ResponseField name="first_name" type="string">
+      First name
+    </ResponseField>
+    
+    <ResponseField name="last_name" type="string">
+      Last name
+    </ResponseField>
+    
+    <ResponseField name="email" type="string">
+      Email address
+    </ResponseField>
+    
+    <ResponseField name="work_area" type="string">
+      Work area code
+    </ResponseField>
+    
+    <ResponseField name="work_area_display" type="string">
+      Human-readable work area
+    </ResponseField>
+    
+    <ResponseField name="dni" type="string">
+      National identification number
+    </ResponseField>
+    
+    <ResponseField name="passes" type="array">
+      Array of pass objects associated with the technical
+    </ResponseField>
+    
+    <ResponseField name="vaccination_records" type="array">
+      Array of vaccination record objects
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Create/Update Technical Pass
+
+<RequestExample>
+```bash cURL (Create)
+curl -X POST https://api.mantis.com/api/technicals/create_update_pass_technical/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "technical_id": 1,
+    "bloque": "A",
+    "fecha_caducidad": "2025-06-30"
+  }'
+```
+
+```bash cURL (Update)
+curl -X PUT https://api.mantis.com/api/technicals/create_update_pass_technical/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": 1,
+    "technical_id": 1,
+    "bloque": "B",
+    "fecha_caducidad": "2025-12-31"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+  "success": true,
+  "message": "Pase creado",
+  "data": {
+    "id": 1,
+    "technical_id": 1,
+    "bloque": "A",
+    "fecha_caducidad": "2025-06-30",
+    "pass_file_url": "/media/passes/technical_pass_1.pdf"
+  }
+}
+```
+</ResponseExample>
+
+Create a new technical pass or update an existing one.
+
+### Endpoint
+```
+POST /api/technicals/create_update_pass_technical/
+PUT /api/technicals/create_update_pass_technical/
+```
+
+### Request Body
+
+<ParamField path="id" type="integer">
+  Pass ID (required for PUT/update only)
+</ParamField>
+
+<ParamField path="technical_id" type="integer" required>
+  ID of the technical staff member
+</ParamField>
+
+<ParamField path="bloque" type="string" required>
+  Pass block/zone identifier
+</ParamField>
+
+<ParamField path="fecha_caducidad" type="string" required>
+  Pass expiration date in YYYY-MM-DD format
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the operation was successful
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success or error message
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Created or updated pass object
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="integer">
+      Pass ID
+    </ResponseField>
+    
+    <ResponseField name="technical_id" type="integer">
+      Associated technical staff ID
+    </ResponseField>
+    
+    <ResponseField name="bloque" type="string">
+      Pass block/zone
+    </ResponseField>
+    
+    <ResponseField name="fecha_caducidad" type="string">
+      Expiration date
+    </ResponseField>
+    
+    <ResponseField name="pass_file_url" type="string">
+      URL to the pass file if available
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Get Technical Passes
+
+<RequestExample>
+```bash cURL (All passes)
+curl -X GET https://api.mantis.com/api/technicals/create_update_pass_technical/
+```
+
+```bash cURL (By technical)
+curl -X GET https://api.mantis.com/api/technicals/create_update_pass_technical/?technical_id=1
+```
+
+```bash cURL (By ID)
+curl -X GET https://api.mantis.com/api/technicals/create_update_pass_technical/?id=1
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "technical_id": 1,
+      "bloque": "A",
+      "fecha_caducidad": "2025-06-30",
+      "pass_file_url": "/media/passes/technical_pass_1.pdf"
+    }
+  ]
+}
+```
+</ResponseExample>
+
+Retrieve technical passes. Can filter by technical ID or pass ID.
+
+### Endpoint
+```
+GET /api/technicals/create_update_pass_technical/
+```
+
+### Query Parameters
+
+<ParamField query="id" type="integer">
+  Filter by pass ID
+</ParamField>
+
+<ParamField query="technical_id" type="integer">
+  Filter by technical staff ID
+</ParamField>
+
+---
+
+## Delete Technical Pass
+
+<RequestExample>
+```bash cURL (Delete single)
+curl -X DELETE https://api.mantis.com/api/technicals/delete_pass_technical/ \
+  -H "Content-Type: application/json" \
+  -d '{"id": 1}'
+```
+
+```bash cURL (Delete multiple)
+curl -X POST https://api.mantis.com/api/technicals/delete_pass_technical/ \
+  -H "Content-Type: application/json" \
+  -d '{"ids": [1, 2, 3]}'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response (Single)
+{
+  "success": true,
+  "message": "Pase eliminado",
+  "data": {
+    "id": 1,
+    "technical_id": 1
+  }
+}
+```
+
+```json Response (Multiple)
+{
+  "success": true,
+  "message": "2 eliminados",
+  "data": {
+    "deleted": [
+      {"id": 1},
+      {"id": 2}
+    ],
+    "errors": []
+  }
+}
+```
+</ResponseExample>
+
+Soft delete technical pass(es).
+
+### Endpoint
+```
+DELETE /api/technicals/delete_pass_technical/
+POST /api/technicals/delete_pass_technical/
+```
+
+### Request Body (single deletion)
+
+<ParamField path="id" type="integer" required>
+  Pass ID to delete
+</ParamField>
+
+### Request Body (bulk deletion)
+
+<ParamField path="ids" type="array" required>
+  Array of pass IDs to delete
+</ParamField>
+
+---
+
+## Create/Update Vaccination Record
+
+<RequestExample>
+```bash cURL (Create)
+curl -X POST https://api.mantis.com/api/technicals/create_update_vaccine/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "technical_id": 1,
+    "vaccine_type": "COVID19",
+    "application_date": "2024-01-15",
+    "batch_number": "BATCH-2024-001",
+    "dose_number": 3,
+    "next_dose_date": "2024-07-15",
+    "notes": "Booster dose"
+  }'
+```
+
+```bash cURL (Update)
+curl -X PUT https://api.mantis.com/api/technicals/create_update_vaccine/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": 1,
+    "technical_id": 1,
+    "vaccine_type": "COVID19",
+    "application_date": "2024-01-15",
+    "batch_number": "BATCH-2024-002",
+    "dose_number": 4,
+    "next_dose_date": "2025-01-15",
+    "notes": "Updated booster"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+  "success": true,
+  "message": "Registro de vacunacion creado",
+  "data": {
+    "id": 1,
+    "technical_id": 1,
+    "vaccine_type": "COVID19",
+    "vaccine_type_display": "COVID-19",
+    "batch_number": "BATCH-2024-001",
+    "application_date": "2024-01-15",
+    "dose_number": 3,
+    "next_dose_date": "2024-07-15",
+    "notes": "Booster dose"
+  }
+}
+```
+</ResponseExample>
+
+Create a new vaccination record or update an existing one for a technical staff member.
+
+### Endpoint
+```
+POST /api/technicals/create_update_vaccine/
+PUT /api/technicals/create_update_vaccine/
+```
+
+### Request Body
+
+<ParamField path="id" type="integer">
+  Vaccination record ID (required for PUT/update only)
+</ParamField>
+
+<ParamField path="technical_id" type="integer" required>
+  ID of the technical staff member
+</ParamField>
+
+<ParamField path="vaccine_type" type="string" required>
+  Type of vaccine (e.g., COVID19, TETANUS, YELLOW_FEVER)
+</ParamField>
+
+<ParamField path="application_date" type="string" required>
+  Vaccine application date in YYYY-MM-DD format
+</ParamField>
+
+<ParamField path="batch_number" type="string">
+  Vaccine batch number
+</ParamField>
+
+<ParamField path="dose_number" type="integer">
+  Dose number (e.g., 1, 2, 3 for booster)
+</ParamField>
+
+<ParamField path="next_dose_date" type="string">
+  Next dose date in YYYY-MM-DD format (if applicable)
+</ParamField>
+
+<ParamField path="notes" type="string">
+  Additional notes about the vaccination
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the operation was successful
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success or error message
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Created or updated vaccination record object
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="integer">
+      Vaccination record ID
+    </ResponseField>
+    
+    <ResponseField name="technical_id" type="integer">
+      Associated technical staff ID
+    </ResponseField>
+    
+    <ResponseField name="vaccine_type" type="string">
+      Vaccine type code
+    </ResponseField>
+    
+    <ResponseField name="vaccine_type_display" type="string">
+      Human-readable vaccine type
+    </ResponseField>
+    
+    <ResponseField name="batch_number" type="string">
+      Vaccine batch number
+    </ResponseField>
+    
+    <ResponseField name="application_date" type="string">
+      Application date
+    </ResponseField>
+    
+    <ResponseField name="dose_number" type="integer">
+      Dose number
+    </ResponseField>
+    
+    <ResponseField name="next_dose_date" type="string">
+      Next scheduled dose date
+    </ResponseField>
+    
+    <ResponseField name="notes" type="string">
+      Additional notes
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Get Vaccination Records
+
+<RequestExample>
+```bash cURL (All records)
+curl -X GET https://api.mantis.com/api/technicals/create_update_vaccine/
+```
+
+```bash cURL (By technical)
+curl -X GET https://api.mantis.com/api/technicals/create_update_vaccine/?technical_id=1
+```
+
+```bash cURL (By ID)
+curl -X GET https://api.mantis.com/api/technicals/create_update_vaccine/?id=1
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "technical_id": 1,
+      "vaccine_type": "COVID19",
+      "vaccine_type_display": "COVID-19",
+      "batch_number": "BATCH-2024-001",
+      "application_date": "2024-01-15",
+      "dose_number": 3,
+      "next_dose_date": "2024-07-15",
+      "notes": "Booster dose"
+    }
+  ]
+}
+```
+</ResponseExample>
+
+Retrieve vaccination records. Can filter by technical ID or record ID.
+
+### Endpoint
+```
+GET /api/technicals/create_update_vaccine/
+```
+
+### Query Parameters
+
+<ParamField query="id" type="integer">
+  Filter by vaccination record ID
+</ParamField>
+
+<ParamField query="technical_id" type="integer">
+  Filter by technical staff ID
+</ParamField>
+
+---
+
+## Delete Vaccination Record
+
+<RequestExample>
+```bash cURL (Delete single)
+curl -X DELETE https://api.mantis.com/api/technicals/delete_vaccine/ \
+  -H "Content-Type: application/json" \
+  -d '{"id": 1}'
+```
+
+```bash cURL (Delete multiple)
+curl -X POST https://api.mantis.com/api/technicals/delete_vaccine/ \
+  -H "Content-Type: application/json" \
+  -d '{"ids": [1, 2, 3]}'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response (Single)
+{
+  "success": true,
+  "message": "Registro de vacunacion eliminado",
+  "data": {
+    "id": 1,
+    "technical_id": 1
+  }
+}
+```
+
+```json Response (Multiple)
+{
+  "success": true,
+  "message": "2 eliminados",
+  "data": {
+    "deleted": [
+      {"id": 1},
+      {"id": 2}
+    ],
+    "errors": []
+  }
+}
+```
+</ResponseExample>
+
+Soft delete vaccination record(s).
+
+### Endpoint
+```
+DELETE /api/technicals/delete_vaccine/
+POST /api/technicals/delete_vaccine/
+```
+
+### Request Body (single deletion)
+
+<ParamField path="id" type="integer" required>
+  Vaccination record ID to delete
+</ParamField>
+
+### Request Body (bulk deletion)
+
+<ParamField path="ids" type="array" required>
+  Array of vaccination record IDs to delete
+</ParamField>

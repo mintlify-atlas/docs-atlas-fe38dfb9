@@ -1,0 +1,566 @@
+---
+title: Deployment
+description: Production deployment with Gunicorn, Nginx, and systemd
+---
+
+## Overview
+
+This guide covers deploying Mantis to a production environment using:
+
+- **Gunicorn**: WSGI HTTP server
+- **Nginx**: Reverse proxy and static file server
+- **systemd**: Service management
+- **PostgreSQL**: Database backend
+
+## Prerequisites
+
+<Steps>
+  <Step title="Server Requirements">
+    - Ubuntu 20.04 LTS or newer
+    - Python 3.8+
+    - PostgreSQL 12+
+    - Root or sudo access
+  </Step>
+  <Step title="Domain Configuration">
+    - Domain pointed to your server IP
+    - SSL certificate (recommended: Let's Encrypt)
+  </Step>
+  <Step title="Database Setup">
+    PostgreSQL installed and configured (see [Database Setup](/admin/database-setup))
+  </Step>
+</Steps>
+
+## System Dependencies
+
+Install required system packages:
+
+```bash
+sudo apt update
+sudo apt install -y python3-pip python3-dev python3-venv \
+  libpq-dev postgresql postgresql-contrib \
+  nginx curl git
+```
+
+## Application Setup
+
+### Create Application User
+
+```bash
+sudo useradd -m -s /bin/bash mantis
+sudo su - mantis
+```
+
+### Clone Repository
+
+```bash
+git clone <repository-url> /home/mantis/mantis
+cd /home/mantis/mantis
+```
+
+### Create Virtual Environment
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### Install Dependencies
+
+Mantis uses the following key dependencies from `requirements.txt`:
+
+```bash
+pip install --upgrade pip
+pip install -r app/requeriments.txt
+```
+
+Key packages installed:
+
+- `django==4.2.14` - Web framework
+- `gunicorn==23.0.0` - WSGI server
+- `psycopg2-binary==2.9.11` - PostgreSQL adapter
+- `djangorestframework==3.14.0` - REST API
+- `django-cors-headers==4.9.0` - CORS handling
+- `pillow==12.0.0` - Image processing
+- `WeasyPrint==66.0` - PDF generation
+
+### Configure Secrets
+
+Create `app/src/common/secrets.py`:
+
+```python
+DATABASES = {
+    'PRODUCTION': {
+        "ENGINE": "django.db.backends.postgresql",
+        'NAME': 'mantis_prod',
+        'USER': 'mantis_user',
+        'PASSWORD': 'your_secure_password',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
+DEFAULT_DB = {
+    'default': DATABASES['PRODUCTION']
+}
+```
+
+### Update Django Settings
+
+Edit `app/src/peisol/settings.py` for production:
+
+```python
+# Security settings
+DEBUG = False
+SECRET_KEY = 'generate-a-unique-secret-key-here'
+ALLOWED_HOSTS = ['mantis.peisol.com.ec', 'www.mantis.peisol.com.ec']
+
+# CSRF and CORS
+CSRF_TRUSTED_ORIGINS = [
+    'https://mantis.peisol.com.ec',
+    'https://www.mantis.peisol.com.ec',
+]
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOWED_ORIGINS = [
+    'https://mantis.peisol.com.ec',
+]
+
+# Production URL
+IS_IN_PRODUCTION = True
+BASE_URL = 'https://mantis.peisol.com.ec'
+```
+
+### Collect Static Files
+
+```bash
+cd /home/mantis/mantis/app/src
+python manage.py collectstatic --noinput
+```
+
+### Run Migrations
+
+```bash
+python manage.py makemigrations accounts
+python manage.py makemigrations equipment projects
+python manage.py migrate
+python manage.py sowseed
+python manage.py populate_history --auto
+```
+
+### Create Superuser
+
+```bash
+python manage.py createsuperuser
+```
+
+## Gunicorn Configuration
+
+### Create Gunicorn Configuration
+
+Create `/home/mantis/mantis/gunicorn_config.py`:
+
+```python
+import multiprocessing
+
+bind = '127.0.0.1:8000'
+workers = multiprocessing.cpu_count() * 2 + 1
+worker_class = 'sync'
+worker_connections = 1000
+max_requests = 1000
+max_requests_jitter = 50
+timeout = 30
+keepalive = 2
+
+# Logging
+accesslog = '/home/mantis/mantis/logs/gunicorn_access.log'
+errorlog = '/home/mantis/mantis/logs/gunicorn_error.log'
+loglevel = 'info'
+
+# Process naming
+proc_name = 'mantis'
+
+# Server mechanics
+daemon = False
+pidfile = '/home/mantis/mantis/gunicorn.pid'
+user = 'mantis'
+group = 'mantis'
+```
+
+### Create Logs Directory
+
+```bash
+mkdir -p /home/mantis/mantis/logs
+```
+
+### Test Gunicorn
+
+```bash
+cd /home/mantis/mantis/app/src
+/home/mantis/mantis/venv/bin/gunicorn \
+  --config /home/mantis/mantis/gunicorn_config.py \
+  peisol.wsgi:application
+```
+
+## systemd Service Configuration
+
+### Create systemd Service File
+
+Exit the mantis user and create `/etc/systemd/system/mantis.service`:
+
+```ini
+[Unit]
+Description=Mantis Gunicorn Application
+After=network.target postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=notify
+User=mantis
+Group=mantis
+WorkingDirectory=/home/mantis/mantis/app/src
+Environment="PATH=/home/mantis/mantis/venv/bin"
+Environment="PYTHONPATH=/home/mantis/mantis/app/src"
+ExecStart=/home/mantis/mantis/venv/bin/gunicorn \
+  --config /home/mantis/mantis/gunicorn_config.py \
+  peisol.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+KillMode=mixed
+TimeoutStopSec=5
+PrivateTmp=true
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### Enable and Start Service
+
+<CodeGroup>
+```bash Start Service
+sudo systemctl daemon-reload
+sudo systemctl start mantis.service
+sudo systemctl enable mantis.service
+```
+
+```bash Check Status
+sudo systemctl status mantis.service
+```
+
+```bash View Logs
+sudo journalctl -u mantis.service -f
+```
+</CodeGroup>
+
+### Service Management Commands
+
+Common commands for managing the Mantis service:
+
+<CodeGroup>
+```bash Restart Service
+sudo systemctl restart mantis.service
+```
+
+```bash Stop Service
+sudo systemctl stop mantis.service
+```
+
+```bash Reload After Changes
+sudo systemctl daemon-reload && \
+sudo systemctl restart mantis.service
+```
+</CodeGroup>
+
+## Nginx Configuration
+
+### Create Nginx Configuration
+
+Create `/etc/nginx/sites-available/mantis`:
+
+```nginx
+upstream mantis_app {
+    server 127.0.0.1:8000 fail_timeout=0;
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name mantis.peisol.com.ec www.mantis.peisol.com.ec;
+    
+    # Redirect HTTP to HTTPS
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name mantis.peisol.com.ec www.mantis.peisol.com.ec;
+
+    # SSL Configuration (update paths to your certificates)
+    ssl_certificate /etc/letsencrypt/live/mantis.peisol.com.ec/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/mantis.peisol.com.ec/privkey.pem;
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+    ssl_prefer_server_ciphers on;
+
+    client_max_body_size 100M;
+
+    # Static files
+    location /static/ {
+        alias /home/mantis/mantis/app/src/static_django/;
+        expires 30d;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Media files
+    location /media/ {
+        alias /home/mantis/mantis/app/src/media/;
+        expires 7d;
+    }
+
+    # Application
+    location / {
+        proxy_pass http://mantis_app;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_redirect off;
+        proxy_buffering off;
+    }
+
+    # Security headers
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+
+    # Logging
+    access_log /var/log/nginx/mantis_access.log;
+    error_log /var/log/nginx/mantis_error.log;
+}
+```
+
+### Enable Site and Restart Nginx
+
+<CodeGroup>
+```bash Enable Site
+sudo ln -s /etc/nginx/sites-available/mantis /etc/nginx/sites-enabled/
+```
+
+```bash Test Configuration
+sudo nginx -t
+```
+
+```bash Restart Nginx
+sudo systemctl restart nginx
+```
+</CodeGroup>
+
+## SSL Certificate (Let's Encrypt)
+
+Install Certbot and obtain SSL certificate:
+
+```bash
+sudo apt install certbot python3-certbot-nginx
+sudo certbot --nginx -d mantis.peisol.com.ec -d www.mantis.peisol.com.ec
+```
+
+Certbot will automatically configure Nginx for SSL.
+
+### Auto-renewal
+
+Test renewal:
+
+```bash
+sudo certbot renew --dry-run
+```
+
+Certbot automatically sets up a systemd timer for renewal.
+
+## Deployment Updates
+
+When updating the application:
+
+<CodeGroup>
+```bash Full Update
+# As mantis user
+cd /home/mantis/mantis
+git pull
+source venv/bin/activate
+pip install -r app/requeriments.txt
+cd app/src
+python manage.py migrate
+python manage.py collectstatic --noinput
+
+# As root/sudo
+sudo systemctl restart mantis.service
+```
+
+```bash Quick Restart (After Code Changes)
+sudo systemctl daemon-reload && \
+sudo systemctl restart mantis.service && \
+sudo systemctl restart nginx
+```
+</CodeGroup>
+
+## Monitoring and Logs
+
+### Application Logs
+
+```bash
+# Gunicorn logs
+tail -f /home/mantis/mantis/logs/gunicorn_error.log
+tail -f /home/mantis/mantis/logs/gunicorn_access.log
+
+# Application logs (if configured)
+tail -f /home/mantis/mantis/logs/*.log
+```
+
+### Service Logs
+
+```bash
+# Mantis service
+sudo journalctl -u mantis.service -f
+
+# Nginx
+sudo tail -f /var/log/nginx/mantis_access.log
+sudo tail -f /var/log/nginx/mantis_error.log
+```
+
+### System Resources
+
+```bash
+# Check service status
+sudo systemctl status mantis.service
+sudo systemctl status nginx
+sudo systemctl status postgresql
+
+# Monitor processes
+htop
+ps aux | grep gunicorn
+```
+
+## Performance Tuning
+
+### Gunicorn Workers
+
+Adjust workers based on CPU cores:
+
+```python
+# In gunicorn_config.py
+workers = (2 * cpu_count) + 1
+```
+
+### Database Connection Pooling
+
+Add to `settings.py`:
+
+```python
+DATABASES['default']['CONN_MAX_AGE'] = 600  # 10 minutes
+```
+
+### Nginx Caching
+
+Add caching for static content in Nginx configuration.
+
+## Security Checklist
+
+<Steps>
+  <Step title="Disable Debug Mode">
+    Set `DEBUG = False` in settings.py
+  </Step>
+  <Step title="Generate Unique Secret Key">
+    Never use the default development secret key
+  </Step>
+  <Step title="Configure Firewall">
+    Allow only ports 80, 443, and SSH
+  </Step>
+  <Step title="Enable SSL">
+    Use HTTPS for all production traffic
+  </Step>
+  <Step title="Restrict Database Access">
+    Configure PostgreSQL to only accept local connections
+  </Step>
+  <Step title="Set Proper File Permissions">
+    Ensure application files are owned by mantis user
+  </Step>
+  <Step title="Regular Updates">
+    Keep system packages and Python dependencies updated
+  </Step>
+  <Step title="Backup Strategy">
+    Implement automated database and file backups
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+### Service Won't Start
+
+1. Check service status:
+   ```bash
+   sudo systemctl status mantis.service
+   ```
+
+2. View detailed logs:
+   ```bash
+   sudo journalctl -u mantis.service -n 50
+   ```
+
+3. Verify permissions:
+   ```bash
+   ls -la /home/mantis/mantis
+   ```
+
+### 502 Bad Gateway
+
+1. Check if Gunicorn is running:
+   ```bash
+   ps aux | grep gunicorn
+   ```
+
+2. Verify Gunicorn is listening:
+   ```bash
+   netstat -tlnp | grep 8000
+   ```
+
+3. Check Nginx error logs:
+   ```bash
+   sudo tail -f /var/log/nginx/mantis_error.log
+   ```
+
+### Static Files Not Loading
+
+1. Run collectstatic:
+   ```bash
+   python manage.py collectstatic --noinput
+   ```
+
+2. Verify Nginx configuration
+3. Check file permissions:
+   ```bash
+   ls -la /home/mantis/mantis/app/src/static_django
+   ```
+
+### Database Connection Errors
+
+1. Verify PostgreSQL is running:
+   ```bash
+   sudo systemctl status postgresql
+   ```
+
+2. Test database connection:
+   ```bash
+   psql -U mantis_user -h localhost -d mantis_prod
+   ```
+
+3. Check credentials in `secrets.py`
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Configuration" icon="gear" href="/admin/configuration">
+    Review Django settings and environment configuration
+  </Card>
+  <Card title="User Management" icon="users" href="/admin/user-management">
+    Set up users, roles, and permissions
+  </Card>
+</CardGroup>

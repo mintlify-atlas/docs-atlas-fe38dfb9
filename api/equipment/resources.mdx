@@ -1,0 +1,313 @@
+---
+title: "Resources"
+description: "Resource/equipment management endpoints"
+---
+
+## Update Resource
+
+<RequestExample>
+```bash cURL
+curl -X POST https://api.mantis.com/api/resources/update/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": 1,
+    "stst_status_equipment": "FUNCIONANDO",
+    "stst_status_disponibility": "DISPONIBLE",
+    "have_battery": true,
+    "have_charger": true,
+    "have_case": true,
+    "stst_commitment_date": "2024-06-01",
+    "stst_release_date": "2024-12-31"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+  "success": true,
+  "message": "Equipo actualizado correctamente",
+  "data": {
+    "id": 1,
+    "name": "GPS Trimble R10",
+    "code": "EQ-001",
+    "type_equipment": "GPS",
+    "is_active": true,
+    "stst_status_equipment": "FUNCIONANDO",
+    "created_at": "2024-01-01T10:00:00Z",
+    "updated_at": "2024-03-01T14:30:00Z"
+  },
+  "ignored_fields": null
+}
+```
+</ResponseExample>
+
+Update resource/equipment information. This endpoint supports dynamic field updates including status, availability, checklist items, and dates.
+
+### Endpoint
+```
+POST /api/resources/update/
+```
+
+### Request Body
+
+<ParamField path="id" type="integer" required>
+  Resource ID to update
+</ParamField>
+
+<ParamField path="stst_status_equipment" type="string">
+  Equipment status (e.g., FUNCIONANDO, INCOMPLETO, DAÑADO)
+</ParamField>
+
+<ParamField path="stst_status_disponibility" type="string">
+  Availability status (e.g., DISPONIBLE, EN_USO, MANTENIMIENTO)
+</ParamField>
+
+<ParamField path="stst_commitment_date" type="string">
+  Commitment date in YYYY-MM-DD format
+</ParamField>
+
+<ParamField path="stst_release_date" type="string">
+  Expected release date in YYYY-MM-DD format
+</ParamField>
+
+<ParamField path="stst_current_project_id" type="integer">
+  Current project ID where the resource is assigned
+</ParamField>
+
+<ParamField path="stst_current_location" type="string">
+  Current physical location of the resource
+</ParamField>
+
+<ParamField path="have_*" type="boolean">
+  Checklist boolean fields (e.g., have_battery, have_charger, have_case, have_cables). When checklist items are updated, the equipment status is automatically adjusted based on completion.
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the operation was successful
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success or error message
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Updated resource object
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="integer">
+      Resource ID
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+      Resource name
+    </ResponseField>
+    
+    <ResponseField name="code" type="string">
+      Resource code/identifier
+    </ResponseField>
+    
+    <ResponseField name="type_equipment" type="string">
+      Equipment type
+    </ResponseField>
+    
+    <ResponseField name="is_active" type="boolean">
+      Whether the resource is active
+    </ResponseField>
+    
+    <ResponseField name="stst_status_equipment" type="string">
+      Current equipment status
+    </ResponseField>
+    
+    <ResponseField name="created_at" type="string">
+      Creation timestamp
+    </ResponseField>
+    
+    <ResponseField name="updated_at" type="string">
+      Last update timestamp
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="ignored_fields" type="array">
+  List of fields that were ignored because they don't exist in the model (null if none)
+</ResponseField>
+
+<ResponseField name="field_errors" type="object">
+  Object containing field-specific validation errors (only present if validation fails)
+</ResponseField>
+
+### Notes
+
+- The endpoint dynamically validates fields against the ResourceItem model
+- Date fields accept YYYY-MM-DD format and are automatically parsed
+- DateTime fields accept multiple formats: YYYY-MM-DD HH:MM:SS, YYYY-MM-DDTHH:MM:SS, or YYYY-MM-DD
+- Checklist fields (starting with `have_`) automatically update `stst_status_equipment`:
+  - If all checklist items are true and status is INCOMPLETO, it changes to FUNCIONANDO
+  - If any checklist item is false and status is not INCOMPLETO, it changes to INCOMPLETO
+- Fields that don't exist in the model are ignored and listed in `ignored_fields`
+
+---
+
+## Release Resource from Project
+
+<RequestExample>
+```bash cURL
+curl -X PUT https://api.mantis.com/api/projects/resources/release/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": 1
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response (Equipment)
+{
+  "message": "Equipo liberado correctamente.",
+  "data": {
+    "id": 1,
+    "project_id": 5,
+    "type_resource": "EQUIPO",
+    "resource_item_id": 10,
+    "resource_item_code": "EQ-001",
+    "resource_item_name": "GPS Trimble R10",
+    "detailed_description": "GPS receiver with RTK capability",
+    "physical_equipment_code": 10,
+    "cost": "5000.00",
+    "is_active": true,
+    "is_retired": true,
+    "operation_start_date": "2024-01-15",
+    "operation_end_date": "2024-03-01"
+  },
+  "related_services_released": [2, 3],
+  "related_services_count": 2
+}
+```
+
+```json Response (Service)
+{
+  "message": "Servicio liberado correctamente.",
+  "data": {
+    "id": 2,
+    "project_id": 5,
+    "type_resource": "SERVICIO",
+    "resource_item_id": 15,
+    "resource_item_code": "SVC-001",
+    "resource_item_name": "GPS Data Processing",
+    "detailed_description": "Post-processing service for GPS data",
+    "physical_equipment_code": 10,
+    "cost": "500.00",
+    "is_active": true,
+    "is_retired": true,
+    "operation_start_date": "2024-01-15",
+    "operation_end_date": "2024-03-01"
+  }
+}
+```
+</ResponseExample>
+
+Release a resource from a project. This endpoint handles both equipment and service resources differently:
+
+- **Equipment**: Clears availability fields, sets status to DISPONIBLE, and automatically releases related services
+- **Service**: Simply marks as retired
+
+### Endpoint
+```
+PUT /api/projects/resources/release/
+```
+
+### Request Body
+
+<ParamField path="id" type="integer" required>
+  ProjectResourceItem ID to release (not the resource_item_id, but the project-resource relationship ID)
+</ParamField>
+
+### Response
+
+<ResponseField name="message" type="string">
+  Success message indicating the type of resource released
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Released project resource object
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="integer">
+      Project resource ID
+    </ResponseField>
+    
+    <ResponseField name="project_id" type="integer">
+      Associated project ID
+    </ResponseField>
+    
+    <ResponseField name="type_resource" type="string">
+      Resource type (EQUIPO or SERVICIO)
+    </ResponseField>
+    
+    <ResponseField name="resource_item_id" type="integer">
+      Base resource item ID
+    </ResponseField>
+    
+    <ResponseField name="resource_item_code" type="string">
+      Resource code
+    </ResponseField>
+    
+    <ResponseField name="resource_item_name" type="string">
+      Resource name
+    </ResponseField>
+    
+    <ResponseField name="detailed_description" type="string">
+      Detailed description of the resource
+    </ResponseField>
+    
+    <ResponseField name="physical_equipment_code" type="integer">
+      Physical equipment code (for linking services to equipment)
+    </ResponseField>
+    
+    <ResponseField name="cost" type="string">
+      Resource cost
+    </ResponseField>
+    
+    <ResponseField name="is_active" type="boolean">
+      Whether the project resource is active
+    </ResponseField>
+    
+    <ResponseField name="is_retired" type="boolean">
+      Whether the resource has been retired from the project
+    </ResponseField>
+    
+    <ResponseField name="operation_start_date" type="string">
+      Operation start date
+    </ResponseField>
+    
+    <ResponseField name="operation_end_date" type="string">
+      Operation end date
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<ResponseField name="related_services_released" type="array">
+  Array of service IDs that were automatically released (only for equipment releases)
+</ResponseField>
+
+<ResponseField name="related_services_count" type="integer">
+  Count of related services released (only for equipment releases)
+</ResponseField>
+
+### Notes
+
+- When releasing equipment (`type_resource: "EQUIPO"`):
+  - The resource item fields are cleared: `stst_release_date`, `stst_commitment_date`, `stst_current_project_id`, `stst_current_location`
+  - Status is set to `stst_status_disponibility: "DISPONIBLE"`
+  - Related services (linked by `physical_equipment_code`) are automatically released
+  - The project resource is marked as retired with `retirement_date` set to today
+
+- When releasing a service (`type_resource: "SERVICIO"`):
+  - The project resource is simply marked as retired with `retirement_date` set to today
+  - No automatic cascading effects
+
+- The endpoint prevents releasing already-retired resources
+- The resource must exist and not be deleted

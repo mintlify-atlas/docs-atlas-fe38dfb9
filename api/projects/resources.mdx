@@ -1,0 +1,637 @@
+---
+title: "Project Resources"
+description: "Manage resources assigned to projects including equipment and services"
+---
+
+## Add Resource to Project
+
+<api-endpoint method="POST" path="/api/projects/resources/add/" />
+
+Add one or more resources (equipment or services) to a project. Supports bulk creation of project resources.
+
+### Authentication
+
+Requires authentication via session or token.
+
+### Request Body
+
+Array of resource objects to add:
+
+<ParamField body="[].project_id" type="integer" required>
+  ID of the project to add resources to. Must be the same for all items in the array.
+</ParamField>
+
+<ParamField body="[].resource_id" type="integer" required>
+  ID of the resource item to add.
+</ParamField>
+
+<ParamField body="[].cost" type="number">
+  Cost for equipment rental or regular services. Defaults to 0.00.
+</ParamField>
+
+<ParamField body="[].maintenance_cost" type="number">
+  Cost for maintenance services. When provided, creates a maintenance service record.
+</ParamField>
+
+<ParamField body="[].physical_equipment_code" type="integer">
+  ID of the physical equipment associated with this resource. Used for services linked to equipment.
+</ParamField>
+
+<ParamField body="[].detailed_description" type="string">
+  Detailed description of the resource assignment.
+</ParamField>
+
+<ParamField body="[].frequency_type" type="string" default="DAY">
+  Billing frequency type. Options: `DAY`, `WEEK`, `MONTH`.
+</ParamField>
+
+<ParamField body="[].interval_days" type="integer">
+  Number of days between billing cycles when `frequency_type` is `DAY`. Defaults to 1 for DAY, 0 for WEEK/MONTH.
+</ParamField>
+
+<ParamField body="[].weekdays" type="array">
+  Array of weekday numbers (0-6) when `frequency_type` is `WEEK`.
+</ParamField>
+
+<ParamField body="[].monthdays" type="array">
+  Array of month day numbers (1-31) when `frequency_type` is `MONTH`.
+</ParamField>
+
+<ParamField body="[].operation_start_date" type="string">
+  Start date for resource operation (ISO 8601 format: YYYY-MM-DD).
+</ParamField>
+
+<ParamField body="[].commitment_date" type="string">
+  Commitment date for equipment (ISO 8601 format: YYYY-MM-DD).
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="array">
+  Array of created project resource items.
+  
+  <ResponseField name="id" type="integer">
+    Unique identifier of the project resource item.
+  </ResponseField>
+  
+  <ResponseField name="project_id" type="integer">
+    ID of the associated project.
+  </ResponseField>
+  
+  <ResponseField name="project_name" type="string">
+    Name of the associated project.
+  </ResponseField>
+  
+  <ResponseField name="resource_item_id" type="integer">
+    ID of the resource item.
+  </ResponseField>
+  
+  <ResponseField name="resource_item_name" type="string">
+    Name of the resource item.
+  </ResponseField>
+  
+  <ResponseField name="type_resource" type="string">
+    Type of resource: `EQUIPO` (equipment) or `SERVICIO` (service).
+  </ResponseField>
+  
+  <ResponseField name="detailed_description" type="string">
+    Formatted description including type, code, and details.
+  </ResponseField>
+  
+  <ResponseField name="cost" type="number">
+    Cost of the resource.
+  </ResponseField>
+  
+  <ResponseField name="frequency_type" type="string">
+    Billing frequency type.
+  </ResponseField>
+  
+  <ResponseField name="interval_days" type="integer">
+    Interval days for billing.
+  </ResponseField>
+  
+  <ResponseField name="weekdays" type="array" nullable>
+    Weekdays for weekly billing.
+  </ResponseField>
+  
+  <ResponseField name="monthdays" type="array" nullable>
+    Month days for monthly billing.
+  </ResponseField>
+  
+  <ResponseField name="operation_start_date" type="string" nullable>
+    Start date in ISO 8601 format.
+  </ResponseField>
+  
+  <ResponseField name="operation_end_date" type="string" nullable>
+    End date in ISO 8601 format.
+  </ResponseField>
+  
+  <ResponseField name="is_retired" type="boolean">
+    Whether the resource has been retired.
+  </ResponseField>
+  
+  <ResponseField name="retirement_date" type="string" nullable>
+    Date when resource was retired.
+  </ResponseField>
+  
+  <ResponseField name="retirement_reason" type="string" nullable>
+    Reason for retirement.
+  </ResponseField>
+  
+  <ResponseField name="is_active" type="boolean">
+    Whether the resource is active.
+  </ResponseField>
+  
+  <ResponseField name="is_deleted" type="boolean">
+    Whether the resource is deleted.
+  </ResponseField>
+  
+  <ResponseField name="created_at" type="string" nullable>
+    Creation timestamp in ISO 8601 format.
+  </ResponseField>
+  
+  <ResponseField name="updated_at" type="string" nullable>
+    Last update timestamp in ISO 8601 format.
+  </ResponseField>
+</ResponseField>
+
+### Error Codes
+
+- `400` - Invalid request data or missing required fields
+- `404` - Project or resource not found
+- `500` - Internal server error
+
+### Example Request
+
+```bash
+curl -X POST https://api.example.com/api/projects/resources/add/ \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '[
+    {
+      "project_id": 123,
+      "resource_id": 456,
+      "cost": 150.00,
+      "frequency_type": "DAY",
+      "interval_days": 1,
+      "operation_start_date": "2024-01-15",
+      "physical_equipment_code": 789
+    }
+  ]'
+```
+
+---
+
+## Get Project Resources
+
+<api-endpoint method="GET" path="/api/projects/{project_id}/resources/" />
+
+Retrieve all resources assigned to a specific project.
+
+### Authentication
+
+Requires authentication via session or token.
+
+### Path Parameters
+
+<ParamField path="project_id" type="integer" required>
+  ID of the project to retrieve resources for.
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="array">
+  Array of project resource items.
+  
+  <ResponseField name="id" type="integer">
+    Unique identifier of the project resource item.
+  </ResponseField>
+  
+  <ResponseField name="project_id" type="integer">
+    ID of the associated project.
+  </ResponseField>
+  
+  <ResponseField name="type" type="string">
+    Equipment type code.
+  </ResponseField>
+  
+  <ResponseField name="type_equipment_display" type="string" nullable>
+    Human-readable equipment type.
+  </ResponseField>
+  
+  <ResponseField name="resource_item_id" type="integer">
+    ID of the resource item.
+  </ResponseField>
+  
+  <ResponseField name="resource_item_code" type="string">
+    Code of the resource item.
+  </ResponseField>
+  
+  <ResponseField name="resource_item_name" type="string">
+    Name of the resource item.
+  </ResponseField>
+  
+  <ResponseField name="detailed_description" type="string">
+    Detailed description of the resource.
+  </ResponseField>
+  
+  <ResponseField name="cost" type="number">
+    Cost of the resource.
+  </ResponseField>
+  
+  <ResponseField name="frequency_type" type="string">
+    Billing frequency type: `DAY`, `WEEK`, or `MONTH`.
+  </ResponseField>
+  
+  <ResponseField name="interval_days" type="integer">
+    Number of days between billing cycles.
+  </ResponseField>
+  
+  <ResponseField name="weekdays" type="array" nullable>
+    Weekdays for weekly billing (0-6).
+  </ResponseField>
+  
+  <ResponseField name="monthdays" type="array" nullable>
+    Month days for monthly billing (1-31).
+  </ResponseField>
+  
+  <ResponseField name="operation_start_date" type="string">
+    Start date in ISO 8601 format.
+  </ResponseField>
+  
+  <ResponseField name="operation_end_date" type="string" nullable>
+    End date in ISO 8601 format.
+  </ResponseField>
+  
+  <ResponseField name="is_active" type="boolean">
+    Whether the resource is active.
+  </ResponseField>
+  
+  <ResponseField name="is_selected" type="boolean">
+    UI selection state (always false).
+  </ResponseField>
+  
+  <ResponseField name="type_resource" type="string">
+    Type of resource: `EQUIPO` or `SERVICIO`.
+  </ResponseField>
+  
+  <ResponseField name="is_retired" type="boolean">
+    Whether the resource has been retired.
+  </ResponseField>
+  
+  <ResponseField name="retirement_date" type="string" nullable>
+    Date when resource was retired (ISO 8601).
+  </ResponseField>
+  
+  <ResponseField name="retirement_reason" type="string" nullable>
+    Reason for retirement.
+  </ResponseField>
+  
+  <ResponseField name="is_confirm_delete" type="boolean">
+    UI deletion confirmation state (always false).
+  </ResponseField>
+  
+  <ResponseField name="is_deleteable" type="boolean">
+    Whether the resource can be deleted (false if used in custody chain).
+  </ResponseField>
+  
+  <ResponseField name="notes" type="string" nullable>
+    Additional notes about the resource.
+  </ResponseField>
+</ResponseField>
+
+### Error Codes
+
+- `404` - Project not found
+- `500` - Internal server error
+
+### Example Request
+
+```bash
+curl -X GET https://api.example.com/api/projects/123/resources/ \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+---
+
+## Update Project Resource
+
+<api-endpoint method="PUT" path="/api/projects/resources/update/" />
+
+Update details of a project resource including cost, frequency, dates, and retirement status.
+
+### Authentication
+
+Requires authentication via session or token.
+
+### Request Body
+
+<ParamField body="id" type="integer" required>
+  ID of the project resource item to update.
+</ParamField>
+
+<ParamField body="cost" type="number">
+  Updated cost for the resource.
+</ParamField>
+
+<ParamField body="frequency_type" type="string" default="DAY">
+  Billing frequency type: `DAY`, `WEEK`, or `MONTH`.
+</ParamField>
+
+<ParamField body="interval_days" type="integer">
+  Number of days between billing (required for `DAY` type, must be >= 1).
+</ParamField>
+
+<ParamField body="weekdays" type="array">
+  Array of weekday numbers (0-6) when `frequency_type` is `WEEK`. At least one required.
+</ParamField>
+
+<ParamField body="monthdays" type="array">
+  Array of month day numbers (1-31) when `frequency_type` is `MONTH`. At least one required.
+</ParamField>
+
+<ParamField body="detailed_description" type="string">
+  Updated detailed description.
+</ParamField>
+
+<ParamField body="operation_start_date" type="string">
+  Updated start date (ISO 8601 format).
+</ParamField>
+
+<ParamField body="operation_end_date" type="string">
+  Updated end date (ISO 8601 format).
+</ParamField>
+
+<ParamField body="maintenance_cost" type="number">
+  For equipment resources, updates the cost of associated maintenance service.
+</ParamField>
+
+<ParamField body="is_retired" type="boolean">
+  Set to true to retire the resource. Requires `retirement_date` and `retirement_reason`.
+</ParamField>
+
+<ParamField body="retirement_date" type="string">
+  Date when resource is retired (required when `is_retired` is true).
+</ParamField>
+
+<ParamField body="retirement_reason" type="string">
+  Reason for retirement (required when `is_retired` is true).
+</ParamField>
+
+### Response
+
+<ResponseField name="message" type="string">
+  Success message indicating the resource was updated or retired.
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Updated project resource item.
+  
+  <ResponseField name="id" type="integer">
+    Unique identifier.
+  </ResponseField>
+  
+  <ResponseField name="project_id" type="integer">
+    ID of the associated project.
+  </ResponseField>
+  
+  <ResponseField name="type" type="string">
+    Equipment type code.
+  </ResponseField>
+  
+  <ResponseField name="resource_item_id" type="integer">
+    ID of the resource item.
+  </ResponseField>
+  
+  <ResponseField name="resource_item_code" type="string">
+    Code of the resource item.
+  </ResponseField>
+  
+  <ResponseField name="resource_item_name" type="string">
+    Name of the resource item.
+  </ResponseField>
+  
+  <ResponseField name="detailed_description" type="string">
+    Detailed description.
+  </ResponseField>
+  
+  <ResponseField name="cost" type="number">
+    Cost of the resource.
+  </ResponseField>
+  
+  <ResponseField name="frequency_type" type="string">
+    Billing frequency type.
+  </ResponseField>
+  
+  <ResponseField name="interval_days" type="integer">
+    Interval days for billing.
+  </ResponseField>
+  
+  <ResponseField name="weekdays" type="array" nullable>
+    Weekdays for weekly billing.
+  </ResponseField>
+  
+  <ResponseField name="monthdays" type="array" nullable>
+    Month days for monthly billing.
+  </ResponseField>
+  
+  <ResponseField name="operation_start_date" type="string" nullable>
+    Start date in ISO 8601 format.
+  </ResponseField>
+  
+  <ResponseField name="operation_end_date" type="string" nullable>
+    End date in ISO 8601 format.
+  </ResponseField>
+  
+  <ResponseField name="is_active" type="boolean">
+    Whether the resource is active.
+  </ResponseField>
+  
+  <ResponseField name="type_resource" type="string">
+    Type: `EQUIPO` or `SERVICIO`.
+  </ResponseField>
+  
+  <ResponseField name="is_retired" type="boolean">
+    Whether the resource has been retired.
+  </ResponseField>
+  
+  <ResponseField name="retirement_date" type="string" nullable>
+    Date when resource was retired.
+  </ResponseField>
+  
+  <ResponseField name="retirement_reason" type="string" nullable>
+    Reason for retirement.
+  </ResponseField>
+  
+  <ResponseField name="notes" type="string" nullable>
+    Additional notes.
+  </ResponseField>
+</ResponseField>
+
+### Error Codes
+
+- `400` - Invalid request data, retired resource, or inactive project
+- `404` - Project resource not found
+- `500` - Internal server error
+
+### Example Request
+
+```bash
+curl -X PUT https://api.example.com/api/projects/resources/update/ \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{
+    "id": 789,
+    "cost": 175.00,
+    "frequency_type": "WEEK",
+    "weekdays": [1, 3, 5],
+    "operation_end_date": "2024-12-31"
+  }'
+```
+
+---
+
+## Delete Project Resource
+
+<api-endpoint method="DELETE" path="/api/projects/resources/delete/{id}/" />
+
+Permanently delete a project resource. Cannot delete resources that have been used in custody chains.
+
+### Authentication
+
+Requires authentication via session or token.
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  ID of the project resource item to delete.
+</ParamField>
+
+### Response
+
+Returns HTTP 204 No Content on successful deletion.
+
+### Error Codes
+
+- `400` - Resource has been used in a custody chain and cannot be deleted
+- `404` - Project resource not found
+- `500` - Internal server error
+
+### Example Request
+
+```bash
+curl -X DELETE https://api.example.com/api/projects/resources/delete/789/ \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+---
+
+## Release Project Resource
+
+<api-endpoint method="PUT" path="/api/projects/resources/release/" />
+
+Release (retire) a resource from a project. For equipment, this also releases the physical item and any associated services.
+
+### Authentication
+
+Requires authentication via session or token.
+
+### Request Body
+
+<ParamField body="id" type="integer" required>
+  ID of the project resource item to release.
+</ParamField>
+
+### Response
+
+<ResponseField name="message" type="string">
+  Success message: "Servicio liberado correctamente" or "Equipo liberado correctamente".
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Released project resource item.
+  
+  <ResponseField name="id" type="integer">
+    Unique identifier.
+  </ResponseField>
+  
+  <ResponseField name="project_id" type="integer">
+    ID of the associated project.
+  </ResponseField>
+  
+  <ResponseField name="type_resource" type="string">
+    Type of resource: `EQUIPO` or `SERVICIO`.
+  </ResponseField>
+  
+  <ResponseField name="resource_item_id" type="integer">
+    ID of the resource item.
+  </ResponseField>
+  
+  <ResponseField name="resource_item_code" type="string">
+    Code of the resource item.
+  </ResponseField>
+  
+  <ResponseField name="resource_item_name" type="string">
+    Name of the resource item.
+  </ResponseField>
+  
+  <ResponseField name="detailed_description" type="string">
+    Detailed description.
+  </ResponseField>
+  
+  <ResponseField name="physical_equipment_code" type="integer">
+    ID of associated physical equipment.
+  </ResponseField>
+  
+  <ResponseField name="cost" type="string">
+    Cost as a string.
+  </ResponseField>
+  
+  <ResponseField name="is_active" type="boolean">
+    Whether the resource is active.
+  </ResponseField>
+  
+  <ResponseField name="is_retired" type="boolean">
+    Whether the resource has been retired (will be true).
+  </ResponseField>
+  
+  <ResponseField name="operation_start_date" type="string" nullable>
+    Start date in ISO 8601 format.
+  </ResponseField>
+  
+  <ResponseField name="operation_end_date" type="string" nullable>
+    End date in ISO 8601 format.
+  </ResponseField>
+</ResponseField>
+
+<ResponseField name="related_services_released" type="array">
+  Only for equipment: Array of IDs of related services that were also released.
+</ResponseField>
+
+<ResponseField name="related_services_count" type="integer">
+  Only for equipment: Count of related services released.
+</ResponseField>
+
+### Error Codes
+
+- `400` - Missing resource ID or resource already retired
+- `404` - Project resource not found
+- `500` - Internal server error
+
+### Example Request
+
+```bash
+curl -X PUT https://api.example.com/api/projects/resources/release/ \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -d '{
+    "id": 789
+  }'
+```
+
+### Notes
+
+- When releasing equipment (`EQUIPO`), the physical resource item status is set to `DISPONIBLE` (available)
+- All services associated with the equipment via `physical_equipment_code` are also automatically retired
+- The retirement date is set to the current date
+- For services (`SERVICIO`), only the project resource is marked as retired

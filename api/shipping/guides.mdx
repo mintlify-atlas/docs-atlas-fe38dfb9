@@ -1,0 +1,535 @@
+---
+title: 'Shipping Guides'
+description: 'API endpoints for managing shipping guides and remission documents'
+---
+
+## Overview
+
+Shipping guides (Guías de Remisión) are used to track equipment and materials being transported between locations. These endpoints support full CRUD operations including creating, updating, listing, and deleting shipping guides with associated details.
+
+## List Shipping Guides
+
+<CodeGroup>
+```bash GET /api/shipping/guides/
+GET /api/shipping/guides/?project_id=123
+```
+</CodeGroup>
+
+Retrieve all shipping guides for a specific project.
+
+### Query Parameters
+
+<ParamField query="project_id" type="integer" required>
+  ID of the project to filter shipping guides
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the request was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of shipping guide objects
+  
+  <Expandable title="Guide object properties">
+    <ResponseField name="id" type="integer">
+      Unique identifier for the shipping guide
+    </ResponseField>
+    
+    <ResponseField name="project_id" type="integer">
+      ID of the associated project
+    </ResponseField>
+    
+    <ResponseField name="project_name" type="string">
+      Name of the associated project
+    </ResponseField>
+    
+    <ResponseField name="guide_number" type="string">
+      Unique guide number (auto-generated or custom)
+    </ResponseField>
+    
+    <ResponseField name="type_shipping_guide" type="string">
+      Type of shipping guide. Options: `EXIT`, `ENTRY`
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+      Current status. Options: `DRAFT`, `CLOSED`, `VOID`
+    </ResponseField>
+    
+    <ResponseField name="issue_date" type="string">
+      Date the guide was issued (ISO 8601 format)
+    </ResponseField>
+    
+    <ResponseField name="start_date" type="string">
+      Transport start date (ISO 8601 format)
+    </ResponseField>
+    
+    <ResponseField name="end_date" type="string">
+      Transport end date (ISO 8601 format)
+    </ResponseField>
+    
+    <ResponseField name="origin_place" type="string">
+      Origin location
+    </ResponseField>
+    
+    <ResponseField name="destination_place" type="string">
+      Destination location
+    </ResponseField>
+    
+    <ResponseField name="carrier_name" type="string">
+      Name of the carrier/transporter
+    </ResponseField>
+    
+    <ResponseField name="carrier_ci" type="string">
+      Carrier's identification number
+    </ResponseField>
+    
+    <ResponseField name="vehicle_plate" type="string">
+      Vehicle license plate number
+    </ResponseField>
+    
+    <ResponseField name="details" type="array">
+      Array of shipping guide detail items
+      
+      <Expandable title="Detail object properties">
+        <ResponseField name="id" type="integer">
+          Detail item ID
+        </ResponseField>
+        
+        <ResponseField name="description" type="string">
+          Item description
+        </ResponseField>
+        
+        <ResponseField name="quantity" type="number">
+          Quantity being shipped
+        </ResponseField>
+        
+        <ResponseField name="unit" type="string">
+          Unit of measurement
+        </ResponseField>
+        
+        <ResponseField name="resource_item_code" type="string">
+          Code of the resource item (if linked)
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl -X GET "https://api.example.com/api/shipping/guides/?project_id=123" \
+  -H "Content-Type: application/json"
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": [
+    {
+      "id": 45,
+      "project_id": 123,
+      "project_name": "Oil Field Equipment Transport",
+      "guide_number": "GR-2024-001",
+      "type_shipping_guide": "EXIT",
+      "type_shipping_guide_display": "Salida",
+      "status": "CLOSED",
+      "status_display": "Cerrada",
+      "issue_date": "2024-03-15",
+      "start_date": "2024-03-16",
+      "end_date": "2024-03-18",
+      "origin_place": "Warehouse A - Quito",
+      "destination_place": "Site B - Lago Agrio",
+      "carrier_name": "Juan Perez",
+      "carrier_ci": "1234567890",
+      "vehicle_plate": "ABC-1234",
+      "details": [
+        {
+          "id": 101,
+          "description": "Drill Pipe 5 inch",
+          "quantity": 20,
+          "unit": "units",
+          "resource_item_code": "EQ-2024-045"
+        }
+      ]
+    }
+  ]
+}
+```
+</ResponseExample>
+
+---
+
+## Get Shipping Guide
+
+<CodeGroup>
+```bash GET /api/shipping/guides/{guide_id}/
+GET /api/shipping/guides/45/
+```
+</CodeGroup>
+
+Retrieve a single shipping guide by ID with full details.
+
+### Path Parameters
+
+<ParamField path="guide_id" type="integer" required>
+  ID of the shipping guide to retrieve
+</ParamField>
+
+### Response
+
+Returns a single shipping guide object with the same structure as the list endpoint.
+
+<RequestExample>
+```bash cURL
+curl -X GET "https://api.example.com/api/shipping/guides/45/" \
+  -H "Content-Type: application/json"
+```
+</RequestExample>
+
+---
+
+## Create Shipping Guide
+
+<CodeGroup>
+```bash POST /api/shipping/guides/
+POST /api/shipping/guides/
+```
+</CodeGroup>
+
+Create a new shipping guide with associated detail items.
+
+### Body Parameters
+
+<ParamField body="project_id" type="integer" required>
+  ID of the project for this shipping guide
+</ParamField>
+
+<ParamField body="issue_date" type="string" required>
+  Date the guide was issued (format: YYYY-MM-DD)
+</ParamField>
+
+<ParamField body="type_shipping_guide" type="string" default="EXIT">
+  Type of shipping guide. Options: `EXIT`, `ENTRY`
+</ParamField>
+
+<ParamField body="guide_number" type="string">
+  Custom guide number (auto-generated if not provided). Must be unique.
+</ParamField>
+
+<ParamField body="start_date" type="string">
+  Transport start date (format: YYYY-MM-DD)
+</ParamField>
+
+<ParamField body="end_date" type="string">
+  Transport end date (format: YYYY-MM-DD)
+</ParamField>
+
+<ParamField body="origin_place" type="string">
+  Origin location
+</ParamField>
+
+<ParamField body="destination_place" type="string">
+  Destination location
+</ParamField>
+
+<ParamField body="carrier_name" type="string">
+  Name of the carrier/transporter
+</ParamField>
+
+<ParamField body="carrier_ci" type="string">
+  Carrier's identification number
+</ParamField>
+
+<ParamField body="vehicle_plate" type="string">
+  Vehicle license plate number
+</ParamField>
+
+<ParamField body="dispatcher_name" type="string">
+  Name of the dispatcher
+</ParamField>
+
+<ParamField body="dispatcher_ci" type="string">
+  Dispatcher's identification number
+</ParamField>
+
+<ParamField body="contact_name" type="string">
+  Contact person name
+</ParamField>
+
+<ParamField body="contact_phone" type="string">
+  Contact phone number
+</ParamField>
+
+<ParamField body="recibed_by" type="string">
+  Name of person receiving the shipment
+</ParamField>
+
+<ParamField body="recibed_ci" type="string">
+  Receiver's identification number
+</ParamField>
+
+<ParamField body="reason_transport" type="string">
+  Reason for transport
+</ParamField>
+
+<ParamField body="cost_transport" type="number" default="0">
+  Transportation cost
+</ParamField>
+
+<ParamField body="cost_stowage" type="number" default="0">
+  Stowage/loading cost
+</ParamField>
+
+<ParamField body="notes" type="string">
+  Additional notes
+</ParamField>
+
+<ParamField body="details" type="array">
+  Array of detail items being shipped
+  
+  <Expandable title="Detail object properties">
+    <ParamField body="description" type="string" required>
+      Description of the item
+    </ParamField>
+    
+    <ParamField body="quantity" type="number" required>
+      Quantity being shipped
+    </ParamField>
+    
+    <ParamField body="unit" type="string">
+      Unit of measurement (e.g., "units", "kg", "m")
+    </ParamField>
+    
+    <ParamField body="id_resource_item" type="integer">
+      ID of the resource item (if linking to existing equipment)
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the guide was created successfully
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success message
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  The created shipping guide object
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl -X POST "https://api.example.com/api/shipping/guides/" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_id": 123,
+    "issue_date": "2024-03-15",
+    "type_shipping_guide": "EXIT",
+    "start_date": "2024-03-16",
+    "end_date": "2024-03-18",
+    "origin_place": "Warehouse A - Quito",
+    "destination_place": "Site B - Lago Agrio",
+    "carrier_name": "Juan Perez",
+    "carrier_ci": "1234567890",
+    "vehicle_plate": "ABC-1234",
+    "details": [
+      {
+        "description": "Drill Pipe 5 inch",
+        "quantity": 20,
+        "unit": "units",
+        "id_resource_item": 567
+      }
+    ]
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json 201 Created
+{
+  "success": true,
+  "message": "Guía de remisión creada exitosamente",
+  "data": {
+    "id": 45,
+    "project_id": 123,
+    "guide_number": "GR-2024-001",
+    "status": "DRAFT",
+    "issue_date": "2024-03-15",
+    "details": [
+      {
+        "id": 101,
+        "description": "Drill Pipe 5 inch",
+        "quantity": 20,
+        "unit": "units"
+      }
+    ]
+  }
+}
+```
+
+```json 400 Error
+{
+  "success": false,
+  "error": "El campo project_id es requerido"
+}
+```
+</ResponseExample>
+
+---
+
+## Update Shipping Guide
+
+<CodeGroup>
+```bash PUT /api/shipping/guides/
+PUT /api/shipping/guides/
+```
+</CodeGroup>
+
+Update an existing shipping guide. Only guides in `DRAFT` status can be edited.
+
+### Body Parameters
+
+<ParamField body="id" type="integer" required>
+  ID of the shipping guide to update
+</ParamField>
+
+All other parameters from the create endpoint are optional and will only update if provided.
+
+<RequestExample>
+```bash cURL
+curl -X PUT "https://api.example.com/api/shipping/guides/" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": 45,
+    "carrier_name": "Carlos Rodriguez",
+    "vehicle_plate": "XYZ-5678",
+    "notes": "Updated carrier information"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "message": "Guía de remisión actualizada exitosamente",
+  "data": {
+    "id": 45,
+    "carrier_name": "Carlos Rodriguez",
+    "vehicle_plate": "XYZ-5678"
+  }
+}
+```
+
+```json 400 Error
+{
+  "success": false,
+  "error": "No se puede editar una guía en estado Cerrada. Solo guías en BORRADOR son editables."
+}
+```
+</ResponseExample>
+
+---
+
+## Update Guide Status
+
+<CodeGroup>
+```bash PATCH /api/shipping/guides/
+PATCH /api/shipping/guides/
+```
+</CodeGroup>
+
+Change the status of a shipping guide. Valid status transitions:
+- `DRAFT` → `CLOSED` or `VOID`
+- `CLOSED` → `VOID`
+- `VOID` → (no transitions allowed)
+
+### Body Parameters
+
+<ParamField body="id" type="integer" required>
+  ID of the shipping guide
+</ParamField>
+
+<ParamField body="status" type="string" required>
+  New status. Options: `DRAFT`, `CLOSED`, `VOID`
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X PATCH "https://api.example.com/api/shipping/guides/" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": 45,
+    "status": "CLOSED"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "message": "Estado de la guía actualizado a Cerrada",
+  "data": {
+    "id": 45,
+    "status": "CLOSED",
+    "status_display": "Cerrada"
+  }
+}
+```
+
+```json 400 Error
+{
+  "success": false,
+  "error": "No se puede cambiar de Cerrada a DRAFT. Transiciones permitidas: ['VOID']"
+}
+```
+</ResponseExample>
+
+---
+
+## Delete Shipping Guide
+
+<CodeGroup>
+```bash DELETE /api/shipping/guides/{pk}/delete/
+DELETE /api/shipping/guides/45/delete/
+```
+</CodeGroup>
+
+Soft delete a shipping guide (marks as deleted, doesn't remove from database). Only guides in `DRAFT` status can be deleted.
+
+### Path Parameters
+
+<ParamField path="pk" type="integer" required>
+  ID of the shipping guide to delete
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X DELETE "https://api.example.com/api/shipping/guides/45/delete/" \
+  -H "Content-Type: application/json"
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "message": "Guía de remisión #GR-2024-001 eliminada exitosamente"
+}
+```
+
+```json 400 Error
+{
+  "success": false,
+  "error": "No se puede eliminar una guía en estado Cerrada. Solo guías en BORRADOR pueden eliminarse."
+}
+```
+</ResponseExample>

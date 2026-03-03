@@ -1,0 +1,278 @@
+---
+title: Projects
+description: Project data model, lifecycle management, and resource assignments in Mantis
+---
+
+Projects represent contracted engagements with clients (Partners) where equipment and services are deployed for a specific location and time period.
+
+## Project Model
+
+The `Project` model tracks client engagements and serves as the central entity for resource allocation.
+
+### Core Fields
+
+<ParamField path="id" type="integer" required>
+  Auto-incrementing primary key
+</ParamField>
+
+<ParamField path="partner" type="ForeignKey" required>
+  Reference to the `Partner` (client) contracting this project
+  
+  - Uses `PROTECT` to prevent deletion of partners with active projects
+</ParamField>
+
+<ParamField path="location" type="string" default="null">
+  Camp or project site name (max 50 characters)
+</ParamField>
+
+<ParamField path="cardinal_point" type="string" default="null">
+  Geographic orientation of the project site
+  
+  **Choices:**
+  - `NORTE` - North
+  - `SUR` - South
+  - `ESTE` - East
+  - `OESTE` - West
+  - `NORESTE` - Northeast
+  - `NOROESTE` - Northwest
+  - `SURESTE` - Southeast
+  - `SUROESTE` - Southwest
+</ParamField>
+
+<ParamField path="contact_name" type="string" required>
+  Name of the on-site contact person (max 255 characters)
+</ParamField>
+
+<ParamField path="contact_phone" type="string" required>
+  Phone number for the on-site contact (max 15 characters)
+</ParamField>
+
+<ParamField path="start_date" type="date" required>
+  Project start date
+</ParamField>
+
+<ParamField path="end_date" type="date" default="null">
+  Project end date (null if ongoing)
+</ParamField>
+
+<ParamField path="is_closed" type="boolean" default="false">
+  Indicates whether the project is closed
+  
+  - `false` - Project is active, resources can be assigned
+  - `true` - Project is closed, no new resource assignments
+</ParamField>
+
+<Info>
+Projects inherit from `BaseModel`, gaining fields like `created_at`, `updated_at`, `is_active`, and `is_deleted`.
+</Info>
+
+## Project Resource Items
+
+The `ProjectResourceItem` model creates the many-to-many relationship between projects and equipment, with additional metadata for rental and maintenance.
+
+### Resource Assignment Fields
+
+<ParamField path="id" type="integer" required>
+  Auto-incrementing primary key
+</ParamField>
+
+<ParamField path="project" type="ForeignKey" required>
+  Reference to the `Project`
+  
+  - Uses `PROTECT` to maintain referential integrity
+</ParamField>
+
+<ParamField path="resource_item" type="ForeignKey" required>
+  Reference to the `ResourceItem` (equipment/service)
+  
+  - Uses `PROTECT` to prevent deletion of assigned equipment
+</ParamField>
+
+<ParamField path="type_resource" type="string" default="SERVICIO">
+  Classification of the resource
+  
+  **Choices:**
+  - `EQUIPO` - Physical equipment
+  - `SERVICIO` - Service
+</ParamField>
+
+<ParamField path="detailed_description" type="string" default="null">
+  Additional description for this specific assignment (max 120 characters)
+</ParamField>
+
+<ParamField path="physical_equipment_code" type="integer" default="0">
+  Code identifying the specific physical unit
+</ParamField>
+
+### Cost and Billing
+
+<ParamField path="cost" type="decimal" default="0.00">
+  Rental or service cost for this resource
+  
+  - Max digits: 10
+  - Decimal places: 2
+</ParamField>
+
+### Maintenance Scheduling
+
+<ParamField path="frequency_type" type="string" default="DAY">
+  Type of maintenance frequency schedule
+  
+  **Choices:**
+  - `DAY` - Interval in days
+  - `WEEK` - Specific weekdays
+  - `MONTH` - Specific days of month
+</ParamField>
+
+<ParamField path="interval_days" type="integer" default="2">
+  Number of days between maintenance when `frequency_type` is `DAY`
+</ParamField>
+
+<ParamField path="weekdays" type="array" default="null">
+  Array of weekday numbers when `frequency_type` is `WEEK`
+  
+  - `0` = Monday
+  - `1` = Tuesday
+  - `2` = Wednesday
+  - `3` = Thursday
+  - `4` = Friday
+  - `5` = Saturday
+  - `6` = Sunday
+  
+  **Example:** `[0, 2, 4]` for Monday, Wednesday, Friday
+</ParamField>
+
+<ParamField path="monthdays" type="array" default="null">
+  Array of day numbers (1-31) when `frequency_type` is `MONTH`
+  
+  **Example:** `[1, 15, 28]` for 1st, 15th, and 28th of each month
+</ParamField>
+
+### Operation Dates
+
+<ParamField path="operation_start_date" type="date" required>
+  Date when the equipment becomes operational on this project
+</ParamField>
+
+<ParamField path="operation_end_date" type="date" default="null">
+  Date when the equipment operation ends (null if ongoing)
+</ParamField>
+
+### Retirement
+
+<ParamField path="is_retired" type="boolean" default="false">
+  Indicates if the equipment has been retired from this project
+</ParamField>
+
+<ParamField path="retirement_date" type="date" default="null">
+  Date when the equipment was retired from the project
+</ParamField>
+
+<ParamField path="retirement_reason" type="text" default="null">
+  Explanation for why the equipment was retired
+</ParamField>
+
+## Project Lifecycle
+
+<Steps>
+  <Step title="Create Project">
+    Create a new project linked to a Partner with location and contact details
+  </Step>
+  
+  <Step title="Assign Equipment">
+    Add equipment and services via `ProjectResourceItem` records
+    
+    - Set maintenance schedules
+    - Define cost structure
+    - Specify operation dates
+  </Step>
+  
+  <Step title="Track Operations">
+    Monitor equipment status and maintenance during the project duration
+  </Step>
+  
+  <Step title="Retire Equipment">
+    Mark equipment as retired when removed from the project
+    
+    - Set `is_retired = true`
+    - Document `retirement_date`
+    - Record `retirement_reason`
+  </Step>
+  
+  <Step title="Close Project">
+    Mark the project as closed when complete
+    
+    - Set `is_closed = true`
+    - Set `end_date`
+  </Step>
+</Steps>
+
+<Warning>
+Projects use soft deletes. Set `is_closed = true` to close a project. Only use `is_deleted = true` to remove from active views while preserving history.
+</Warning>
+
+## Maintenance Frequency Examples
+
+<CodeGroup>
+```python Every 2 Days
+{
+  "frequency_type": "DAY",
+  "interval_days": 2,
+  "weekdays": null,
+  "monthdays": null
+}
+```
+
+```python Monday, Wednesday, Friday
+{
+  "frequency_type": "WEEK",
+  "interval_days": 2,
+  "weekdays": [0, 2, 4],
+  "monthdays": null
+}
+```
+
+```python 1st and 15th of Month
+{
+  "frequency_type": "MONTH",
+  "interval_days": 2,
+  "weekdays": null,
+  "monthdays": [1, 15]
+}
+```
+</CodeGroup>
+
+## Model Methods
+
+### ProjectResourceItem Methods
+
+<ResponseField name="delete_forever" type="classmethod">
+  Physically deletes a project resource by ID
+  
+  ```python
+  ProjectResourceItem.delete_forever(id_project_resource)
+  ```
+  
+  <Warning>This bypasses soft delete. Use with caution.</Warning>
+</ResponseField>
+
+<ResponseField name="get_by_project" type="classmethod">
+  Retrieves all active resources for a specific project
+  
+  ```python
+  resources = ProjectResourceItem.get_by_project(project_id)
+  ```
+  
+  Returns only records where `is_deleted = False`
+</ResponseField>
+
+## Related Models
+
+<CardGroup cols={2}>
+  <Card title="Architecture" icon="diagram-project" href="/core-concepts/architecture">
+    Learn about system architecture
+  </Card>
+  <Card title="Equipment" icon="toolbox" href="/core-concepts/equipment">
+    Explore equipment types and resource items
+  </Card>
+</CardGroup>

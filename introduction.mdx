@@ -1,0 +1,219 @@
+---
+title: Introduction to Mantis
+description: Complete project and equipment management system for service operations
+---
+
+# Welcome to Mantis
+
+Mantis is a comprehensive project and equipment management system designed specifically for service operations that rent and maintain specialized equipment. Built with Django and Vue.js, it provides end-to-end tracking of rental equipment, projects, work orders, and maintenance schedules.
+
+## What is Mantis?
+
+Mantis helps service companies manage:
+
+- **Rental Equipment**: Track portable toilets, water treatment plants, tanks, pumps, and more
+- **Projects**: Manage client projects with resource allocation and scheduling
+- **Work Orders**: Create and track work sheets, custody chains, and shipping guides
+- **Maintenance**: Schedule and monitor equipment maintenance cycles
+- **Documentation**: Generate PDF reports for custody chains, final disposition certificates, and worksheets
+
+## Quick Links
+
+<CardGroup cols={2}>
+  <Card
+    title="Quickstart Guide"
+    icon="rocket"
+    href="/quickstart"
+  >
+    Get started with Mantis in under 10 minutes
+  </Card>
+  <Card
+    title="Installation"
+    icon="download"
+    href="/installation"
+  >
+    Complete setup guide for backend and frontend
+  </Card>
+  <Card
+    title="Core Concepts"
+    icon="book"
+    href="/core-concepts/architecture"
+  >
+    Understand projects, resources, and work orders
+  </Card>
+  <Card
+    title="API Reference"
+    icon="code"
+    href="/api/introduction"
+  >
+    Explore the REST API endpoints
+  </Card>
+</CardGroup>
+
+## Key Features
+
+### 1. Equipment Management
+
+Track diverse rental equipment types with detailed specifications:
+
+- Portable toilets (men's/women's bathrooms, urinals)
+- Water treatment plants (10M3, 15M3, 25M3 capacities)
+- Storage tanks (raw water, wastewater)
+- Pumps and washbasins
+- Camper bathrooms
+
+Each resource includes:
+- Unique identification (code, serial number)
+- Physical dimensions and weight
+- Purchase information and pricing
+- Status tracking (Available, Rented, Under Repair, Out of Service)
+- Type-specific technical specifications
+
+### 2. Project Management
+
+Organize client projects with comprehensive tracking:
+
+- Partner/client information
+- Project location and contact details
+- Start and end dates
+- Resource allocation and scheduling
+- Project status and closure workflows
+
+**Source:** `projects/models/Project.py:32`
+
+### 3. Resource Allocation
+
+Assign equipment to projects with detailed tracking:
+
+- Rental and maintenance costs per resource
+- Maintenance frequency in days
+- Operation date ranges
+- Retirement tracking with reasons
+- Automatic status updates
+
+**Source:** `api/projects.py:18`
+
+### 4. Work Orders & Custody Chains
+
+Create detailed work documentation:
+
+- **Work Sheets**: Daily tracking of project activities
+- **Custody Chains**: Equipment handoff documentation with PDF generation
+- **Shipping Guides**: Transport documentation for equipment
+- **Maintenance Sheets**: Service records for equipment
+
+**Source:** `projects/models/__init__.py:8`
+
+### 5. Calendar & Scheduling
+
+Manage events and maintenance schedules:
+
+- Calendar events with resource details
+- Event rescheduling and tracking
+- Visual timeline management
+
+**Source:** `projects/models/CalendarEvent.py:31`
+
+### 6. REST API with JWT Authentication
+
+Secure API access with token-based authentication:
+
+- JWT tokens using `djangorestframework-simplejwt`
+- Protected endpoints for all operations
+- CORS support for frontend integration
+
+**Source:** `peisol/settings.py:41`
+
+### 7. Document Management
+
+Upload, organize, and merge project documents:
+
+- File tree structure per project
+- Bulk custody chain uploads
+- PDF generation and merging
+- Document storage and retrieval
+
+**Source:** `api/load_files.py:46`
+
+### 8. Historical Tracking
+
+Complete audit trail using `django-simple-history`:
+
+- Track all changes to projects, resources, and work orders
+- User attribution for modifications
+- Rollback capabilities
+- Compliance and reporting
+
+**Source:** `peisol/settings.py:42`
+
+## Technology Stack
+
+### Backend
+
+- **Django 4.2.14**: Python web framework
+- **PostgreSQL**: Primary database
+- **Django REST Framework 3.14.0**: API layer
+- **JWT Authentication**: Secure token-based auth
+- **WeasyPrint**: PDF report generation
+
+**Source:** `requeriments.txt:1-6`
+
+### Frontend
+
+- **Vue.js 3.5.22**: Progressive JavaScript framework
+- **Tailwind CSS 4.1.17**: Utility-first CSS framework
+- **DaisyUI 5.4.7**: Component library for Tailwind
+- **Pinia 3.0.3**: State management
+- **Axios 1.13.2**: HTTP client
+- **Vite 7.1.11**: Build tool and dev server
+
+**Source:** `package.json:15-22`
+
+### Infrastructure
+
+- **Gunicorn**: WSGI HTTP server for production
+- **Nginx**: Reverse proxy and static file serving
+- **Node.js 20+**: Frontend build environment
+
+## System Architecture
+
+Mantis follows a modern web application architecture:
+
+```
+┌─────────────────┐
+│   Vue.js SPA    │  ← Frontend (Vite dev server / compiled assets)
+│  Tailwind CSS   │
+└────────┬────────┘
+         │ HTTP/AJAX (Axios)
+         ↓
+┌─────────────────┐
+│  Django REST    │  ← Backend API
+│      API        │
+└────────┬────────┘
+         │
+         ↓
+┌─────────────────┐
+│   PostgreSQL    │  ← Database
+└─────────────────┘
+```
+
+## Default Configuration
+
+- **Backend URL**: `http://localhost:8000`
+- **Frontend Dev Server**: `http://localhost:5173`
+- **Language**: Spanish (es-ec)
+- **Timezone**: America/Guayaquil
+- **Database Engine**: PostgreSQL
+
+**Source:** `peisol/settings.py:137-141`
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Follow the Quickstart" icon="play" href="/quickstart">
+    Set up your first project in minutes
+  </Card>
+  <Card title="Install Mantis" icon="server" href="/installation">
+    Complete installation guide for development
+  </Card>
+</CardGroup>

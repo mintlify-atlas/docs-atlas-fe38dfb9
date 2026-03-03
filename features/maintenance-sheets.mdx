@@ -1,0 +1,418 @@
+---
+title: Maintenance Sheets
+description: Document equipment maintenance activities, track preventive and corrective work, and bill for technical services
+---
+
+Maintenance Sheets (Hojas de Mantenimiento) document all maintenance work performed on equipment at project sites. These records track both preventive maintenance and corrective repairs, ensuring equipment uptime and accurate billing for technical services.
+
+## What is a Maintenance Sheet?
+
+A Maintenance Sheet is a technical work record that documents:
+
+- **Equipment Serviced**: Specific equipment that received maintenance
+- **Maintenance Type**: Preventive (scheduled) or Corrective (repair)
+- **Work Performed**: Detailed description of maintenance activities
+- **Parts Used**: Replaced components and accessories
+- **Time and Cost**: Duration and cost of maintenance work
+- **Technical Personnel**: Responsible technician who performed the work
+- **Approval**: Client approval and acknowledgment
+
+## Maintenance Types
+
+### Preventive Maintenance (PREVENTIVO)
+
+Scheduled, routine maintenance:
+- Planned based on resource maintenance frequency
+- Regular inspections and servicing
+- Component lubrication and adjustments
+- Filter changes and cleaning
+- Prevents future breakdowns
+
+### Corrective Maintenance (CORRECTIVO)
+
+Unscheduled repairs:
+- Emergency breakdowns
+- Equipment malfunctions
+- Component failures
+- Damage repairs
+- Restores equipment to working condition
+
+## Creating a Maintenance Sheet
+
+<Steps>
+  <Step title="Navigate to Work Order Sheet">
+    Select the work order sheet (planilla) where this maintenance will be billed.
+  </Step>
+  
+  <Step title="Click Create Maintenance Sheet">
+    Select "New Maintenance Sheet" or "Add Maintenance".
+  </Step>
+  
+  <Step title="Enter Basic Information">
+    The system auto-generates:
+    - **Sheet Number**: Unique global consecutive number
+    - **Sheet Project**: Links to current work order
+    - **Status**: Set to DRAFT initially
+  </Step>
+  
+  <Step title="Select Maintenance Type">
+    Choose:
+    - **PREVENTIVO**: For scheduled maintenance
+    - **CORRECTIVO**: For repairs and emergency service
+  </Step>
+  
+  <Step title="Assign Technician">
+    Select the **Responsible Technical** from your team who performed or supervised the work.
+  </Step>
+  
+  <Step title="Enter Equipment Information">
+    Specify the equipment:
+    
+    **Equipment Selection:**
+    - **Resource Item**: Choose from project equipment
+    - **Code**: Equipment identifier or serial number
+    
+    **Location:**
+    - **Location**: Specific location within project site
+    - **RIG**: Rig number or zone identifier (if applicable)
+    
+    **Requested By:**
+    - **Requested By**: Name of person who requested the maintenance
+  </Step>
+  
+  <Step title="Set Dates and Duration">
+    Enter the maintenance period:
+    
+    - **Start Date**: When maintenance work began
+    - **End Date**: When maintenance was completed
+    - **Total Days**: Automatically calculated from start to end
+  </Step>
+  
+  <Step title="Save as Draft">
+    Click Save. The maintenance sheet is created with status DRAFT.
+  </Step>
+</Steps>
+
+<Tip>
+  The Sheet Number is a global consecutive that increments across all projects and never resets. This ensures every maintenance sheet has a unique identifier.
+</Tip>
+
+## Documenting Maintenance Work
+
+### For Corrective Maintenance
+
+When documenting repairs:
+
+<Steps>
+  <Step title="Describe the Fault">
+    **Fault Description** (Descripción de la Falla):
+    - What went wrong?
+    - Symptoms observed
+    - When the problem started
+    - Impact on operations
+  </Step>
+  
+  <Step title="Identify Possible Causes">
+    **Possible Causes** (Posibles Causas):
+    - Technical analysis of failure
+    - Root cause assessment
+    - Environmental or operational factors
+  </Step>
+  
+  <Step title="Document Work Performed">
+    **Maintenance Description** (Descripción del Mantenimiento):
+    - Specific actions taken
+    - Repair procedures followed
+    - Tests performed
+    - Results achieved
+  </Step>
+  
+  <Step title="List Replaced Parts">
+    **Replaced Parts** (Repuestos y/o Accesorios Reemplazados):
+    - Part names and numbers
+    - Quantities used
+    - Parts removed (if salvageable)
+  </Step>
+  
+  <Step title="Add Observations">
+    **Observations and Recommendations** (Observaciones y Recomendaciones):
+    - Equipment condition after repair
+    - Recommendations for future maintenance
+    - Preventive measures suggested
+  </Step>
+</Steps>
+
+### For Preventive Maintenance
+
+<Steps>
+  <Step title="Document Maintenance Activities">
+    **Maintenance Description**:
+    - Inspection points checked
+    - Lubrication performed
+    - Filters changed
+    - Adjustments made
+    - Measurements taken
+  </Step>
+  
+  <Step title="Record Findings">
+    **Observations and Recommendations**:
+    - Equipment condition assessment
+    - Wear and tear noted
+    - Future maintenance schedule
+    - Any concerns or issues identified
+  </Step>
+  
+  <Step title="List Parts Used">
+    **Replaced Parts** (if any):
+    - Filters, oils, lubricants
+    - Consumables used
+    - Preventive replacements
+  </Step>
+</Steps>
+
+## Setting Costs and Billing Information
+
+### Maintenance Service Costs
+
+<Steps>
+  <Step title="Enter Daily Cost">
+    **Cost Day** (Costo Día):
+    - Daily rate for technical service
+    - Based on contract or resource cost
+  </Step>
+  
+  <Step title="System Calculates Total">
+    **Cost Total** = Total Days × Cost Day
+    - Automatically computed
+    - Represents total maintenance service charge
+  </Step>
+  
+  <Step title="Set Sheet Project Concept">
+    **Sheet Project Maintenance Concept**:
+    - Default: "SERVICIO TÉCNICO ESPECIALIZADO"
+    - Can customize for specific service type
+    - Appears on work order line item
+  </Step>
+</Steps>
+
+### Logistics Costs (Optional)
+
+If travel or logistics are billable separately:
+
+<Steps>
+  <Step title="Enter Logistics Cost">
+    **Cost Logistics** (Costo Logístico):
+    - Transportation costs
+    - Travel expenses
+    - Equipment transport
+  </Step>
+  
+  <Step title="Set Logistics Concept">
+    **Sheet Project Logistics Concept**:
+    - Description for logistics charge
+    - Example: "TRANSPORTE DE PERSONAL TÉCNICO"
+  </Step>
+</Steps>
+
+## Approval and Signatures
+
+<Steps>
+  <Step title="Performed By Section">
+    Enter information for who did the work:
+    - **Performed By**: Technician name
+    - **Performed By Position**: Job title (e.g., "Técnico Especializado")
+  </Step>
+  
+  <Step title="Approved By Section">
+    Client representative who approved the work:
+    - **Approved By**: Client contact name
+    - **Approved By Position**: Their role (e.g., "Supervisor de Operaciones")
+  </Step>
+  
+  <Step title="Generate PDF">
+    Create maintenance sheet PDF with all details and obtain signatures.
+  </Step>
+  
+  <Step title="Upload Signed Document">
+    **Maintenance File**:
+    - Upload signed PDF
+    - Only PDF format accepted
+    - Serves as legal record of work performed
+  </Step>
+</Steps>
+
+## Closing the Maintenance Sheet
+
+When all work is documented and approved:
+
+<Steps>
+  <Step title="Review Completeness">
+    Verify:
+    - All fields are filled accurately
+    - Costs are correct
+    - PDF is uploaded with signatures
+    - Dates and durations are accurate
+  </Step>
+  
+  <Step title="Change Status to CLOSED">
+    Set status to **CLOSED** (EN PLANILLA).
+  </Step>
+  
+  <Step title="System Actions">
+    When closed:
+    - Sheet is locked for inclusion in work order
+    - Cannot be deleted (preserves work record)
+    - Can still be edited if needed
+    - Available for billing in work order sheet
+  </Step>
+</Steps>
+
+<Warning>
+  Setting status to CLOSED means "ready for billing." Ensure all information is complete and accurate before closing.
+</Warning>
+
+## Maintenance Sheet in Billing
+
+### Work Order Integration
+
+When the work order sheet is compiled, closed maintenance sheets are added as line items:
+
+**Maintenance Service Line:**
+- Equipment: From maintenance sheet
+- Detail: Maintenance description or concept
+- Unit: DÍAS (days)
+- Quantity: Total days from maintenance sheet
+- Unit Price: Cost per day
+- Total Line: Cost total from sheet
+- Reference: "SheetMaintenance" with sheet number
+
+**Logistics Line (if applicable):**
+- Concept: Logistics description
+- Unit: UNIDAD
+- Quantity: 1
+- Unit Price: Logistics cost
+- Reference: Same sheet number
+
+## Editing Maintenance Sheets
+
+You can edit a maintenance sheet when:
+- Status is DRAFT or CLOSED
+- Has not been included in an invoiced work order
+
+<Steps>
+  <Step title="Open Maintenance Sheet">
+    Find the sheet in the work order sheet view.
+  </Step>
+  
+  <Step title="Click Edit">
+    Modify necessary fields.
+  </Step>
+  
+  <Step title="Save Changes">
+    Updates are timestamped automatically.
+  </Step>
+</Steps>
+
+## Voiding Maintenance Sheets
+
+If a maintenance sheet should not be used:
+
+<Steps>
+  <Step title="Open Sheet">
+    Navigate to the maintenance sheet.
+  </Step>
+  
+  <Step title="Change Status to VOID">
+    Set status to **VOID** (ANULADO).
+  </Step>
+  
+  <Step title="Result">
+    - Sheet is not included in billing
+    - Remains in system for record-keeping
+    - Cannot be changed back to CLOSED
+  </Step>
+</Steps>
+
+## Best Practices
+
+### Documentation Best Practices
+
+- **Detailed Descriptions**: Write clear, specific descriptions of work performed
+- **Complete Part Lists**: Document all parts and materials used
+- **Accurate Timing**: Record actual start and end dates/times
+- **Root Cause Analysis**: For corrective maintenance, identify underlying causes
+- **Recommendations**: Always include preventive recommendations
+
+### Cost Management Best Practices
+
+- **Contract Verification**: Ensure costs match contract rates
+- **Separate Logistics**: Bill logistics separately when significant
+- **Multi-Day Jobs**: Use total days to reflect actual labor time
+- **Parts Markup**: Include parts costs in total if specified in contract
+
+### Preventive Maintenance Scheduling
+
+- **Follow Resource Schedule**: Align with project resource maintenance frequency
+- **Regular Intervals**: Maintain consistent preventive maintenance cycles
+- **Document Trends**: Track recurring issues across maintenance sheets
+- **Proactive Replacement**: Replace parts before failure when wear is detected
+
+### Quality Assurance
+
+- **Technical Review**: Have senior technician review before closing
+- **Client Communication**: Discuss major findings with client contact
+- **Photo Documentation**: Keep photos externally, reference in observations
+- **Follow-up**: Schedule follow-up inspections for serious issues
+
+## Common Scenarios
+
+### Scenario 1: Routine Preventive Maintenance
+
+1. Treatment plant scheduled for 2-day maintenance every 7 days
+2. Create maintenance sheet on day maintenance begins
+3. Type: PREVENTIVO
+4. Perform inspections, cleaning, filter changes
+5. Document all activities in maintenance description
+6. List filters and parts replaced
+7. Add recommendations for next cycle
+8. Close and bill 2 days × daily rate
+
+### Scenario 2: Emergency Pump Failure
+
+1. Pump fails at 3 AM
+2. Emergency call to technician
+3. Create maintenance sheet: Type CORRECTIVO
+4. Fault Description: "Pump motor overheating, no water flow"
+5. Possible Causes: "Belt breakage, motor bearing failure"
+6. Maintenance Description: "Replaced motor belt, inspected bearings, tested operation"
+7. Parts: "1× Motor belt Type A"
+8. Observations: "Recommend monthly belt inspections"
+9. Total: 1 day emergency service
+10. Close and bill premium emergency rate
+
+### Scenario 3: Extended Repair Job
+
+1. Treatment plant requires major overhaul
+2. Work spans 5 days
+3. Create maintenance sheet with start date
+4. Update daily as work progresses
+5. Document each day's activities in description
+6. List all parts replaced over the 5 days
+7. Set end date when complete
+8. Total Days automatically = 5
+9. Close and bill for full duration
+
+## Sheet Number Format
+
+Maintenance sheets use a unique global consecutive number:
+
+**Format**: Positive integer, starts at 1
+
+Examples:
+- First sheet: `1`
+- Hundredth: `100`
+- Thousandth: `1000`
+
+<Note>
+  The consecutive number increments globally across all projects and all time. It never resets, ensuring every maintenance sheet in the system has a unique identifier.
+</Note>

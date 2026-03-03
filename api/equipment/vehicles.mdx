@@ -1,0 +1,631 @@
+---
+title: "Vehicles"
+description: "Vehicle certification and management endpoints"
+---
+
+## Get Available Vehicles
+
+<RequestExample>
+```bash cURL
+curl -X GET https://api.mantis.com/api/vehicles/avaliables/
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+  "data": [
+    {
+      "id": 1,
+      "brand": "Toyota",
+      "model": "Hilux",
+      "type_vehicle": "PICKUP",
+      "year": 2022,
+      "no_plate": "ABC-123",
+      "status_vehicle": "OPERATIVO",
+      "status_cert_oper": "VIGENTE",
+      "date_cert_oper": "2024-01-15",
+      "due_date_cert_oper": "2025-01-15",
+      "date_matricula": "2024-01-10",
+      "due_date_matricula": "2025-01-10",
+      "date_mtop": "2024-02-01",
+      "due_date_mtop": "2025-02-01",
+      "date_technical_review": "2024-03-01",
+      "due_date_technical_review": "2025-03-01",
+      "nro_poliza": "POL-12345",
+      "insurance_company": "Insurance Co.",
+      "insurance_expiration_date": "2025-01-15",
+      "insurance_issue_date": "2024-01-15",
+      "date_satellite": "2024-01-20",
+      "due_date_satellite": "2025-01-20",
+      "serial_number": "SN123456",
+      "engine_number": "EN789012",
+      "chassis_number": "CH345678",
+      "passes": [
+        {
+          "id": 1,
+          "bloque": "A",
+          "fecha_caducidad": "2025-06-30",
+          "meta": {
+            "notes": null,
+            "created_at": "2024-01-01T10:00:00Z",
+            "updated_at": "2024-01-01T10:00:00Z",
+            "is_active": true,
+            "is_deleted": false,
+            "id_user_created": 1,
+            "id_user_updated": 1
+          }
+        }
+      ],
+      "certifications": [
+        {
+          "id": 1,
+          "name": "SOAT",
+          "name_display": "SOAT",
+          "date_start": "2024-01-01",
+          "date_end": "2025-01-01",
+          "description": "Annual SOAT certification",
+          "meta": {
+            "notes": null,
+            "created_at": "2024-01-01T10:00:00Z",
+            "updated_at": "2024-01-01T10:00:00Z",
+            "is_active": true,
+            "is_deleted": false,
+            "id_user_created": 1,
+            "id_user_updated": 1
+          }
+        }
+      ],
+      "notes": null,
+      "created_at": "2024-01-01T10:00:00Z",
+      "updated_at": "2024-01-01T10:00:00Z",
+      "is_active": true,
+      "is_deleted": false,
+      "id_user_created": 1,
+      "id_user_updated": 1
+    }
+  ]
+}
+```
+</ResponseExample>
+
+Retrieves a list of all active vehicles with their passes and certifications.
+
+### Endpoint
+```
+GET /api/vehicles/avaliables/
+```
+
+### Response
+
+<ResponseField name="data" type="array">
+  Array of vehicle objects with their passes and certifications
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="integer">
+      Vehicle ID
+    </ResponseField>
+    
+    <ResponseField name="brand" type="string">
+      Vehicle brand
+    </ResponseField>
+    
+    <ResponseField name="model" type="string">
+      Vehicle model
+    </ResponseField>
+    
+    <ResponseField name="type_vehicle" type="string">
+      Type of vehicle
+    </ResponseField>
+    
+    <ResponseField name="year" type="integer">
+      Manufacturing year
+    </ResponseField>
+    
+    <ResponseField name="no_plate" type="string">
+      License plate number
+    </ResponseField>
+    
+    <ResponseField name="status_vehicle" type="string">
+      Current vehicle status
+    </ResponseField>
+    
+    <ResponseField name="passes" type="array">
+      Array of pass objects associated with the vehicle
+    </ResponseField>
+    
+    <ResponseField name="certifications" type="array">
+      Array of certification objects associated with the vehicle
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Create/Update Vehicle Certification
+
+<RequestExample>
+```bash cURL (Create)
+curl -X POST https://api.mantis.com/api/vehicles/cert_vehicle/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "vehicle_id": 1,
+    "name": "SOAT",
+    "date_start": "2024-01-01",
+    "date_end": "2025-01-01",
+    "description": "Annual SOAT certification"
+  }'
+```
+
+```bash cURL (Update)
+curl -X PUT https://api.mantis.com/api/vehicles/cert_vehicle/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": 1,
+    "vehicle_id": 1,
+    "name": "SOAT",
+    "date_start": "2024-01-01",
+    "date_end": "2025-06-01",
+    "description": "Updated SOAT certification"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+  "success": true,
+  "message": "Certificación de vehículo creada exitosamente",
+  "data": {
+    "id": 1,
+    "vehicle_id": 1,
+    "vehicle_plate": "ABC-123",
+    "name": "SOAT",
+    "name_display": "SOAT",
+    "date_start": "2024-01-01",
+    "date_end": "2025-01-01",
+    "description": "Annual SOAT certification",
+    "created_at": "2024-01-01T10:00:00Z",
+    "updated_at": "2024-01-01T10:00:00Z"
+  }
+}
+```
+</ResponseExample>
+
+Create a new vehicle certification or update an existing one.
+
+### Endpoint
+```
+POST /api/vehicles/cert_vehicle/
+PUT /api/vehicles/cert_vehicle/
+```
+
+### Request Body
+
+<ParamField path="id" type="integer">
+  Certification ID (required for PUT/update only)
+</ParamField>
+
+<ParamField path="vehicle_id" type="integer" required>
+  ID of the vehicle to certify
+</ParamField>
+
+<ParamField path="name" type="string" required>
+  Certification name/type
+</ParamField>
+
+<ParamField path="date_start" type="string" required>
+  Certification start date in YYYY-MM-DD format
+</ParamField>
+
+<ParamField path="date_end" type="string" required>
+  Certification end date in YYYY-MM-DD format (must be after date_start)
+</ParamField>
+
+<ParamField path="description" type="string">
+  Optional certification description
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the operation was successful
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success or error message
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Created or updated certification object
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="integer">
+      Certification ID
+    </ResponseField>
+    
+    <ResponseField name="vehicle_id" type="integer">
+      Associated vehicle ID
+    </ResponseField>
+    
+    <ResponseField name="vehicle_plate" type="string">
+      Vehicle license plate
+    </ResponseField>
+    
+    <ResponseField name="name" type="string">
+      Certification name
+    </ResponseField>
+    
+    <ResponseField name="name_display" type="string">
+      Human-readable certification name
+    </ResponseField>
+    
+    <ResponseField name="date_start" type="string">
+      Certification start date
+    </ResponseField>
+    
+    <ResponseField name="date_end" type="string">
+      Certification end date
+    </ResponseField>
+    
+    <ResponseField name="description" type="string">
+      Certification description
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Get Vehicle Certifications
+
+<RequestExample>
+```bash cURL (All certifications)
+curl -X GET https://api.mantis.com/api/vehicles/cert_vehicle/
+```
+
+```bash cURL (By vehicle)
+curl -X GET https://api.mantis.com/api/vehicles/cert_vehicle/?vehicle_id=1
+```
+
+```bash cURL (By ID)
+curl -X GET https://api.mantis.com/api/vehicles/cert_vehicle/?id=1
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "vehicle_id": 1,
+      "vehicle_plate": "ABC-123",
+      "name": "SOAT",
+      "name_display": "SOAT",
+      "date_start": "2024-01-01",
+      "date_end": "2025-01-01",
+      "description": "Annual SOAT certification",
+      "created_at": "2024-01-01T10:00:00Z",
+      "updated_at": "2024-01-01T10:00:00Z"
+    }
+  ]
+}
+```
+</ResponseExample>
+
+Retrieve vehicle certifications. Can filter by vehicle ID or certification ID.
+
+### Endpoint
+```
+GET /api/vehicles/cert_vehicle/
+```
+
+### Query Parameters
+
+<ParamField query="id" type="integer">
+  Filter by certification ID
+</ParamField>
+
+<ParamField query="vehicle_id" type="integer">
+  Filter by vehicle ID
+</ParamField>
+
+---
+
+## Delete Vehicle Certification
+
+<RequestExample>
+```bash cURL (Delete single)
+curl -X DELETE https://api.mantis.com/api/vehicles/cert_vehicle/1/
+```
+
+```bash cURL (Delete multiple)
+curl -X POST https://api.mantis.com/api/vehicles/cert_vehicle/1/ \
+  -H "Content-Type: application/json" \
+  -d '{"ids": [1, 2, 3]}'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response (Single)
+{
+  "success": true,
+  "message": "Certificación de vehículo eliminada exitosamente",
+  "data": {
+    "id": 1,
+    "vehicle_plate": "ABC-123",
+    "name": "SOAT",
+    "name_display": "SOAT"
+  }
+}
+```
+
+```json Response (Multiple)
+{
+  "success": true,
+  "message": "3 certificaciones eliminadas exitosamente",
+  "data": {
+    "deleted": [
+      {"id": 1, "vehicle_plate": "ABC-123", "name": "SOAT", "name_display": "SOAT"},
+      {"id": 2, "vehicle_plate": "ABC-123", "name": "REVISION", "name_display": "Revision Tecnica"}
+    ],
+    "errors": [],
+    "total_deleted": 2,
+    "total_errors": 0
+  }
+}
+```
+</ResponseExample>
+
+Soft delete vehicle certification(s). Single deletion uses DELETE method with ID in URL, bulk deletion uses POST with IDs in request body.
+
+### Endpoint
+```
+DELETE /api/vehicles/cert_vehicle/{pk}/
+POST /api/vehicles/cert_vehicle/{pk}/
+```
+
+### Path Parameters
+
+<ParamField path="pk" type="integer">
+  Certification ID to delete (for single deletion)
+</ParamField>
+
+### Request Body (for bulk deletion)
+
+<ParamField path="ids" type="array">
+  Array of certification IDs to delete
+</ParamField>
+
+---
+
+## Create/Update Vehicle Pass
+
+<RequestExample>
+```bash cURL (Create)
+curl -X POST https://api.mantis.com/api/vehicles/pass_vehicle/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "vehicle_id": 1,
+    "bloque": "A",
+    "fecha_caducidad": "2025-06-30"
+  }'
+```
+
+```bash cURL (Update)
+curl -X PUT https://api.mantis.com/api/vehicles/pass_vehicle/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": 1,
+    "vehicle_id": 1,
+    "bloque": "B",
+    "fecha_caducidad": "2025-12-31"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+  "success": true,
+  "message": "Pase de vehículo creado exitosamente",
+  "data": {
+    "id": 1,
+    "vehicle_id": 1,
+    "vehicle_plate": "ABC-123",
+    "bloque": "A",
+    "fecha_caducidad": "2025-06-30",
+    "pass_file_url": "/media/passes/vehicle_pass_1.pdf",
+    "created_at": "2024-01-01T10:00:00Z",
+    "updated_at": "2024-01-01T10:00:00Z"
+  }
+}
+```
+</ResponseExample>
+
+Create a new vehicle pass or update an existing one.
+
+### Endpoint
+```
+POST /api/vehicles/pass_vehicle/
+PUT /api/vehicles/pass_vehicle/
+```
+
+### Request Body
+
+<ParamField path="id" type="integer">
+  Pass ID (required for PUT/update only)
+</ParamField>
+
+<ParamField path="vehicle_id" type="integer" required>
+  ID of the vehicle
+</ParamField>
+
+<ParamField path="bloque" type="string" required>
+  Pass block/zone identifier
+</ParamField>
+
+<ParamField path="fecha_caducidad" type="string" required>
+  Pass expiration date in YYYY-MM-DD format
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the operation was successful
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success or error message
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Created or updated pass object
+  
+  <Expandable title="properties">
+    <ResponseField name="id" type="integer">
+      Pass ID
+    </ResponseField>
+    
+    <ResponseField name="vehicle_id" type="integer">
+      Associated vehicle ID
+    </ResponseField>
+    
+    <ResponseField name="vehicle_plate" type="string">
+      Vehicle license plate
+    </ResponseField>
+    
+    <ResponseField name="bloque" type="string">
+      Pass block/zone
+    </ResponseField>
+    
+    <ResponseField name="fecha_caducidad" type="string">
+      Expiration date
+    </ResponseField>
+    
+    <ResponseField name="pass_file_url" type="string">
+      URL to the pass file if available
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Get Vehicle Passes
+
+<RequestExample>
+```bash cURL (All passes)
+curl -X GET https://api.mantis.com/api/vehicles/pass_vehicle/
+```
+
+```bash cURL (By vehicle)
+curl -X GET https://api.mantis.com/api/vehicles/pass_vehicle/?vehicle_id=1
+```
+
+```bash cURL (By ID)
+curl -X GET https://api.mantis.com/api/vehicles/pass_vehicle/?id=1
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "vehicle_id": 1,
+      "vehicle_plate": "ABC-123",
+      "bloque": "A",
+      "fecha_caducidad": "2025-06-30",
+      "created_at": "2024-01-01T10:00:00Z",
+      "updated_at": "2024-01-01T10:00:00Z"
+    }
+  ]
+}
+```
+</ResponseExample>
+
+Retrieve vehicle passes. Can filter by vehicle ID or pass ID.
+
+### Endpoint
+```
+GET /api/vehicles/pass_vehicle/
+```
+
+### Query Parameters
+
+<ParamField query="id" type="integer">
+  Filter by pass ID
+</ParamField>
+
+<ParamField query="vehicle_id" type="integer">
+  Filter by vehicle ID
+</ParamField>
+
+---
+
+## Delete Vehicle Pass
+
+<RequestExample>
+```bash cURL (Delete single)
+curl -X DELETE https://api.mantis.com/api/vehicles/pass_vehicle/1/
+```
+
+```bash cURL (Delete multiple)
+curl -X POST https://api.mantis.com/api/vehicles/pass_vehicle/1/ \
+  -H "Content-Type: application/json" \
+  -d '{"ids": [1, 2, 3]}'
+```
+</RequestExample>
+
+<ResponseExample>
+```json Response (Single)
+{
+  "success": true,
+  "message": "Pase de vehículo eliminado exitosamente",
+  "data": {
+    "id": 1,
+    "vehicle_plate": "ABC-123",
+    "bloque": "A"
+  }
+}
+```
+
+```json Response (Multiple)
+{
+  "success": true,
+  "message": "2 pases eliminados exitosamente",
+  "data": {
+    "deleted": [
+      {"id": 1, "vehicle_plate": "ABC-123", "bloque": "A"},
+      {"id": 2, "vehicle_plate": "ABC-123", "bloque": "B"}
+    ],
+    "errors": [],
+    "total_deleted": 2,
+    "total_errors": 0
+  }
+}
+```
+</ResponseExample>
+
+Soft delete vehicle pass(es). Single deletion uses DELETE method with ID in URL, bulk deletion uses POST with IDs in request body.
+
+### Endpoint
+```
+DELETE /api/vehicles/pass_vehicle/{pk}/
+POST /api/vehicles/pass_vehicle/{pk}/
+```
+
+### Path Parameters
+
+<ParamField path="pk" type="integer">
+  Pass ID to delete (for single deletion)
+</ParamField>
+
+### Request Body (for bulk deletion)
+
+<ParamField path="ids" type="array">
+  Array of pass IDs to delete
+</ParamField>

@@ -1,0 +1,372 @@
+---
+title: Work Orders (Sheet Projects)
+description: Create and manage work order sheets for billing, track service delivery, and generate invoices
+---
+
+Work Order Sheets (Planillas de Proyecto) are the primary billing documents that consolidate all services, equipment rentals, and activities performed during a specific period for a project.
+
+## What is a Work Order Sheet?
+
+A Work Order Sheet (SheetProject) is a billing document that:
+
+- Consolidates all billable items for a specific period
+- References custody chains, maintenance sheets, and shipping guides
+- Calculates costs for equipment rentals and services
+- Tracks from creation through invoicing
+- Generates PDF documentation for client review
+
+## Work Order Lifecycle
+
+### Status Progression
+
+Work orders progress through these statuses:
+
+1. **IN_PROGRESS** (En Ejecución): Currently being compiled, items can be added/modified
+2. **LIQUIDATED** (Liquidado): Finalized and ready for invoicing, no further changes
+3. **INVOICED** (Facturado): Invoice generated and sent to client
+4. **CANCELLED** (Cancelado): Work order cancelled, not billed
+
+## Creating a Work Order Sheet
+
+<Steps>
+  <Step title="Navigate to Project">
+    Select the project for which you want to create a work order sheet.
+  </Step>
+  
+  <Step title="Click Create Work Order">
+    Select "New Work Order" or "Create Sheet Project" from the project dashboard.
+  </Step>
+  
+  <Step title="Set Period Dates">
+    Define the billing period:
+    - **Period Start**: First day of the billing period
+    - **Period End**: Last day of the billing period
+    - **Issue Date**: Date the work order is created
+    
+    <Note>
+      The combination of project + period start + period end must be unique. You cannot create duplicate work orders for the same period.
+    </Note>
+  </Step>
+  
+  <Step title="Configure Service Type">
+    Select the service type for this work order:
+    - **ALQUILER**: Equipment rental only
+    - **MANTENIMIENTO**: Maintenance services only
+    - **ALQUILER Y MANTENIMIENTO**: Both rental and maintenance (most common)
+  </Step>
+  
+  <Step title="Enter Reference Information">
+    Add any reference numbers:
+    - **Client PO Reference**: Client's purchase order number
+    - **Contact Reference**: On-site contact information
+    - **Contact Phone**: Contact phone number
+  </Step>
+  
+  <Step title="Save Work Order">
+    Click Save. The system automatically:
+    - Generates a unique series code (Format: PSL-PS-YYYY-NNNN)
+    - Sets status to IN_PROGRESS
+    - Creates the work order shell ready for details
+  </Step>
+</Steps>
+
+## Adding Items to Work Order
+
+Work order details come from three main sources:
+
+### 1. Equipment Rentals (Direct Resources)
+
+For project resources with rental charges:
+
+<Steps>
+  <Step title="Select Resource">
+    Choose from resources assigned to the project.
+  </Step>
+  
+  <Step title="System Calculates Days">
+    The system automatically calculates billable days based on:
+    - Work order period (start to end dates)
+    - Resource operation dates
+    - Configured frequency (interval, weekdays, or month days)
+  </Step>
+  
+  <Step title="Review and Add">
+    The system creates a line item with:
+    - Equipment description
+    - Unit: DÍAS (days)
+    - Quantity: Calculated days
+    - Unit Price: Resource cost per day
+    - Total Line: Quantity × Unit Price
+    - Reference: ResourceItem
+  </Step>
+</Steps>
+
+### 2. Maintenance Sheets (Hojas de Mantenimiento)
+
+<Steps>
+  <Step title="Create Maintenance Sheet">
+    During the billing period, maintenance sheets are created for work performed (see [Maintenance Sheets](/features/maintenance-sheets)).
+  </Step>
+  
+  <Step title="Close Maintenance Sheet">
+    When ready to bill, close the maintenance sheet with status "CLOSED" (En Planilla).
+  </Step>
+  
+  <Step title="Add to Work Order">
+    The closed maintenance sheet is automatically included:
+    - Equipment: The maintained equipment
+    - Detail: Maintenance description
+    - Unit: DÍAS or UNIDAD
+    - Quantity: Days worked or units
+    - Cost: From maintenance sheet
+    - Reference: SheetMaintenance with the sheet number
+  </Step>
+</Steps>
+
+### 3. Custody Chains (Cadenas de Custodia)
+
+<Steps>
+  <Step title="Create Custody Chain">
+    Document waste collection activities (see [Custody Chains](/features/custody-chains)).
+  </Step>
+  
+  <Step title="Close Custody Chain">
+    Set status to "CLOSE" when activity is complete.
+  </Step>
+  
+  <Step title="Include in Work Order">
+    The system adds line items for:
+    - Service performed
+    - Equipment used
+    - Volume collected (gallons/barrels/cubic meters)
+    - Hours worked
+    - Reference: CustodyChain with consecutive number
+  </Step>
+</Steps>
+
+### 4. Shipping Guides (Guías de Envío)
+
+When logistics costs are involved:
+
+<Steps>
+  <Step title="Create Shipping Guide">
+    Document equipment transport (see [Shipping Guides](/features/shipping-guides)).
+  </Step>
+  
+  <Step title="Close Guide">
+    Set status to "CLOSED".
+  </Step>
+  
+  <Step title="Add Transport Costs">
+    Logistics costs are added as line items:
+    - Concept: Transport or stowage description
+    - Unit: UNIDAD
+    - Quantity: 1
+    - Cost: Transport or stowage cost
+    - Reference: ShippingGuide
+  </Step>
+</Steps>
+
+## Managing Work Order Details
+
+### Viewing Work Order Details
+
+The work order detail view shows:
+
+- **Header Information**: Series code, dates, status, service type
+- **Line Items Table**: All billable items with quantities and costs
+- **Volume Totals**: Total gallons, barrels, cubic meters (from custody chains)
+- **Financial Totals**:
+  - Subtotal: Sum of all line items
+  - Tax (IVA 15%): Calculated tax amount
+  - Total: Subtotal + Tax
+
+### Editing Work Order Items
+
+While status is **IN_PROGRESS**:
+
+<Steps>
+  <Step title="Select Line Item">
+    Click on any line item to edit.
+  </Step>
+  
+  <Step title="Modify Values">
+    You can update:
+    - Quantity
+    - Unit price
+    - Description/detail
+    - Days to apply cost (monthdays_apply_cost)
+  </Step>
+  
+  <Step title="Recalculate">
+    Total line is automatically recalculated, and work order totals update.
+  </Step>
+</Steps>
+
+<Warning>
+  Once a work order is LIQUIDATED or INVOICED, you cannot modify line items. If changes are needed, you must reopen the work order first.
+</Warning>
+
+## Closing and Finalizing Work Orders
+
+### Liquidating the Work Order
+
+<Steps>
+  <Step title="Review All Items">
+    Verify all maintenance sheets, custody chains, and rentals are included.
+  </Step>
+  
+  <Step title="Verify Calculations">
+    Check that quantities, costs, and totals are correct.
+  </Step>
+  
+  <Step title="Set Status to LIQUIDATED">
+    This action:
+    - Locks all line items (no further edits)
+    - Marks the work order as ready for invoicing
+    - Sets `is_closed = true` on the work order
+  </Step>
+  
+  <Step title="Generate PDF">
+    Optionally generate and upload the work order PDF document.
+  </Step>
+</Steps>
+
+### Creating Invoice
+
+<Steps>
+  <Step title="Ensure LIQUIDATED Status">
+    Work order must be liquidated before invoicing.
+  </Step>
+  
+  <Step title="Generate Invoice">
+    Create invoice in your accounting system using work order data.
+  </Step>
+  
+  <Step title="Update Work Order">
+    - Upload invoice PDF to work order
+    - Add invoice reference number
+    - Change status to INVOICED
+  </Step>
+</Steps>
+
+## Reopening Work Orders
+
+If you need to modify a liquidated work order:
+
+<Steps>
+  <Step title="Click Reopen Work Order">
+    Available when status is LIQUIDATED (before invoicing).
+  </Step>
+  
+  <Step title="Confirm Reopen">
+    System sets status back to IN_PROGRESS.
+  </Step>
+  
+  <Step title="Make Changes">
+    Edit line items as needed.
+  </Step>
+  
+  <Step title="Re-Liquidate">
+    Set status back to LIQUIDATED when corrections are complete.
+  </Step>
+</Steps>
+
+<Note>
+  You cannot reopen a work order once it's INVOICED. Contact your administrator if invoice corrections are needed.
+</Note>
+
+## Final Disposition Certificate
+
+For waste management projects:
+
+<Steps>
+  <Step title="Complete All Activities">
+    Ensure all custody chains for the period are closed.
+  </Step>
+  
+  <Step title="Generate Certificate">
+    Create the final disposition certificate documenting waste handling.
+  </Step>
+  
+  <Step title="Upload to Work Order">
+    - Add final disposition reference number
+    - Upload certificate PDF
+  </Step>
+</Steps>
+
+## Series Code Format
+
+Work orders use an auto-generated series code:
+
+**Format**: `PSL-PS-YYYY-NNNN`
+
+Where:
+- **PSL-PS**: Fixed prefix
+- **YYYY**: Current year
+- **NNNN**: Sequential number starting at 1000 per year
+
+Example: `PSL-PS-2024-1023`
+
+<Tip>
+  Series codes reset the sequential number each year, starting from 1000. The year and number are stored separately for easy querying.
+</Tip>
+
+## Work Order Reports and Tracking
+
+### Viewing Work Orders
+
+From the project dashboard:
+
+- **All Work Orders**: List of all work orders for the project
+- **Filter by Status**: View only IN_PROGRESS, LIQUIDATED, or INVOICED
+- **Search by Series**: Find specific work order by series code
+- **Sort by Date**: Order by issue date or period dates
+
+### Key Metrics
+
+- **Total Work Orders**: Count of all work orders
+- **In Progress**: Active work orders being compiled
+- **Pending Invoice**: Liquidated but not yet invoiced
+- **Invoiced**: Completed and billed work orders
+
+## Best Practices
+
+### Creation Best Practices
+
+- **Consistent Periods**: Use standard billing periods (e.g., monthly, bi-weekly)
+- **Complete Documentation**: Add all reference numbers at creation time
+- **Service Type Accuracy**: Choose the correct service type for proper categorization
+
+### Management Best Practices
+
+- **Regular Review**: Check in-progress work orders frequently to ensure completeness
+- **Timely Closure**: Close related documents (maintenance, custody chains) promptly
+- **Verify Before Liquidating**: Double-check all calculations before setting to LIQUIDATED
+- **Document Upload**: Always upload PDF documentation for client records
+
+### Billing Best Practices
+
+- **Accurate Quantities**: Verify calculated days match actual service periods
+- **Cost Verification**: Confirm costs match contract terms
+- **Complete Line Items**: Ensure all work is represented in the work order
+- **Reference Tracking**: Maintain clear references to source documents
+
+## Common Scenarios
+
+### Monthly Billing Cycle
+
+1. Start of month: Create work order for previous month
+2. Throughout month: Close maintenance sheets and custody chains
+3. End of period: Add all closed documents to work order
+4. Add equipment rental line items (auto-calculated)
+5. Review totals and liquidate
+6. Generate invoice and mark as INVOICED
+
+### Emergency Maintenance
+
+1. Perform emergency maintenance
+2. Create maintenance sheet with "CORRECTIVO" type
+3. Close maintenance sheet
+4. Add to current or next work order
+5. System bills the actual days/cost from the sheet

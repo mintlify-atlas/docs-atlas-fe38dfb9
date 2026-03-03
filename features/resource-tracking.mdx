@@ -1,0 +1,249 @@
+---
+title: Resource Tracking
+description: Track equipment and services assigned to projects, manage availability, and monitor resource lifecycle
+---
+
+Resource Tracking enables you to assign equipment and services to projects, monitor their status, and manage their entire lifecycle from assignment to retirement.
+
+## Understanding Resources
+
+Mantis manages two types of resources:
+
+### Equipment (EQUIPO)
+Physical assets such as:
+- Bathroom facilities (BATERIA SANITARIA)
+- Handwashing stations (LAVAMANOS)
+- Treatment plants (PLANTA DE TRATAMIENTO)
+- Storage tanks (TANQUES DE ALMACENAMIENTO)
+- Urinal stations (ESTACION URINARIO)
+
+### Services (SERVICIO)
+Non-physical resources like:
+- Technical support
+- Specialized maintenance
+- Consulting services
+- Other professional services
+
+## Resource Assignment Workflow
+
+### Assigning Resources to Projects
+
+<Steps>
+  <Step title="Access Project Resources">
+    Navigate to the project where you want to assign resources and select "Resources" or "Add Resources".
+  </Step>
+  
+  <Step title="Browse Available Resources">
+    The system shows resources that are:
+    - **DISPONIBLE** (Available): Not currently assigned
+    - **FUNCIONANDO** (Working): In good operational condition
+    - Not already assigned to another project
+  </Step>
+  
+  <Step title="Select Resource Type">
+    Choose whether you're adding:
+    - **EQUIPO**: Physical equipment that will be deployed
+    - **SERVICIO**: A service to be provided
+  </Step>
+  
+  <Step title="Configure Assignment Details">
+    For each resource:
+    
+    **Basic Information:**
+    - **Detailed Description**: Specific use or location within the project
+    - **Physical Equipment Code**: Identifier for equipment tracking
+    - **Operation Start Date**: When the resource begins service
+    - **Operation End Date**: (Optional) Planned end date
+    
+    **Cost Configuration:**
+    - **Cost**: Daily rental or service fee
+    - For equipment with maintenance: Separate maintenance cost
+  </Step>
+  
+  <Step title="Set Maintenance Schedule">
+    Configure maintenance frequency using one of three methods:
+    
+    **Interval Days (DAY)**
+    - Maintenance every X days
+    - Example: Every 2 days, every 7 days
+    - System tracks from operation start date
+    
+    **Week Days (WEEK)**
+    - Specific days of the week
+    - Days numbered 0-6 (0=Monday, 6=Sunday)
+    - Example: [0, 2, 4] = Monday, Wednesday, Friday
+    
+    **Month Days (MONTH)**
+    - Specific days of each month
+    - Example: [1, 15, 28] = 1st, 15th, and 28th of each month
+  </Step>
+  
+  <Step title="Include Maintenance Service">
+    For equipment, optionally create an associated maintenance service:
+    - Enable "Include Maintenance"
+    - Set maintenance cost and frequency
+    - System creates linked service record automatically
+  </Step>
+</Steps>
+
+<Tip>
+  When you assign equipment with maintenance enabled, the system creates two records: one for the equipment rental and one for the maintenance service. Both are linked and share the same physical equipment code.
+</Tip>
+
+## Resource Status Management
+
+### Resource States
+
+Each resource in a project can be in one of these states:
+
+- **Active**: Currently assigned and operational (`is_retired = false`)
+- **Retired**: Removed from project (`is_retired = true`)
+
+Resource items themselves have availability status:
+- **DISPONIBLE**: Available for assignment
+- **RENTADO**: Currently rented/assigned to a project
+
+And operational status:
+- **FUNCIONANDO**: Working properly
+- **DAÑADO**: Damaged
+- **INCOMPLETO**: Incomplete/missing parts
+- **EN REPARACION**: Under repair
+
+### Updating Resource Information
+
+You can update resource assignment details:
+
+<Steps>
+  <Step title="Select Resource">
+    From the project resources list, click on the resource to edit.
+  </Step>
+  
+  <Step title="Modify Details">
+    Update any of the following:
+    - Detailed description
+    - Cost amounts
+    - Maintenance frequency
+    - Operation end date
+  </Step>
+  
+  <Step title="Save Changes">
+    Confirm updates. The system tracks change history automatically.
+  </Step>
+</Steps>
+
+<Note>
+  You cannot change the base resource item or operation start date once assigned. If you need to make these changes, retire the current assignment and create a new one.
+</Note>
+
+## Retiring Resources
+
+When equipment or services are no longer needed:
+
+<Steps>
+  <Step title="Initiate Retirement">
+    Click "Release" or "Retire" next to the resource in the project view.
+  </Step>
+  
+  <Step title="Enter Retirement Information">
+    Required fields:
+    - **Retirement Date**: The date when resource was removed
+    - **Retirement Reason**: Clear explanation for retirement
+  </Step>
+  
+  <Step title="System Updates">
+    Upon retirement, the system:
+    - Marks the resource as `is_retired = true`
+    - Records retirement date and reason
+    - Updates equipment availability status
+    - For equipment: Automatically releases linked maintenance services
+    - Ends the operation period for billing purposes
+  </Step>
+</Steps>
+
+<Warning>
+  Retiring equipment automatically retires its associated maintenance service. You cannot retire a maintenance service independently if the equipment is still active.
+</Warning>
+
+## Resource Tracking in Work Orders
+
+### Viewing Resource Usage
+
+The project dashboard shows which resources are included in work order sheets:
+
+- **In Sheet Projects**: Resources currently billed in work order sheets
+- **Available for Billing**: Resources assigned but not yet included in sheets
+- **Retired**: Resources no longer active
+
+### Preventing Resource Deletion
+
+You **cannot delete** a resource that:
+- Is included in any work order sheet (planilla)
+- Has custody chain records
+- Has maintenance sheet records
+- Has shipping guide records
+
+To remove such resources:
+1. Remove from all related documents first
+2. Then retire the resource
+3. Optionally mark as deleted (soft delete)
+
+<Tip>
+  Use the "Resources in Sheets" indicator to quickly see which resources are actively being billed and cannot be removed.
+</Tip>
+
+## Resource Search and Filtering
+
+The resource list supports:
+
+- **Filter by Type**: Show only equipment or services
+- **Filter by Status**: Active, retired, or all
+- **Search by Name/Code**: Quick find by equipment code or name
+- **Sort Options**: By cost, start date, or resource name
+
+## Best Practices
+
+### Assignment Best Practices
+
+- **Accurate Descriptions**: Use detailed descriptions that identify specific equipment location or purpose
+- **Proper Scheduling**: Set realistic operation dates and maintenance frequencies
+- **Cost Verification**: Verify costs match contract agreements before assignment
+- **Physical Codes**: Ensure physical equipment codes are correct for tracking
+
+### Maintenance Frequency Guidelines
+
+- **Treatment Plants**: Typically every 2-3 days or specific weekdays
+- **Bathroom Facilities**: Daily or specific days based on usage
+- **Tanks**: Monthly or bi-weekly depending on capacity and usage
+- **Services**: Based on contract terms and project needs
+
+### Retirement Best Practices
+
+- **Timely Retirement**: Retire resources promptly when removed to ensure accurate billing
+- **Detailed Reasons**: Document specific reasons for retirement for audit trails
+- **Coordinate with Billing**: Ensure retirement dates align with final billing periods
+- **Verify Dependencies**: Check for related maintenance services before retiring equipment
+
+## Common Scenarios
+
+### Scenario 1: Adding Treatment Plant with Maintenance
+
+1. Select the treatment plant equipment
+2. Set type as "EQUIPO"
+3. Configure daily rental cost
+4. Enable "Include Maintenance"
+5. Set maintenance cost and frequency (e.g., every 2 days)
+6. System creates two linked records automatically
+
+### Scenario 2: Replacing Damaged Equipment
+
+1. Retire the damaged equipment with reason "Equipment malfunction"
+2. Add new equipment with same service parameters
+3. Update work order sheets to reflect the change
+4. Original equipment marked as "DAÑADO" in inventory
+
+### Scenario 3: Temporary Service Addition
+
+1. Add service resource with specific start date
+2. Set operation end date for when service concludes
+3. Configure appropriate billing frequency
+4. Service automatically appears in relevant billing periods only

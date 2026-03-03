@@ -1,0 +1,212 @@
+---
+title: Configuration
+description: Django settings and environment configuration for Mantis
+---
+
+## Overview
+
+Mantis is built on Django 4.2.14 and uses PostgreSQL as its database backend. This guide covers the configuration settings and environment variables needed to run Mantis.
+
+## Django Settings
+
+### Core Settings
+
+The main configuration file is located at `app/src/peisol/settings.py`.
+
+#### Secret Key
+
+<Warning>
+Always generate a unique secret key for production environments. Never use the default development key.
+</Warning>
+
+```python
+SECRET_KEY = 'your-unique-secret-key-here'
+```
+
+#### Debug Mode
+
+```python
+# Development
+DEBUG = True
+
+# Production
+DEBUG = False
+```
+
+<Warning>
+Always set `DEBUG = False` in production to prevent sensitive information leakage.
+</Warning>
+
+#### Allowed Hosts
+
+```python
+# Development - allow all
+ALLOWED_HOSTS = ['*']
+
+# Production - specify your domains
+ALLOWED_HOSTS = ['mantis.peisol.com.ec', 'www.mantis.peisol.com.ec']
+```
+
+### Database Configuration
+
+Mantis requires a database configuration file at `app/src/common/secrets.py`. Create this file with your database credentials:
+
+```python
+DATABASES = {
+    'TEST': {
+        "ENGINE": "django.db.backends.postgresql",
+        'NAME': 'mantis_test',
+        'USER': 'mantis_user',
+        'PASSWORD': 'your_password',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
+    'PRODUCTION': {
+        "ENGINE": "django.db.backends.postgresql",
+        'NAME': 'mantis_prod',
+        'USER': 'mantis_user',
+        'PASSWORD': 'your_password',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    },
+    'DEVELOPMENT': {
+        "ENGINE": "django.db.backends.postgresql",
+        'NAME': 'mantis_dev',
+        'USER': 'mantis_user',
+        'PASSWORD': 'your_password',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
+DEFAULT_DB = {
+    'default': DATABASES['PRODUCTION']  # Change based on environment
+}
+```
+
+### CORS Configuration
+
+CORS is enabled for all origins by default. For production, configure specific origins:
+
+```python
+CORS_ORIGIN_ALLOW_ALL = True  # Development only
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://mantis.peisol.com.ec',
+    'https://www.mantis.peisol.com.ec',
+]
+```
+
+### Static and Media Files
+
+```python
+STATIC_URL = '/static/'
+STATIC_ROOT = '/path/to/static_django/'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = '/path/to/media/'
+```
+
+### Internationalization
+
+```python
+LANGUAGE_CODE = 'es-ec'
+TIME_ZONE = 'America/Guayaquil'
+USE_I18N = True
+USE_TZ = False
+```
+
+## Installed Apps
+
+Mantis includes the following Django applications:
+
+- **grappelli**: Enhanced Django admin interface
+- **django-rest-framework**: REST API functionality
+- **simple_history**: Model history tracking
+- **user_sessions**: Enhanced session management
+- **accounts**: Custom user authentication
+- **equipment**: Equipment management
+- **projects**: Project management
+
+## Authentication
+
+Mantis uses a custom user model and email-based authentication:
+
+```python
+AUTH_USER_MODEL = 'accounts.CustomUserModel'
+
+AUTHENTICATION_BACKENDS = [
+    'common.EmailBackEndAuth.EmailBackEndAuth'
+]
+```
+
+## Session Configuration
+
+```python
+SESSION_ENGINE = 'user_sessions.backends.db'
+```
+
+## Environment Detection
+
+Mantis automatically detects the environment based on the file path:
+
+```python
+IS_IN_PRODUCTION = True
+if 'eduardo' in os.path.abspath(__file__):
+    IS_IN_PRODUCTION = False
+
+if IS_IN_PRODUCTION:
+    BASE_URL = 'https://mantis.peisol.com.ec'
+else:
+    BASE_URL = 'http://localhost:8000'
+```
+
+## Custom Settings
+
+### Logging Path
+
+```python
+PATH_LOGS = os.path.join(os.path.dirname(BASE_DIR), 'logs')
+```
+
+Ensure this directory exists and is writable by the application.
+
+### License URL
+
+```python
+URL_LICENCE = 'https://licences.dev-7.com/peisol/'
+```
+
+## Security Checklist
+
+<Steps>
+  <Step title="Generate Secret Key">
+    Generate a unique `SECRET_KEY` for production
+  </Step>
+  <Step title="Disable Debug">
+    Set `DEBUG = False` in production
+  </Step>
+  <Step title="Configure Allowed Hosts">
+    Specify exact domains in `ALLOWED_HOSTS`
+  </Step>
+  <Step title="Secure Database">
+    Use strong passwords and restrict database access
+  </Step>
+  <Step title="Configure CORS">
+    Disable `CORS_ORIGIN_ALLOW_ALL` and specify trusted origins
+  </Step>
+  <Step title="HTTPS Only">
+    Ensure all `CSRF_TRUSTED_ORIGINS` use HTTPS in production
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Database Setup" icon="database" href="/admin/database-setup">
+    Configure PostgreSQL and run migrations
+  </Card>
+  <Card title="Deployment" icon="rocket" href="/admin/deployment">
+    Deploy Mantis to production
+  </Card>
+</CardGroup>

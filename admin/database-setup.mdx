@@ -1,0 +1,437 @@
+---
+title: Database Setup
+description: PostgreSQL setup, migrations, and data management for Mantis
+---
+
+## Overview
+
+Mantis uses PostgreSQL as its database backend. This guide covers installation, configuration, migrations, and data management.
+
+## PostgreSQL Installation
+
+### Ubuntu/Debian
+
+```bash
+sudo apt update
+sudo apt install postgresql postgresql-contrib
+```
+
+### macOS
+
+```bash
+brew install postgresql
+brew services start postgresql
+```
+
+### Verify Installation
+
+```bash
+psql --version
+```
+
+## Database Configuration
+
+### Create Database and User
+
+Connect to PostgreSQL as the postgres user:
+
+```bash
+sudo -u postgres psql
+```
+
+Create the database and user:
+
+```sql
+CREATE DATABASE mantis_prod;
+CREATE USER mantis_user WITH PASSWORD 'your_secure_password';
+ALTER ROLE mantis_user SET client_encoding TO 'utf8';
+ALTER ROLE mantis_user SET default_transaction_isolation TO 'read committed';
+ALTER ROLE mantis_user SET timezone TO 'America/Guayaquil';
+GRANT ALL PRIVILEGES ON DATABASE mantis_prod TO mantis_user;
+```
+
+Exit PostgreSQL:
+
+```sql
+\q
+```
+
+### Configure Django Database Settings
+
+Create `app/src/common/secrets.py` with your database credentials:
+
+```python
+DATABASES = {
+    'PRODUCTION': {
+        "ENGINE": "django.db.backends.postgresql",
+        'NAME': 'mantis_prod',
+        'USER': 'mantis_user',
+        'PASSWORD': 'your_secure_password',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
+}
+
+DEFAULT_DB = {
+    'default': DATABASES['PRODUCTION']
+}
+```
+
+<Warning>
+Never commit `secrets.py` to version control. Add it to `.gitignore`.
+</Warning>
+
+## Python Database Driver
+
+Mantis uses `psycopg2-binary` as the PostgreSQL adapter, which is already included in `requirements.txt`:
+
+```txt
+psycopg2-binary==2.9.11
+```
+
+## Migrations
+
+### Initial Migrations
+
+Run migrations for all apps in the correct order:
+
+<CodeGroup>
+```bash Unix (Line by Line)
+./manage.py makemigrations accounts equipment projects
+./manage.py migrate
+./manage.py sowseed
+./manage.py populate_history --auto
+```
+
+```bash Unix (Single Command)
+./manage.py makemigrations accounts && \
+./manage.py makemigrations equipment projects && \
+./manage.py migrate && \
+./manage.py sowseed
+```
+
+```bash Windows
+python manage.py makemigrations accounts
+python manage.py makemigrations equipment projects
+python manage.py migrate
+python manage.py sowseed
+python manage.py populate_history --auto
+```
+</CodeGroup>
+
+### Migration Commands Explained
+
+<AccordionGroup>
+  <Accordion title="makemigrations accounts">
+    Creates migration files for the accounts app (custom user model). Must be run first due to dependencies.
+  </Accordion>
+  
+  <Accordion title="makemigrations equipment projects">
+    Creates migration files for equipment and projects apps.
+  </Accordion>
+  
+  <Accordion title="migrate">
+    Applies all pending migrations to the database, creating tables and relationships.
+  </Accordion>
+  
+  <Accordion title="sowseed">
+    Custom management command to seed initial data (users, permissions, etc.).
+  </Accordion>
+  
+  <Accordion title="populate_history --auto">
+    Populates historical records for models using django-simple-history.
+  </Accordion>
+</AccordionGroup>
+
+### Creating New Migrations
+
+After modifying models, create and apply migrations:
+
+<CodeGroup>
+```bash Unix
+./manage.py makemigrations
+./manage.py migrate
+```
+
+```bash Windows
+python manage.py makemigrations
+python manage.py migrate
+```
+</CodeGroup>
+
+### Viewing Migration Status
+
+Check which migrations have been applied:
+
+<CodeGroup>
+```bash Unix
+./manage.py showmigrations
+```
+
+```bash Windows
+python manage.py showmigrations
+```
+</CodeGroup>
+
+### Rolling Back Migrations
+
+Revert to a specific migration:
+
+<CodeGroup>
+```bash Unix
+./manage.py migrate accounts 0003
+```
+
+```bash Windows
+python manage.py migrate accounts 0003
+```
+</CodeGroup>
+
+## Data Management
+
+### Exporting Data
+
+Export all data to JSON (excluding system tables):
+
+<CodeGroup>
+```bash Unix
+python manage.py dumpdata \
+  --natural-foreign \
+  --natural-primary \
+  --exclude auth.permission \
+  --exclude contenttypes \
+  --exclude admin.logentry \
+  > data.json
+```
+
+```bash Windows
+python manage.py dumpdata --natural-foreign --natural-primary --exclude auth.permission --exclude contenttypes --exclude admin.logentry > data.json
+```
+</CodeGroup>
+
+### Importing Data
+
+Load data from a JSON file:
+
+<CodeGroup>
+```bash Unix
+./manage.py loaddata data.json
+
+# With verbosity for debugging
+./manage.py loaddata ../../docs/sql/data_ccpl_07022026.json -v 3
+```
+
+```bash Windows
+python manage.py loaddata data.json
+
+# With verbosity for debugging
+python manage.py loaddata ..\..\docs\sql\data_ccpl_07022026.json -v 3
+```
+</CodeGroup>
+
+### Exporting Database Schema
+
+Export the database structure without data:
+
+```bash
+pg_dump -U mantis_user -h localhost --schema-only --no-owner mantis_prod > schema.sql
+```
+
+### Database Backup
+
+Create a complete backup:
+
+```bash
+pg_dump -U mantis_user -h localhost mantis_prod > backup_$(date +%Y%m%d).sql
+```
+
+### Restore Database
+
+Restore from a backup:
+
+```bash
+psql -U mantis_user -h localhost mantis_prod < backup_20260303.sql
+```
+
+## Database Inspection
+
+### Useful PostgreSQL Queries
+
+Connect to the database:
+
+```bash
+psql -U mantis_user -h localhost -d mantis_prod
+```
+
+List all tables:
+
+```sql
+\dt
+```
+
+Describe a table:
+
+```sql
+\d projects_project
+```
+
+View table relationships:
+
+```sql
+SELECT
+    tc.table_name,
+    kcu.column_name,
+    ccu.table_name AS foreign_table_name,
+    ccu.column_name AS foreign_column_name
+FROM information_schema.table_constraints AS tc
+JOIN information_schema.key_column_usage AS kcu
+    ON tc.constraint_name = kcu.constraint_name
+JOIN information_schema.constraint_column_usage AS ccu
+    ON ccu.constraint_name = tc.constraint_name
+WHERE tc.constraint_type = 'FOREIGN KEY'
+    AND tc.table_schema = 'public';
+```
+
+### Example Queries
+
+Based on the Mantis schema:
+
+```sql
+-- View project details
+SELECT * FROM projects_project WHERE id = 6;
+
+-- View project resources
+SELECT * FROM projects_projectresourceitem WHERE project_id = 6;
+
+-- View project worksheets
+SELECT * FROM projects_sheetproject WHERE project_id = 4;
+
+-- View custody chains
+SELECT * FROM projects_custodychain WHERE sheet_project_id = 174;
+
+-- View chain custody details
+SELECT * FROM projects_chaincustodydetail WHERE custody_chain_id = 174;
+
+-- List all migrations
+SELECT * FROM django_migrations ORDER BY applied DESC;
+```
+
+## Database Maintenance
+
+### Vacuum Database
+
+Reclaim storage and optimize performance:
+
+```sql
+VACUUM ANALYZE;
+```
+
+### Clear Expired Sessions
+
+<CodeGroup>
+```bash Unix
+./manage.py clearsessions
+```
+
+```bash Windows
+python manage.py clearsessions
+```
+</CodeGroup>
+
+### Database Statistics
+
+Check database size:
+
+```sql
+SELECT pg_size_pretty(pg_database_size('mantis_prod'));
+```
+
+Check table sizes:
+
+```sql
+SELECT
+    schemaname,
+    tablename,
+    pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) AS size
+FROM pg_tables
+WHERE schemaname = 'public'
+ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC;
+```
+
+## Troubleshooting
+
+### Connection Refused
+
+1. Verify PostgreSQL is running:
+   ```bash
+   sudo systemctl status postgresql
+   ```
+
+2. Check PostgreSQL is listening:
+   ```bash
+   sudo netstat -plnt | grep 5432
+   ```
+
+3. Verify `pg_hba.conf` allows connections from your host
+
+### Authentication Failed
+
+1. Verify database credentials in `secrets.py`
+2. Check user exists:
+   ```sql
+   SELECT * FROM pg_user WHERE usename = 'mantis_user';
+   ```
+
+3. Reset password if needed:
+   ```sql
+   ALTER USER mantis_user WITH PASSWORD 'new_password';
+   ```
+
+### Migration Errors
+
+1. Check for circular dependencies between models
+2. Ensure migrations are created in the correct order
+3. Try running `makemigrations` for each app individually
+4. Review migration files for conflicts
+
+### Database Locked
+
+Terminate active connections:
+
+```sql
+SELECT pg_terminate_backend(pid)
+FROM pg_stat_activity
+WHERE datname = 'mantis_prod'
+    AND pid <> pg_backend_pid();
+```
+
+## Best Practices
+
+<Steps>
+  <Step title="Regular Backups">
+    Schedule automated daily backups using cron or systemd timers
+  </Step>
+  <Step title="Test Migrations">
+    Test migrations on a staging database before applying to production
+  </Step>
+  <Step title="Monitor Performance">
+    Regularly check slow queries and optimize indexes
+  </Step>
+  <Step title="Version Control Migrations">
+    Always commit migration files to version control
+  </Step>
+  <Step title="Secure Credentials">
+    Never commit database credentials to version control
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Configuration" icon="gear" href="/admin/configuration">
+    Configure Django settings and environment
+  </Card>
+  <Card title="Deployment" icon="rocket" href="/admin/deployment">
+    Deploy Mantis to production
+  </Card>
+</CardGroup>

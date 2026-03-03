@@ -1,0 +1,417 @@
+---
+title: Shipping Guides
+description: Document equipment transport between locations, track logistics costs, and maintain shipping records
+---
+
+Shipping Guides (Guías de Envío) document the movement of equipment and materials between locations. These records are essential for tracking equipment logistics, ensuring proper custody during transport, and billing for transportation services.
+
+## What is a Shipping Guide?
+
+A Shipping Guide is a transport document that records:
+
+- **Equipment Shipped**: Specific items being transported
+- **Transport Type**: Exit to project, return to base, or transfer between projects
+- **Route**: Origin and destination locations
+- **Transport Details**: Carrier, vehicle, dates, and times
+- **Costs**: Transport and stowage (loading/unloading) costs
+- **Signatures**: Dispatcher, carrier, and receiver acknowledgments
+
+## Shipping Guide Types
+
+There are three types of shipping guides:
+
+### EXIT - Exit to Project (SALIDA A PROYECTO)
+Equipment leaving the base warehouse to be deployed at a project site:
+- From: Base/warehouse
+- To: Project location
+- Purpose: Equipment installation or replacement
+
+### IN - Return to Base (ENTRADA A BASE)
+Equipment returning from a project to the base:
+- From: Project location  
+- To: Base/warehouse
+- Purpose: Project completion, equipment retirement, or repair
+
+### TRANSFER - Transfer Between Projects (TRANSFERENCIA ENTRE PROYECTOS)
+Equipment moving directly from one project to another:
+- From: Project A
+- To: Project B
+- Purpose: Redeployment, resource optimization
+
+## Creating a Shipping Guide
+
+<Steps>
+  <Step title="Navigate to Project">
+    Select the project for which you're creating the shipping guide.
+  </Step>
+  
+  <Step title="Click Create Shipping Guide">
+    Select "New Shipping Guide" or "Create Guide".
+  </Step>
+  
+  <Step title="Select Guide Type">
+    Choose the type of shipment:
+    - **EXIT**: Sending equipment to the project
+    - **IN**: Receiving equipment back from project
+    - **TRANSFER**: Moving between projects
+    
+    The system auto-generates:
+    - **Guide Number**: Unique consecutive number
+    - **Status**: Set to DRAFT
+  </Step>
+  
+  <Step title="Enter Dates">
+    Specify the timeline:
+    
+    - **Issue Date**: Date the guide is created
+    - **Start Date**: When transport begins
+    - **End Date**: When transport is scheduled to complete
+  </Step>
+  
+  <Step title="Set Origin and Destination">
+    Enter locations:
+    
+    - **Origin Place** (Lugar de Origen): Starting location
+    - **Destination Place** (Lugar de Destino): Ending location
+    
+    <Tip>
+      For EXIT guides, origin is typically your base address. For IN guides, origin is the project site.
+    </Tip>
+  </Step>
+  
+  <Step title="Save as Draft">
+    Click Save. The guide is created with status DRAFT.
+  </Step>
+</Steps>
+
+## Adding Transport Details
+
+### Carrier Information
+
+<Steps>
+  <Step title="Enter Carrier Details">
+    Document the transporter:
+    
+    - **Carrier Name** (Transportista): Name of driver or transport company
+    - **Carrier CI** (Cédula del Transportista): Driver's ID number
+    - **Vehicle Plate** (Placa del Vehículo): License plate number
+  </Step>
+  
+  <Step title="Dispatcher Information">
+    Person who prepared/authorized the shipment:
+    
+    - **Dispatcher Name** (Nombre del Despachador): Who prepared the shipment
+    - **Dispatcher CI** (Cédula del Despachador): Dispatcher's ID number
+  </Step>
+  
+  <Step title="Project Contact">
+    On-site contact at destination:
+    
+    - **Contact Name**: Who will receive the equipment
+    - **Contact Phone**: Their phone number
+  </Step>
+  
+  <Step title="Receiver Information">
+    Person who actually received the equipment:
+    
+    - **Received By** (Recibido Por): Name of receiver
+    - **Received CI** (Cédula de Quien Recibe): Receiver's ID
+  </Step>
+</Steps>
+
+## Adding Equipment to the Guide
+
+<Steps>
+  <Step title="Add Shipping Guide Detail">
+    Click "Add Item" or "Add Detail" to the shipping guide.
+  </Step>
+  
+  <Step title="Select Resource Item">
+    Choose from your equipment inventory:
+    - Treatment plants
+    - Bathroom facilities
+    - Tanks
+    - Tools and accessories
+    - Other equipment
+    
+    <Note>
+      You can also add items that aren't in the resource catalog by manually entering the description.
+    </Note>
+  </Step>
+  
+  <Step title="Enter Item Details">
+    For each item:
+    
+    - **Description**: Specific description of the item
+    - **Quantity**: Number of units being shipped
+    - **Unit**: Unit of measure (e.g., "UNIDAD", "CAJA", "PIEZA")
+  </Step>
+  
+  <Step title="Save Item">
+    The item is added to the shipping guide detail list.
+  </Step>
+  
+  <Step title="Repeat for All Items">
+    Continue adding all equipment and materials being transported.
+  </Step>
+</Steps>
+
+## Setting Transport Costs
+
+### Transport Cost
+
+<Steps>
+  <Step title="Enter Transport Cost">
+    **Cost Transport** (Costo del Transporte):
+    - Total cost for moving the equipment
+    - Based on distance, vehicle type, urgency
+  </Step>
+  
+  <Step title="Set Logistics Concept">
+    **Sheet Project Logistics Concept**:
+    - Description for billing
+    - Example: "TRANSPORTE A PROYECTO ZONA NORTE"
+    - Appears on work order line item
+  </Step>
+  
+  <Step title="Select Reason">
+    **Reason Transport** (Motivo del Transporte):
+    - **USE_IN_PROJECT**: Equipment will be used in project
+    - **RENT**: Rental deployment
+    - **DEVOLUTION**: Return after use
+    - **SALE**: Equipment being sold/transferred permanently
+  </Step>
+</Steps>
+
+### Stowage Cost
+
+For loading and unloading services:
+
+<Steps>
+  <Step title="Enter Stowage Cost">
+    **Cost Stowage** (Costo de Estiba):
+    - Loading/unloading labor cost
+    - Equipment handling charges
+    - Crane or forklift fees
+  </Step>
+  
+  <Step title="Set Stowage Concept">
+    **Sheet Project Stowage Concept**:
+    - Description for billing
+    - Example: "ESTIBA Y DESESTIBA DE EQUIPOS"
+  </Step>
+</Steps>
+
+<Tip>
+  Transport and stowage are billed separately in work orders. You can have one, both, or neither depending on the arrangement with the client.
+</Tip>
+
+## Uploading Documentation
+
+<Steps>
+  <Step title="Generate PDF">
+    Create the shipping guide PDF document with:
+    - All equipment listed
+    - Origin and destination
+    - Carrier and receiver information
+    - Signatures from all parties
+  </Step>
+  
+  <Step title="Upload File">
+    **Shipping Guide File** (Archivo de Guía de Envío):
+    - Upload the signed PDF
+    - Only PDF format accepted
+    - Serves as legal transport document
+  </Step>
+  
+  <Step title="Confirm Upload">
+    File is stored and linked to the shipping guide record.
+  </Step>
+</Steps>
+
+## Closing the Shipping Guide
+
+<Steps>
+  <Step title="Verify Completion">
+    Ensure:
+    - All items are listed
+    - Transport is complete
+    - Equipment received at destination
+    - All signatures obtained
+    - PDF uploaded
+  </Step>
+  
+  <Step title="Change Status to CLOSED">
+    Set status to **CLOSED** (CERRADA).
+  </Step>
+  
+  <Step title="System Actions">
+    When closed:
+    - Guide is marked as complete
+    - Costs are available for billing
+    - Cannot be deleted (preserves transport record)
+    - Can be included in work order sheet
+  </Step>
+</Steps>
+
+## Shipping Guide in Billing
+
+### Work Order Integration
+
+When the shipping guide is closed and costs are set, it can be included in work orders:
+
+**Transport Line Item:**
+- Concept: Logistics concept from guide
+- Unit: UNIDAD
+- Quantity: 1
+- Unit Price: Transport cost
+- Reference: "ShippingGuide" with guide number
+
+**Stowage Line Item (if applicable):**
+- Concept: Stowage concept from guide
+- Unit: UNIDAD
+- Quantity: 1
+- Unit Price: Stowage cost
+- Reference: Same guide number
+
+<Note>
+  Shipping guides are typically billed in the work order period when the transport occurred, regardless of when the equipment starts operating.
+</Note>
+
+## Editing Shipping Guides
+
+You can edit a shipping guide when:
+- Status is DRAFT or CLOSED
+- Has not been included in an invoiced work order
+
+<Steps>
+  <Step title="Open Shipping Guide">
+    Navigate to the guide from the project view.
+  </Step>
+  
+  <Step title="Click Edit">
+    Modify necessary fields or items.
+  </Step>
+  
+  <Step title="Save Changes">
+    Updates are timestamped automatically.
+  </Step>
+</Steps>
+
+## Voiding Shipping Guides
+
+If a shipment was cancelled or the guide shouldn't be used:
+
+<Steps>
+  <Step title="Open Guide">
+    Navigate to the shipping guide.
+  </Step>
+  
+  <Step title="Change Status to VOID">
+    Set status to **VOID** (ANULADA).
+  </Step>
+  
+  <Step title="Result">
+    - Guide is not included in billing
+    - Remains in system for record-keeping
+    - Equipment status not affected
+  </Step>
+</Steps>
+
+## Best Practices
+
+### Documentation Best Practices
+
+- **Complete Item Lists**: List every piece of equipment, even small items
+- **Accurate Quantities**: Double-check quantities before shipping
+- **Clear Descriptions**: Use specific descriptions to identify equipment
+- **Condition Notes**: Note equipment condition in description field
+- **Serial Numbers**: Include serial numbers in descriptions for valuable equipment
+
+### Transport Management
+
+- **Advance Planning**: Create shipping guides before equipment leaves
+- **Coordinate Delivery**: Confirm receiver availability before transport
+- **Track Progress**: Update end date when transport actually completes
+- **Photo Documentation**: Take photos of equipment before/after transport
+- **Insurance**: Verify equipment is insured during transport
+
+### Cost Management
+
+- **Accurate Estimates**: Get transport quotes before creating guide
+- **Separate Costs**: Always separate transport and stowage for clarity
+- **Contract Verification**: Ensure costs align with client contract terms
+- **Receipt Documentation**: Keep receipts for transport expenses
+
+### Equipment Tracking
+
+- **Update Inventory**: Mark equipment as "in transit" when guide is created
+- **Update Project Assignment**: Add equipment to project when guide is closed (for EXIT)
+- **Remove from Project**: Retire equipment when return guide (IN) is closed
+- **Transfer Coordination**: For TRANSFER guides, coordinate with both project managers
+
+## Common Scenarios
+
+### Scenario 1: Initial Project Equipment Deployment
+
+1. Project starts next week
+2. Create EXIT shipping guide
+3. Add all equipment: 2× treatment plants, 3× bathrooms, 1× tank
+4. Origin: Base warehouse address
+5. Destination: Project site address
+6. Set transport cost: 500 USD
+7. Set stowage cost: 200 USD (crane rental for unloading)
+8. Reason: USE_IN_PROJECT
+9. Obtain signatures from dispatcher and receiver
+10. Close guide and bill in first work order
+
+### Scenario 2: Equipment Return After Project Closure
+
+1. Project closing, equipment returning to base
+2. Create IN shipping guide
+3. List all equipment being returned
+4. Origin: Project site
+5. Destination: Base warehouse
+6. Set transport cost (return trip)
+7. Reason: DEVOLUTION
+8. Coordinate with operations to receive and inspect equipment
+9. Close guide, bill return transport to project
+
+### Scenario 3: Equipment Transfer Between Projects
+
+1. Project A overstocked, Project B needs equipment
+2. Create TRANSFER shipping guide linked to Project B
+3. List equipment moving from A to B
+4. Origin: Project A location
+5. Destination: Project B location
+6. Set transport cost (direct route)
+7. Reason: USE_IN_PROJECT
+8. Retire equipment from Project A resources
+9. Add equipment to Project B resources
+10. Close guide and bill to Project B
+
+### Scenario 4: Emergency Part Delivery
+
+1. Treatment plant needs urgent part replacement
+2. Create EXIT shipping guide
+3. Add item: "Motor belt Type A - Emergency delivery"
+4. Set same-day start and end dates
+5. Use express courier service
+6. Higher transport cost due to urgency
+7. Close immediately upon delivery confirmation
+8. Bill in current work order period
+
+## Guide Number Format
+
+Shipping guides use a unique global consecutive number:
+
+**Format**: Positive integer, starts at 1
+
+Examples:
+- First guide: `1`
+- Hundredth: `100`
+- Thousandth: `1000`
+
+<Note>
+  The consecutive number increments globally across all projects and never resets, ensuring every shipping guide in the system has a unique identifier.
+</Note>

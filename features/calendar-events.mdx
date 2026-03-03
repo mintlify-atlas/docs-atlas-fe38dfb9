@@ -1,0 +1,435 @@
+---
+title: Calendar Events
+description: Schedule and track project activities, manage maintenance calendars, and coordinate field operations
+---
+
+Calendar Events enable you to schedule, track, and manage all activities related to your projects. From planned maintenance to installations and inspections, the calendar system helps coordinate field operations and resource allocation.
+
+## What are Calendar Events?
+
+Calendar Events are scheduled activities that:
+
+- **Schedule Work**: Plan maintenance, installations, removals, and inspections
+- **Assign Resources**: Link specific equipment and personnel to activities
+- **Track Progress**: Monitor from scheduled through completion
+- **Coordinate Teams**: Assign responsible technicians to each event
+- **Manage Priorities**: Categorize events by urgency level
+- **Visualize Schedule**: Display events on calendar view by project
+
+## Event Types
+
+Mantis supports five types of calendar events:
+
+### Maintenance (MAINTENANCE)
+Scheduled equipment maintenance activities:
+- Preventive maintenance visits
+- Routine inspections and servicing
+- Filter changes and cleaning
+- Regular operational checks
+
+### Installation (INSTALLATION)
+Equipment deployment and setup:
+- New equipment installation
+- System commissioning
+- Initial setup and testing
+- Equipment upgrades
+
+### Removal (REMOVAL)
+Equipment decommissioning and retrieval:
+- Project completion removals
+- Equipment retirement
+- Temporary removal for repairs
+- Resource redeployment
+
+### Inspection (INSPECTION)
+Quality and compliance checks:
+- Safety inspections
+- Regulatory compliance checks
+- Quality assurance visits
+- Performance assessments
+
+### Other (OTHER)
+General project activities:
+- Client meetings
+- Site surveys
+- Training sessions
+- Any other scheduled activity
+
+## Priority Levels
+
+Events can be prioritized:
+
+- **LOW** (Baja): Routine, can be rescheduled if needed
+- **MEDIUM** (Media): Standard priority, schedule as planned
+- **HIGH** (Alta): Important, minimal flexibility
+- **URGENT** (Urgente): Critical, must be completed ASAP
+
+## Event Status
+
+Events progress through these statuses:
+
+- **SCHEDULED** (Programado): Planned but not yet started
+- **IN_PROGRESS** (En Progreso): Currently being worked on
+- **COMPLETED** (Completado): Finished successfully
+- **CANCELLED** (Cancelado): Cancelled or postponed
+
+## Creating a Calendar Event
+
+<Steps>
+  <Step title="Navigate to Project Calendar">
+    Select the project and open the Calendar view.
+  </Step>
+  
+  <Step title="Click Create Event">
+    Click "New Event" or click on a specific date in the calendar.
+  </Step>
+  
+  <Step title="Enter Event Details">
+    Fill in the basic information:
+    
+    **Title**: Brief description of the event
+    - Example: "Treatment Plant 101 - Monthly Maintenance"
+    - Example: "Install Bathroom Facility at Zone B"
+    
+    **Description**: Detailed information about the activity
+    - What needs to be done
+    - Special requirements
+    - Access instructions
+    - Preparation needed
+  </Step>
+  
+  <Step title="Select Event Type">
+    Choose from:
+    - MAINTENANCE
+    - INSTALLATION
+    - REMOVAL
+    - INSPECTION
+    - OTHER
+  </Step>
+  
+  <Step title="Set Priority">
+    Select priority level:
+    - LOW, MEDIUM, HIGH, or URGENT
+  </Step>
+  
+  <Step title="Schedule Date and Time">
+    Enter when the event occurs:
+    
+    **Dates:**
+    - **Start Date**: When the activity begins (required)
+    - **End Date**: When the activity ends (optional for single-day events)
+    
+    **Times:**
+    - **Start Time**: Time to begin (optional)
+    - **End Time**: Time to complete (optional)
+  </Step>
+  
+  <Step title="Assign Technician">
+    **Responsible Technical**: Select the technician who will perform or supervise the work.
+  </Step>
+  
+  <Step title="Choose Color (Optional)">
+    Set a color for the event display on the calendar:
+    - Use hex format: #FF5733
+    - Default colors based on event type
+    - Custom colors for special events
+  </Step>
+  
+  <Step title="Save Event">
+    Click Save. The event is created with status SCHEDULED.
+  </Step>
+</Steps>
+
+<Tip>
+  Use consistent color coding across your organization: for example, green for preventive maintenance, red for urgent repairs, blue for installations.
+</Tip>
+
+## Adding Equipment to Events
+
+Link specific equipment to calendar events:
+
+<Steps>
+  <Step title="Open Event Details">
+    Click on the calendar event you created.
+  </Step>
+  
+  <Step title="Add Event Detail">
+    Click "Add Equipment" or "Add Resource" to the event.
+  </Step>
+  
+  <Step title="Select Resource Item">
+    Choose the equipment involved:
+    - From project resources assigned
+    - Specific treatment plants, tanks, bathrooms, etc.
+  </Step>
+  
+  <Step title="Select Project Resource Item">
+    Link to the specific project assignment (if applicable).
+  </Step>
+  
+  <Step title="Enter Activity Description">
+    Describe what will be done to this specific equipment:
+    - "Replace air filters and check motor"
+    - "Complete installation and commissioning"
+    - "Remove and prepare for transport"
+  </Step>
+  
+  <Step title="Set Cost (Optional)">
+    Enter cost for this specific activity if tracked separately.
+  </Step>
+  
+  <Step title="Save Detail">
+    The equipment is linked to the event.
+  </Step>
+  
+  <Step title="Repeat for Multiple Equipment">
+    Add all equipment involved in this activity.
+  </Step>
+</Steps>
+
+<Note>
+  You can add multiple pieces of equipment to a single event. For example, a maintenance visit might service three different treatment plants.
+</Note>
+
+## Managing Events
+
+### Updating Event Status
+
+#### Starting Work
+
+<Steps>
+  <Step title="Open Event">
+    Find the scheduled event in the calendar.
+  </Step>
+  
+  <Step title="Change Status to IN_PROGRESS">
+    When technician arrives on site and begins work.
+  </Step>
+  
+  <Step title="Update Time">
+    Optionally update start time with actual arrival time.
+  </Step>
+</Steps>
+
+#### Completing Event
+
+<Steps>
+  <Step title="Mark Equipment Complete">
+    For each equipment detail:
+    - Check "Is Completed"
+    - Set "Completed Date"
+  </Step>
+  
+  <Step title="Change Event Status to COMPLETED">
+    When all work is done.
+  </Step>
+  
+  <Step title="Update Actual Times">
+    Set actual end time when work finished.
+  </Step>
+</Steps>
+
+#### Cancelling Event
+
+<Steps>
+  <Step title="Open Event">
+    Navigate to the event to cancel.
+  </Step>
+  
+  <Step title="Change Status to CANCELLED">
+    Select CANCELLED status.
+  </Step>
+  
+  <Step title="Add Cancellation Note">
+    Update description with reason for cancellation:
+    - "Weather delay"
+    - "Client rescheduled"
+    - "Equipment unavailable"
+  </Step>
+</Steps>
+
+### Moving Events
+
+Reschedule events by dragging on the calendar:
+
+<Steps>
+  <Step title="Drag Event">
+    In calendar view, click and drag the event to a new date.
+  </Step>
+  
+  <Step title="System Updates">
+    Start date and end date are automatically adjusted.
+  </Step>
+  
+  <Step title="Confirm Changes">
+    The event is rescheduled immediately.
+  </Step>
+</Steps>
+
+Or use the move function:
+
+<Steps>
+  <Step title="Open Event">
+    Click on the event.
+  </Step>
+  
+  <Step title="Edit Dates">
+    Change start date and/or end date.
+  </Step>
+  
+  <Step title="Save">
+    Event is rescheduled.
+  </Step>
+</Steps>
+
+## Calendar Views
+
+### Month View
+
+Display events by month:
+
+<Steps>
+  <Step title="Select Month and Year">
+    Use the calendar navigation to select the period.
+  </Step>
+  
+  <Step title="View Events">
+    Events appear on their scheduled dates.
+  </Step>
+  
+  <Step title="Filter by Project">
+    Show events for specific project or all projects.
+  </Step>
+</Steps>
+
+### Event List View
+
+View events as a list:
+
+- All events for the selected period
+- Filter by status (SCHEDULED, IN_PROGRESS, COMPLETED, CANCELLED)
+- Sort by date, priority, or type
+- Search by title or description
+
+### Day View
+
+See all events on a specific day:
+
+- Click on any date
+- Shows all events scheduled that day
+- Displays start and end times
+- Color-coded by event type or custom color
+
+## Integration with Maintenance Scheduling
+
+Calendar events are automatically created based on project resource maintenance frequencies:
+
+### Automatic Event Generation
+
+When resources are assigned with maintenance schedules:
+
+1. **Interval Days** (DAY frequency):
+   - Events created every X days from operation start
+   - Example: Every 2 days creates events on day 0, 2, 4, 6, etc.
+
+2. **Week Days** (WEEK frequency):
+   - Events created on specific weekdays
+   - Example: [0, 2, 4] creates events every Monday, Wednesday, Friday
+
+3. **Month Days** (MONTH frequency):
+   - Events created on specific days of each month
+   - Example: [1, 15] creates events on 1st and 15th of every month
+
+<Tip>
+  Automatic events are created with type MAINTENANCE and status SCHEDULED. You can edit them or add additional details as needed.
+</Tip>
+
+## Best Practices
+
+### Scheduling Best Practices
+
+- **Consistent Timing**: Schedule events at the same time of day when possible
+- **Buffer Time**: Allow travel time between events at different locations
+- **Technician Capacity**: Don't overbook technicians with multiple simultaneous events
+- **Weather Consideration**: Build in flexibility for outdoor work
+- **Client Coordination**: Confirm access and availability before scheduling
+
+### Priority Management
+
+- **URGENT**: Use sparingly for true emergencies
+- **HIGH**: Time-sensitive work with regulatory or safety implications
+- **MEDIUM**: Standard scheduled work
+- **LOW**: Optional or flexible activities
+
+### Event Documentation
+
+- **Detailed Descriptions**: Include all relevant information for technicians
+- **Equipment Lists**: Always link specific equipment to events
+- **Cost Tracking**: Record costs for activities that will be billed
+- **Completion Notes**: Update descriptions with what was actually done
+
+### Team Coordination
+
+- **Advance Notice**: Create events at least 24-48 hours in advance
+- **Daily Review**: Check calendar daily for upcoming events
+- **Status Updates**: Update status in real-time from the field
+- **Mobile Access**: Use mobile devices to update events on-site
+
+## Common Scenarios
+
+### Scenario 1: Preventive Maintenance Route
+
+1. Multiple treatment plants need maintenance same day
+2. Create single MAINTENANCE event for the day
+3. Add each treatment plant as event detail
+4. Assign one technician
+5. Set priority: MEDIUM
+6. Include route and timing notes in description
+7. Technician completes each equipment item as serviced
+8. Mark event COMPLETED at end of day
+
+### Scenario 2: Emergency Repair
+
+1. Equipment failure reported
+2. Create MAINTENANCE event immediately
+3. Type: MAINTENANCE, Priority: URGENT
+4. Status: IN_PROGRESS (already dispatched)
+5. Add affected equipment
+6. Assign available technician
+7. Update with repair details as work progresses
+8. Complete event and create maintenance sheet for billing
+
+### Scenario 3: New Equipment Installation
+
+1. Shipping guide shows equipment arriving tomorrow
+2. Create INSTALLATION event for tomorrow
+3. Add all equipment being installed
+4. Assign installation technician
+5. Include setup requirements in description
+6. Set realistic time window (8 AM - 2 PM)
+7. Update to IN_PROGRESS when tech arrives
+8. Complete when all equipment commissioned
+
+### Scenario 4: Monthly Inspection Schedule
+
+1. Regulatory inspection required monthly
+2. Create INSPECTION events for each month
+3. Set recurring pattern: 1st Monday of each month
+4. Add all equipment to be inspected
+5. Assign certified inspector
+6. Include checklist in description
+7. Complete each month with findings
+8. Generate compliance report from completed events
+
+## Viewing Event History
+
+Track past events for compliance and analysis:
+
+- **Completed Events**: Filter calendar to show only completed
+- **Equipment History**: View all events for specific equipment
+- **Technician Activity**: See all events assigned to a technician
+- **Maintenance Patterns**: Analyze frequency and costs over time
+
+<Note>
+  Completed and cancelled events remain in the system indefinitely for audit trail and historical analysis.
+</Note>

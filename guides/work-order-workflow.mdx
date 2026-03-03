@@ -1,0 +1,367 @@
+---
+title: Work Order Workflow
+description: Complete workflow from work order creation to completion in Mantis
+---
+
+This guide covers the complete lifecycle of work orders (custody chains and maintenance sheets) in Mantis.
+
+## Overview
+
+Mantis manages two types of work orders:
+- **Cadena de Custodia** (Custody Chain): Service delivery tracking and waste management
+- **Hoja de Mantenimiento** (Maintenance Sheet): Equipment maintenance documentation
+
+Both are organized within **Planillas de Trabajo** (Work Orders/Sheet Projects).
+
+## Work Order Statuses
+
+Work orders progress through these statuses:
+
+- **DRAFT** (Borrador): Editable, can be modified
+- **IN_PROGRESS** (En Progreso): Active work order
+- **CLOSED** (Cerrado): Completed and locked
+- **LIQUIDATED** (Liquidado): Processed for billing
+- **INVOICED** (Facturado): Invoiced to client
+- **CANCELLED** (Cancelado): Cancelled work order
+
+<Note>
+Once a work order reaches LIQUIDATED, INVOICED, or CANCELLED status, custody chains and maintenance sheets cannot be modified.
+</Note>
+
+## Creating a Custody Chain
+
+Custody chains track service delivery, waste transport, and equipment usage.
+
+<Steps>
+  <Step title="Navigate to Work Orders">
+    1. Open your project
+    2. Click the **Planillas de Trabajo** tab (cyan tab)
+    3. Ensure you have an active work order in **IN_PROGRESS** status
+    4. Click **New Custody Chain** or the add button
+  </Step>
+
+  <Step title="Fill General Information">
+    Complete the **Información General** section:
+
+    **Required Fields:**
+    - **Técnico**: Select the responsible technician from the dropdown
+    - **Vehículo**: Select the vehicle used
+    - **Fecha de Actividad**: Activity date (defaults to today)
+    - **¿Tiene Logística?**: Select SÍ, NO, or NO APLICA
+
+    **Optional Fields:**
+    - **Consecutivo**: Auto-generated reference number (max 7 characters)
+    - **Ubicación**: Location (defaults from project)
+    - **Fecha de Emisión**: Issue date (defaults to activity date)
+    - **Hora de Inicio**: Start time (HH:MM format)
+    - **Hora de Fin**: End time (must be after start time)
+    - **Duración (Horas)**: Auto-calculated from start/end times
+  </Step>
+
+  <Step title="Enter Transporter Information">
+    In **Información del Transportista**:
+    - **Nombre de Transportista**: Full name of driver
+    - **Cédula de Transportista**: ID number (max 15 characters)
+    - **Cargo de Transportista**: Position (e.g., "Conductor")
+    - **Fecha de Transportista**: Transporter date
+
+    <Tip>
+    When you select a technician, the system auto-fills transporter fields with the technician's data.
+    </Tip>
+  </Step>
+
+  <Step title="Add Contact Information">
+    In **Información de Contacto**:
+    - **Nombre de Contacto**: Contact person name (defaults from project)
+    - **Cédula de Contacto**: Contact ID number
+    - **Cargo de Contacto**: Contact position (e.g., "Maquinista")
+    - **Fecha de Contacto**: Contact date
+  </Step>
+
+  <Step title="Select Resources">
+    In the **Recursos de la Planilla** table:
+    1. Review available service resources from the work order
+    2. Click rows or checkboxes to select resources
+    3. Only active resources can be selected
+    4. At least one resource must be selected
+
+    <Warning>
+    Inactive resources show a red badge and cannot be selected.
+    </Warning>
+  </Step>
+
+  <Step title="Select Waste Types">
+    Check applicable waste/water types in **Tipo de Residuos / Aguas**:
+    - **Aguas Negras** (Black Water)
+    - **Aguas Grises** (Grey Water)
+    - **Aguas Limpias** (Clean Water)
+    - **Lodos Activados** (Activated Sludge)
+    - **Aguas Residuales Tratadas** (Treated Wastewater)
+    - **Grasa Orgánica** (Organic Grease)
+  </Step>
+
+  <Step title="Enter Volume Totals">
+    In the **Totales** section, enter volume in any unit:
+    - **Total Galones** (Gallons)
+    - **Total Barriles** (Barrels)
+    - **Total Metros Cúbicos** (Cubic Meters)
+
+    <Tip>
+    The system automatically converts between units. Enter the value you know, and the others will calculate automatically.
+    </Tip>
+  </Step>
+
+  <Step title="Add Notes and Save">
+    1. Add any observations in the **Notas** field
+    2. Select **Estado**: BORRADOR or CERRADO
+    3. Click **Guardar**
+
+    <Warning>
+    Setting status to CERRADO locks the custody chain from further edits.
+    </Warning>
+  </Step>
+</Steps>
+
+## Editing a Custody Chain
+
+<Steps>
+  <Step title="Open for Editing">
+    1. Navigate to the work order detail
+    2. Click on the custody chain to edit
+    3. The form opens in edit mode
+  </Step>
+
+  <Step title="Check Edit Permissions">
+    You can edit if ALL these conditions are met:
+    - Custody chain status is **BORRADOR** (DRAFT)
+    - Parent work order is **NOT** closed
+    - Parent work order status is **NOT** LIQUIDATED, INVOICED, or CANCELLED
+    - Project is **NOT** closed
+
+    If any condition fails, the form displays a warning and disables editing.
+  </Step>
+
+  <Step title="Make Changes">
+    Modify any editable fields following the same guidelines as creation.
+  </Step>
+
+  <Step title="Save or Close">
+    - Click **Guardar** to save changes
+    - Set status to **CERRADO** to lock the custody chain
+    - Click **Cancelar** to discard changes
+  </Step>
+</Steps>
+
+## Creating a Maintenance Sheet
+
+Maintenance sheets document equipment maintenance activities.
+
+<Steps>
+  <Step title="Access Maintenance Form">
+    1. Navigate to your project's **Planillas de Trabajo** tab
+    2. Open the active work order
+    3. Click **New Maintenance Sheet**
+  </Step>
+
+  <Step title="Enter General Maintenance Data">
+    In **Datos Generales del Mantenimiento**:
+
+    **Key Fields:**
+    - **Técnico Responsable**: Select responsible technician (optional)
+    - **Solicitado Por**: Name of person requesting maintenance
+    - **RIG**: Rig identifier (e.g., "125")
+    - **Equipo**: Select equipment from project resources (only EQUIPO type)
+    - **Código**: Equipment code
+    - **Ubicación**: Equipment location (defaults from project)
+    - **Tipo de Mantenimiento**: **Required** - PREVENTIVO or CORRECTIVO
+    - **Fecha de Inicio**: **Required** - Maintenance start date
+    - **Fecha de Finalización**: End date
+    - **Total Días**: Total days of maintenance
+    - **Costo Día**: Daily cost
+    - **Costo Total**: Total cost
+  </Step>
+
+  <Step title="Define Work Order Concepts">
+    In **Conceptos de Planilla**:
+    - **Concepto de Mantenimiento**: Default: "SERVICIO TÉCNICO ESPECIALIZADO"
+    - **Concepto Logístico**: Logistics concept (optional)
+    - **Costo Logístico**: Logistics cost
+  </Step>
+
+  <Step title="Describe Maintenance Work">
+    **Descripción del Mantenimiento**:
+    - Detailed description of activities performed (4 rows)
+
+    **Falla y Posibles Causas**:
+    - **Descripción de la Falla**: Description of the failure found (3 rows)
+    - **Posibles Causas**: Possible causes of the failure (3 rows)
+  </Step>
+
+  <Step title="Document Parts and Observations">
+    **Repuestos y/o Accesorios Reemplazados**:
+    - List all replaced parts and accessories (3 rows)
+
+    **Observaciones y Recomendaciones**:
+    - Additional observations and recommendations (3 rows)
+  </Step>
+
+  <Step title="Add Responsible Parties">
+    In **Responsables**:
+    - **Realizado Por**: Name of person who performed maintenance
+    - **Cargo**: Their position
+    - **Aprobado Por**: Name of person who approved
+    - **Cargo**: Their position
+  </Step>
+
+  <Step title="Upload PDF (Edit Mode Only)">
+    If editing an existing sheet:
+    1. Scroll to **Archivo PDF de la Hoja**
+    2. Click **Choose File** and select a PDF
+    3. System uploads and displays the file
+    4. You can view or delete the file
+
+    <Note>
+    Only PDF files are accepted. File upload is only available in edit mode after the sheet is created.
+    </Note>
+  </Step>
+
+  <Step title="Save the Maintenance Sheet">
+    1. Add any final notes in **Notas**
+    2. Click **Guardar Hoja** (create mode) or **Actualizar Hoja** (edit mode)
+    3. System returns to the work order view
+  </Step>
+</Steps>
+
+## Maintenance Sheet Statuses
+
+- **DRAFT**: Sheet can be edited and modified
+- **CLOSED**: Sheet is finalized and locked
+- **VOID**: Sheet has been voided/cancelled
+
+<Warning>
+Sheets in CLOSED or VOID status display a warning alert and all fields are disabled.
+</Warning>
+
+## Validation Alerts
+
+### Technician Validation
+
+The system validates selected technicians and shows alerts:
+
+**Error Alerts (Red):**
+- Missing critical information (DNI, work area)
+- Expired certifications
+- Inactive technician status
+
+**Warning Alerts (Yellow):**
+- Certifications expiring soon
+- Incomplete profile information
+
+Click the eye icon next to the technician dropdown to view full technician details.
+
+### Vehicle Validation
+
+Similar validation applies to vehicles:
+- Expired SOAT (insurance)
+- Expired registration
+- Missing maintenance records
+- Inactive vehicle status
+
+Click the eye icon to view complete vehicle information.
+
+### Time Validation
+
+For custody chains with start/end times:
+- End time must be after start time
+- Invalid times show error message: "La hora de fin debe ser mayor que la hora de inicio"
+- Duration auto-calculates in hours (e.g., 2.5 hours)
+
+## Work Order Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Complete Documentation" icon="file-alt">
+    Fill all relevant fields completely. This ensures accurate records for billing and compliance.
+  </Card>
+
+  <Card title="Status Management" icon="tasks">
+    Only close work orders when all activities are complete. Closed orders cannot be easily reopened.
+  </Card>
+
+  <Card title="Resource Selection" icon="check-square">
+    Verify you've selected all applicable service resources before saving custody chains.
+  </Card>
+
+  <Card title="PDF Attachments" icon="file-pdf">
+    Always upload supporting PDF documentation for maintenance sheets and custody chains when available.
+  </Card>
+</CardGroup>
+
+## Field Reference
+
+### Custody Chain Key Fields
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| technical | Dropdown | Yes | Must have valid certifications |
+| vehicle | Dropdown | Yes | Must have valid SOAT |
+| activity_date | Date | Yes | Date of activity |
+| location | Text | No | Defaults from project |
+| start_time | Time | No | HH:MM format |
+| end_time | Time | No | Must be > start_time |
+| time_duration | Number | Auto | Calculated in hours |
+| have_logistic | Select | Yes | SÍ / NO / NO APLICA |
+| total_gallons | Number | No | Auto-converts to barrels/m³ |
+| status | Select | Yes | DRAFT or CLOSE |
+
+### Maintenance Sheet Key Fields
+
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| responsible_technical_id | Dropdown | No | From available technicians |
+| resource_item_id | Dropdown | No | Only EQUIPO resources |
+| maintenance_type | Select | Yes | PREVENTIVO or CORRECTIVO |
+| start_date | Date | Yes | Maintenance start |
+| maintenance_description | Textarea | No | 4 rows |
+| fault_description | Textarea | No | 3 rows |
+| replaced_parts | Textarea | No | 3 rows |
+
+## Common Issues
+
+### Cannot Edit Custody Chain
+**Problem**: Form shows "Esta cadena de custodia está cerrada" or sheet lock message.
+
+**Solution**: Check:
+- Custody chain status (must be BORRADOR)
+- Parent work order status (must not be LIQUIDATED/INVOICED/CANCELLED)
+- Parent work order is_closed flag (must be false)
+- Project is_closed flag (must be false)
+
+### No Resources Available
+**Problem**: Resource table shows "No hay recursos disponibles".
+
+**Solution**:
+- Ensure the work order has service resources assigned
+- Check that resources are active (not retired)
+- Verify you have an IN_PROGRESS work order
+
+### Time Validation Error
+**Problem**: "La hora de fin debe ser mayor que la hora de inicio".
+
+**Solution**: Enter an end time that is later than the start time (e.g., start: 08:00, end: 17:00).
+
+### Cannot Upload PDF
+**Problem**: File upload section not visible.
+
+**Solution**: PDF upload is only available in edit mode. Save the custody chain or maintenance sheet first, then edit it to upload files.
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Document Management" icon="folder" href="/guides/document-management">
+    Learn how to organize and generate work order documents
+  </Card>
+
+  <Card title="Generate Reports" icon="chart-bar" href="/guides/reports">
+    Create reports from work order data
+  </Card>
+</CardGroup>

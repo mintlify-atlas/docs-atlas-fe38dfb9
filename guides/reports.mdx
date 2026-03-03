@@ -1,0 +1,472 @@
+---
+title: Reports
+description: Generate and export reports from Mantis project data
+---
+
+This guide covers how to generate, view, and export various reports from your Mantis project data.
+
+## Overview
+
+Mantis provides comprehensive reporting capabilities to help you analyze project performance, track costs, monitor equipment usage, and generate client-ready documentation.
+
+## Available Reports
+
+### Project Reports
+
+Generate reports at the project level including:
+- Project summary and status
+- Resource allocation and costs
+- Timeline and milestones
+- Client contact information
+
+### Equipment Reports
+
+Track equipment across projects:
+- Equipment assignment history
+- Utilization rates
+- Maintenance schedules and completion
+- Rental costs and billing
+- Retirement tracking
+
+### Work Order Reports
+
+Comprehensive work order analytics:
+- Custody chain summaries
+- Maintenance activity logs
+- Service delivery tracking
+- Volume and waste management statistics
+- Labor and vehicle utilization
+
+### Financial Reports
+
+Cost tracking and billing:
+- Daily rental costs
+- Maintenance costs
+- Logistics and transport costs
+- Project cost summaries
+- Billing preparation data
+
+### Shipping Guide Reports
+
+Equipment movement documentation:
+- Equipment transfers between locations
+- Transport activity logs
+- Item manifests
+- Cost tracking for logistics
+
+## Generating Reports
+
+### Project Summary Report
+
+<Steps>
+  <Step title="Navigate to Project">
+    Open the project you want to report on from the Projects list.
+  </Step>
+
+  <Step title="Access Reports">
+    Look for the **Reports** or **Reportes** menu option:
+    - May be in the main project navigation
+    - Could be in a dropdown menu
+    - Might be under a specific tab
+  </Step>
+
+  <Step title="Select Report Type">
+    Choose **Project Summary** or **Resumen de Proyecto** from the available report types.
+  </Step>
+
+  <Step title="Configure Parameters">
+    Set report parameters:
+    - **Date Range**: Start and end dates for the report period
+    - **Include Closed**: Whether to include closed work orders
+    - **Detail Level**: Summary or detailed view
+  </Step>
+
+  <Step title="Generate Report">
+    Click **Generate** or **Generar Reporte** to create the report.
+  </Step>
+
+  <Step title="View and Export">
+    Once generated:
+    - Review the report on screen
+    - Export to PDF for printing or sharing
+    - Export to Excel for further analysis
+    - Save or print directly
+  </Step>
+</Steps>
+
+### Equipment Utilization Report
+
+<Steps>
+  <Step title="Access Equipment Reports">
+    From the project, navigate to:
+    1. **Recursos Asignados** (Assigned Resources) tab
+    2. Look for **Reports** or export options
+  </Step>
+
+  <Step title="Select Report Parameters">
+    Configure:
+    - **Equipment Type**: Filter by EQUIPO or SERVICIO
+    - **Date Range**: Analysis period
+    - **Status**: Active, Retired, or All
+    - **Include Costs**: Whether to show cost data
+  </Step>
+
+  <Step title="Generate Report">
+    Click generate to create the utilization report showing:
+    - Equipment assignment dates
+    - Days in operation
+    - Daily costs and totals
+    - Maintenance schedule adherence
+  </Step>
+
+  <Step title="Export Data">
+    Export to:
+    - **PDF**: For documentation and client sharing
+    - **Excel**: For cost analysis and pivoting
+    - **CSV**: For importing into other systems
+  </Step>
+</Steps>
+
+### Work Order Activity Report
+
+<Steps>
+  <Step title="Navigate to Work Orders">
+    Open the **Planillas de Trabajo** (Work Orders) tab in your project.
+  </Step>
+
+  <Step title="Select Report Type">
+    Choose from:
+    - **Custody Chain Summary**: All custody chains in period
+    - **Maintenance Activity**: All maintenance sheets
+    - **Combined Report**: Both custody chains and maintenance
+  </Step>
+
+  <Step title="Set Filters">
+    Configure filters:
+    - **Date Range**: Start and end dates
+    - **Status**: DRAFT, CLOSED, or ALL
+    - **Technician**: Filter by specific technician
+    - **Vehicle**: Filter by specific vehicle
+    - **Resource Type**: SERVICIO or EQUIPO
+  </Step>
+
+  <Step title="Select Metrics">
+    Choose what to include:
+    - Volume totals (gallons, barrels, cubic meters)
+    - Waste type breakdown
+    - Service hours and duration
+    - Cost summaries
+    - Technician and vehicle utilization
+  </Step>
+
+  <Step title="Generate and Review">
+    Generate the report and review:
+    - Summary statistics at the top
+    - Detailed line items
+    - Charts and visualizations (if available)
+    - Cost breakdowns
+  </Step>
+
+  <Step title="Export Report">
+    Export in your preferred format for distribution or archiving.
+  </Step>
+</Steps>
+
+### Maintenance Calendar Report
+
+<Steps>
+  <Step title="Access Calendar">
+    Click the **Calendario Mantenimientos** (Maintenance Calendar) tab.
+  </Step>
+
+  <Step title="Select Time Period">
+    Choose:
+    - **Month View**: Current month's scheduled maintenance
+    - **Week View**: Current week details
+    - **Custom Range**: Specific date range
+  </Step>
+
+  <Step title="Filter by Equipment">
+    Optionally filter to show:
+    - All equipment maintenance
+    - Specific equipment only
+    - Equipment by type
+  </Step>
+
+  <Step title="Generate Calendar Report">
+    Create a report showing:
+    - Scheduled maintenance dates
+    - Completed vs. pending maintenance
+    - Upcoming due dates
+    - Maintenance frequency compliance
+  </Step>
+
+  <Step title="Export Calendar">
+    Export as:
+    - **PDF**: Printable calendar format
+    - **Excel**: Spreadsheet with dates and details
+    - **CSV**: For importing into calendar applications
+  </Step>
+</Steps>
+
+## Export Formats
+
+### PDF Export
+
+**Best for:**
+- Client presentations
+- Formal documentation
+- Archiving
+- Printing
+
+**Features:**
+- Professionally formatted
+- Includes company branding (if configured)
+- Read-only format
+- Universal compatibility
+
+### Excel Export
+
+**Best for:**
+- Financial analysis
+- Data manipulation
+- Pivot tables and charts
+- Integration with accounting systems
+
+**Features:**
+- Editable spreadsheet format
+- Preserves formulas (where applicable)
+- Multiple worksheets for complex reports
+- Easy to create custom views
+
+### CSV Export
+
+**Best for:**
+- System integration
+- Database imports
+- Custom analysis tools
+- Simple data transfer
+
+**Features:**
+- Plain text format
+- Universal compatibility
+- Lightweight file size
+- Easy to parse programmatically
+
+## Report Customization
+
+Many reports support customization:
+
+### Column Selection
+Choose which data columns to include:
+- Date fields
+- Cost fields
+- Description fields
+- Status indicators
+- Custom fields
+
+### Grouping and Sorting
+Organize data by:
+- **Group by**: Equipment, Technician, Date, Work Order
+- **Sort by**: Date ascending/descending, Cost, Name
+- **Subtotals**: Show subtotals for each group
+
+### Filters
+Apply filters to focus on specific data:
+- Date ranges
+- Equipment types
+- Cost thresholds
+- Status values
+- Custom criteria
+
+### Formatting
+Customize appearance:
+- Show/hide totals
+- Currency formatting
+- Date formats
+- Decimal places
+- Header/footer content
+
+## Common Report Use Cases
+
+<AccordionGroup>
+  <Accordion title="Monthly Client Billing Report">
+    **Purpose**: Generate invoice support for monthly billing.
+
+    **Steps**:
+    1. Select Work Order Activity Report
+    2. Set date range to billing month
+    3. Filter status: CLOSED only
+    4. Include: Daily costs, maintenance costs, logistics costs
+    5. Group by: Service type
+    6. Export to Excel for invoice preparation
+
+    **Tip**: Include custody chain details for transparency.
+  </Accordion>
+
+  <Accordion title="Equipment Utilization Analysis">
+    **Purpose**: Analyze equipment ROI and utilization rates.
+
+    **Steps**:
+    1. Select Equipment Utilization Report
+    2. Set date range: Last quarter or year
+    3. Include: All equipment types
+    4. Show: Days active, total costs, cost per day
+    5. Export to Excel for analysis
+
+    **Tip**: Compare active days vs. total days to identify underutilized equipment.
+  </Accordion>
+
+  <Accordion title="Compliance Documentation">
+    **Purpose**: Generate compliance reports for regulatory requirements.
+
+    **Steps**:
+    1. Select Custody Chain Summary Report
+    2. Date range: Compliance period
+    3. Include: Waste types, volumes, transport details
+    4. Group by: Waste type
+    5. Export to PDF for submission
+
+    **Tip**: Include all custody chains regardless of status for complete documentation.
+  </Accordion>
+
+  <Accordion title="Maintenance Schedule Adherence">
+    **Purpose**: Verify maintenance is performed on schedule.
+
+    **Steps**:
+    1. Select Maintenance Calendar Report
+    2. Date range: Review period
+    3. Filter: All equipment with maintenance
+    4. Show: Scheduled vs. completed dates
+    5. Export to Excel for tracking
+
+    **Tip**: Use conditional formatting to highlight overdue maintenance.
+  </Accordion>
+
+  <Accordion title="Technician Activity Report">
+    **Purpose**: Track technician workload and productivity.
+
+    **Steps**:
+    1. Select Work Order Activity Report
+    2. Group by: Technician
+    3. Include: Number of orders, total hours, services performed
+    4. Date range: Pay period or month
+    5. Export to PDF for review
+
+    **Tip**: Compare across technicians to balance workload.
+  </Accordion>
+</AccordionGroup>
+
+## Report Scheduling
+
+If your Mantis installation supports scheduled reports:
+
+<Steps>
+  <Step title="Access Report Scheduler">
+    Navigate to **Reports** > **Scheduled Reports** or similar menu.
+  </Step>
+
+  <Step title="Create Schedule">
+    1. Select the report type
+    2. Configure parameters (date range, filters)
+    3. Set frequency: Daily, Weekly, Monthly
+    4. Choose day/time for generation
+  </Step>
+
+  <Step title="Configure Distribution">
+    Set up delivery:
+    - Email addresses for recipients
+    - Export format (PDF, Excel)
+    - Subject and message template
+  </Step>
+
+  <Step title="Activate Schedule">
+    Enable the schedule to start automatic generation and delivery.
+  </Step>
+
+  <Step title="Monitor Execution">
+    Check scheduled report history to verify successful generation and delivery.
+  </Step>
+</Steps>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Regular Reporting" icon="calendar-check">
+    Generate reports on a consistent schedule (weekly, monthly) for trend analysis and proactive management.
+  </Card>
+
+  <Card title="Data Validation" icon="check-double">
+    Before generating client-facing reports, verify data accuracy by reviewing source work orders and documents.
+  </Card>
+
+  <Card title="Archive Reports" icon="archive">
+    Save exported reports with clear naming conventions including date range and report type for easy retrieval.
+  </Card>
+
+  <Card title="Custom Views" icon="sliders-h">
+    Create and save custom report configurations for frequently-used report types to save time.
+  </Card>
+</CardGroup>
+
+## Common Issues
+
+### Report Shows No Data
+**Problem**: Report generates but shows "No data found" or empty results.
+
+**Solution**:
+- Verify date range includes the period with data
+- Check filters - may be too restrictive
+- Ensure work orders exist and are not all in DRAFT status
+- Try removing filters one by one to isolate the issue
+
+### Export Fails
+**Problem**: Export to PDF or Excel fails or downloads corrupted file.
+
+**Solution**:
+- Check browser popup blocker settings
+- Try a different export format
+- Reduce date range to limit data volume
+- Clear browser cache and retry
+- Check for special characters in data that may cause issues
+
+### Incorrect Totals
+**Problem**: Report totals don't match expected values.
+
+**Solution**:
+- Verify all work orders in period are CLOSED
+- Check for duplicate entries
+- Ensure costs are entered correctly in source documents
+- Review grouping and filter settings
+- Compare report total to manual calculation
+
+### Missing Columns
+**Problem**: Expected data columns are missing from report.
+
+**Solution**:
+- Check column selection settings
+- Verify data exists in source documents
+- Ensure you have permissions to view sensitive data (costs)
+- Try different report templates
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Creating Projects" icon="folder-plus" href="/guides/creating-projects">
+    Return to project creation and management
+  </Card>
+
+  <Card title="Work Order Workflow" icon="clipboard-list" href="/guides/work-order-workflow">
+    Review work order processes to ensure accurate reporting
+  </Card>
+</CardGroup>
+
+## Additional Resources
+
+<Tip>
+For advanced reporting needs, consider exporting raw data to Excel and using pivot tables, charts, and formulas to create custom analytics tailored to your specific requirements.
+</Tip>
+
+<Note>
+Report availability and features may vary based on your Mantis installation configuration and user permissions. Contact your system administrator for access to specific report types.
+</Note>

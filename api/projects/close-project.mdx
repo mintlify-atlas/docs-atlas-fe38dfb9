@@ -1,0 +1,243 @@
+---
+title: "Close Project"
+description: "Validate and close projects with automatic resource release"
+---
+
+## Validate Project Closure
+
+<api-endpoint method="GET" path="/api/projects/{project_id}/close/" />
+
+Validate whether a project can be closed and return any warnings or blocking issues.
+
+### Authentication
+
+Requires authentication via session or token.
+
+### Path Parameters
+
+<ParamField path="project_id" type="integer" required>
+  ID of the project to validate for closure.
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Whether the validation request was successful.
+</ResponseField>
+
+<ResponseField name="can_close" type="boolean">
+  Whether the project can be closed. False if there are error-type alerts.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Summary message about the validation result.
+</ResponseField>
+
+<ResponseField name="alerts" type="array">
+  Array of validation alerts and warnings.
+  
+  <ResponseField name="type" type="string">
+    Alert severity: `error` (blocks closure), `warning` (advisory), or `info` (informational).
+  </ResponseField>
+  
+  <ResponseField name="message" type="string">
+    Description of the alert.
+  </ResponseField>
+  
+  <ResponseField name="link" type="string" optional>
+    Navigation link for the related item (e.g., work sheet URL).
+  </ResponseField>
+  
+  <ResponseField name="link_text" type="string" optional>
+    Display text for the navigation link.
+  </ResponseField>
+</ResponseField>
+
+### Validation Rules
+
+The endpoint checks the following conditions:
+
+1. **Work Sheets in Progress (ERROR)**: Any work sheets with status `IN_PROGRESS` must be liquidated or cancelled before closing.
+2. **Work Sheets Not Closed (WARNING)**: Work sheets that are not closed (except cancelled ones) will trigger a warning.
+3. **Active Equipment (INFO)**: Lists equipment that will be released when the project closes.
+4. **Active Services (INFO)**: Lists services that will be retired when the project closes.
+
+### Error Codes
+
+- `400` - Project is already closed
+- `404` - Project not found
+- `500` - Internal server error
+
+### Example Request
+
+```bash
+curl -X GET https://api.example.com/api/projects/123/close/ \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Example Response
+
+```json
+{
+  "success": true,
+  "can_close": false,
+  "message": "El proyecto no puede cerrarse. Revise las alertas.",
+  "alerts": [
+    {
+      "type": "error",
+      "message": "La planilla #456 (WS-2024-001) está en ejecución. Debe liquidarla o cancelarla antes de cerrar el proyecto.",
+      "link": "#/work-sheet/form/456",
+      "link_text": "Ir a planilla WS-2024-001"
+    },
+    {
+      "type": "warning",
+      "message": "La planilla #457 (WS-2024-002) no está cerrada (Estado: Liquidada).",
+      "link": "#/work-sheet/form/457",
+      "link_text": "Ir a planilla WS-2024-002"
+    },
+    {
+      "type": "info",
+      "message": "Se liberarán 3 equipo(s) al cerrar el proyecto: EQ-001 - Excavadora, EQ-002 - Grúa, EQ-003 - Bulldozer."
+    }
+  ]
+}
+```
+
+---
+
+## Close Project
+
+<api-endpoint method="POST" path="/api/projects/{project_id}/close/" />
+
+Close a project and automatically release all associated resources.
+
+### Authentication
+
+Requires authentication via session or token.
+
+### Path Parameters
+
+<ParamField path="project_id" type="integer" required>
+  ID of the project to close.
+</ParamField>
+
+### Request Body
+
+No request body required.
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Whether the project was successfully closed.
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success or error message.
+</ResponseField>
+
+<ResponseField name="released_equipment" type="array">
+  Array of equipment items that were released.
+  
+  <ResponseField name="id" type="integer">
+    ID of the project resource item.
+  </ResponseField>
+  
+  <ResponseField name="code" type="string">
+    Equipment code.
+  </ResponseField>
+  
+  <ResponseField name="name" type="string">
+    Equipment name.
+  </ResponseField>
+</ResponseField>
+
+<ResponseField name="released_equipment_count" type="integer">
+  Total number of equipment items released.
+</ResponseField>
+
+<ResponseField name="alerts" type="array">
+  Same structure as validation alerts, included for reference.
+</ResponseField>
+
+### Closure Process
+
+When a project is successfully closed, the following actions occur:
+
+1. **Release Active Equipment**:
+   - Equipment status set to `DISPONIBLE` (available)
+   - Project assignment cleared
+   - Location and commitment dates cleared
+   - Project resource marked as retired with reason "Cierre de proyecto #{project_id}"
+
+2. **Retire Related Services**:
+   - Services linked to equipment via `physical_equipment_code` are retired
+   - Retirement date set to current date
+
+3. **Retire Independent Services**:
+   - Any remaining active services are retired
+
+4. **Update Project**:
+   - `is_closed` flag set to true
+   - `end_date` set to current date if not already set
+
+### Error Codes
+
+- `400` - Project is already closed or has blocking issues (work sheets in progress)
+- `404` - Project not found
+- `500` - Internal server error
+
+### Example Request
+
+```bash
+curl -X POST https://api.example.com/api/projects/123/close/ \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Example Response
+
+```json
+{
+  "success": true,
+  "message": "Proyecto cerrado exitosamente.",
+  "released_equipment": [
+    {
+      "id": 789,
+      "code": "EQ-001",
+      "name": "Excavadora Caterpillar 320"
+    },
+    {
+      "id": 790,
+      "code": "EQ-002",
+      "name": "Grúa Torre 50T"
+    }
+  ],
+  "released_equipment_count": 2,
+  "alerts": [
+    {
+      "type": "info",
+      "message": "Se liberarán 2 equipo(s) al cerrar el proyecto: EQ-001 - Excavadora Caterpillar 320, EQ-002 - Grúa Torre 50T."
+    },
+    {
+      "type": "info",
+      "message": "Se retirarán 3 servicio(s) activo(s) al cerrar el proyecto."
+    }
+  ]
+}
+```
+
+### Best Practices
+
+1. **Always Validate First**: Call the GET endpoint to validate before attempting to close
+2. **Resolve Blocking Issues**: Address all error-type alerts before closing
+3. **Review Warnings**: Consider warning-type alerts as they may indicate incomplete work
+4. **Equipment Tracking**: Note the released equipment for inventory management
+5. **Audit Trail**: The retirement reason includes the project ID for tracking
+
+### Notes
+
+- Projects must be active and not deleted to be closed
+- All work sheets must be in a final state (not `IN_PROGRESS`)
+- Equipment is automatically made available for other projects
+- The closure process is transactional - either all resources are released or none
+- Retirement dates are set to the current date (not the project end date)

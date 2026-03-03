@@ -1,0 +1,656 @@
+---
+title: Installation Guide
+description: Complete setup guide for Django backend and Vue.js frontend
+---
+
+# Installation Guide
+
+This guide covers the complete installation of Mantis, including the Django backend, Vue.js frontend, and PostgreSQL database.
+
+## System Requirements
+
+### Software Prerequisites
+
+- **Python**: 3.10 or higher
+- **Node.js**: 20.19.0 or higher (or 22.12.0+)
+- **PostgreSQL**: 12 or higher
+- **Git**: For cloning the repository
+
+### Operating System
+
+- Linux (recommended for production)
+- macOS (development)
+- Windows (with WSL for best compatibility)
+
+## Installation Steps
+
+### Step 1: Clone the Repository
+
+<Steps>
+  <Step title="Clone the source code">
+    ```bash
+    git clone <repository-url>
+    cd mantis
+    ```
+  </Step>
+
+  <Step title="Verify directory structure">
+    ```bash
+    ls -la
+    ```
+    
+    You should see:
+    - `app/` - Backend Django application
+    - `app/client/mantis/` - Frontend Vue.js application
+    - `docs/` - Documentation
+    - `README.md`
+  </Step>
+</Steps>
+
+### Step 2: Database Setup
+
+Mantis uses PostgreSQL as its primary database.
+
+<Steps>
+  <Step title="Install PostgreSQL">
+    <CodeGroup>
+    ```bash Ubuntu/Debian
+    sudo apt update
+    sudo apt install postgresql postgresql-contrib
+    sudo systemctl start postgresql
+    sudo systemctl enable postgresql
+    ```
+    
+    ```bash macOS (Homebrew)
+    brew install postgresql@15
+    brew services start postgresql@15
+    ```
+    
+    ```bash Windows
+    # Download and install from:
+    # https://www.postgresql.org/download/windows/
+    ```
+    </CodeGroup>
+  </Step>
+
+  <Step title="Create Database and User">
+    ```bash
+    # Access PostgreSQL
+    sudo -u postgres psql
+    ```
+    
+    ```sql
+    -- Create database
+    CREATE DATABASE mantis;
+    
+    -- Create user
+    CREATE USER mantis_user WITH PASSWORD 'your_secure_password';
+    
+    -- Grant privileges
+    GRANT ALL PRIVILEGES ON DATABASE mantis TO mantis_user;
+    
+    -- Exit
+    \q
+    ```
+    
+    <Warning>
+      Use a strong password for production environments. Never commit passwords to version control.
+    </Warning>
+  </Step>
+
+  <Step title="Configure Database Connection">
+    Create `app/src/common/secrets.py` with your database configuration:
+    
+    ```python app/src/common/secrets.py
+    DATABASES = {
+        'DEVELOPMENT': {
+            "ENGINE": "django.db.backends.postgresql",
+            'NAME': 'mantis',
+            'USER': 'mantis_user',
+            'PASSWORD': 'your_secure_password',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        },
+        'TEST': {
+            "ENGINE": "django.db.backends.postgresql",
+            'NAME': 'mantis_test',
+            'USER': 'mantis_user',
+            'PASSWORD': 'your_secure_password',
+            'HOST': 'localhost',
+            'PORT': '5432',
+        },
+        'PRODUCTION': {
+            "ENGINE": "django.db.backends.postgresql",
+            'NAME': 'mantis_prod',
+            'USER': 'mantis_prod_user',
+            'PASSWORD': 'production_password',
+            'HOST': 'your_db_host',
+            'PORT': '5432',
+        }
+    }
+    
+    # Set default environment
+    DEFAULT_DB = {
+        'default': DATABASES['DEVELOPMENT']
+    }
+    ```
+    
+    <Note>
+      This file is imported by `peisol/settings.py:11` and should be added to `.gitignore`
+    </Note>
+  </Step>
+</Steps>
+
+### Step 3: Backend Setup (Django)
+
+<Steps>
+  <Step title="Create Virtual Environment">
+    ```bash
+    cd app
+    python -m venv venv
+    
+    # Activate virtual environment
+    # On Linux/macOS:
+    source venv/bin/activate
+    
+    # On Windows:
+    venv\Scripts\activate
+    ```
+  </Step>
+
+  <Step title="Install Python Dependencies">
+    ```bash
+    pip install --upgrade pip
+    pip install -r requeriments.txt
+    ```
+    
+    This installs:
+    - Django 4.2.14
+    - Django REST Framework 3.14.0
+    - djangorestframework-simplejwt 5.3.0 (JWT authentication)
+    - psycopg2-binary 2.9.11 (PostgreSQL adapter)
+    - django-simple-history 3.4.0 (audit trail)
+    - WeasyPrint 66.0 (PDF generation)
+    - And more...
+    
+    **Source:** `app/requeriments.txt`
+  </Step>
+
+  <Step title="Run Database Migrations">
+    ```bash
+    cd src
+    
+    # Create migrations for custom apps
+    python manage.py makemigrations accounts equipment projects
+    
+    # Apply all migrations
+    python manage.py migrate
+    ```
+    
+    <Note>
+      The migration order is important: `accounts` first (custom user model), then `equipment` and `projects`.
+      
+      **Source:** `README.md:3-5`
+    </Note>
+  </Step>
+
+  <Step title="Create Superuser">
+    ```bash
+    python manage.py createsuperuser
+    ```
+    
+    Enter:
+    - Email address (used for login)
+    - Password
+    - Confirm password
+    
+    <Note>
+      Mantis uses email-based authentication instead of usernames.
+      
+      **Source:** `peisol/settings.py:168-172`
+    </Note>
+  </Step>
+
+  <Step title="(Optional) Load Sample Data">
+    ```bash
+    # Seed database with sample data
+    python manage.py sowseed
+    
+    # Populate history for existing records
+    python manage.py populate_history --auto
+    ```
+    
+    **Source:** `README.md:6-8`
+  </Step>
+
+  <Step title="Create Required Directories">
+    ```bash
+    # Create media directory for uploads
+    mkdir -p ../media
+    
+    # Create static files directory
+    mkdir -p ../static_django
+    
+    # Create logs directory
+    mkdir -p ../../logs
+    ```
+    
+    **Source:** `peisol/settings.py:151-178`
+  </Step>
+</Steps>
+
+### Step 4: Frontend Setup (Vue.js)
+
+<Steps>
+  <Step title="Navigate to Frontend Directory">
+    ```bash
+    cd ../../app/client/mantis
+    ```
+  </Step>
+
+  <Step title="Verify Node.js Version">
+    ```bash
+    node --version
+    ```
+    
+    Should be `v20.19.0` or higher (or `v22.12.0+`)
+    
+    **Source:** `package.json:6-8`
+  </Step>
+
+  <Step title="Install Dependencies">
+    ```bash
+    npm install
+    ```
+    
+    This installs:
+    - Vue 3.5.22
+    - Tailwind CSS 4.1.17
+    - DaisyUI 5.4.7
+    - Pinia 3.0.3 (state management)
+    - Axios 1.13.2 (HTTP client)
+    - Vue Router 4.6.3
+    - Vite 7.1.11 (build tool)
+    
+    **Source:** `package.json:15-31`
+  </Step>
+
+  <Step title="Configure API Base URL">
+    The frontend automatically connects to `http://localhost:8000` for development.
+    
+    To customize, update `src/AppConfig.js`:
+    
+    ```javascript src/AppConfig.js
+    const apiBaseUrl = window.djangoConfig?.baseUrl ?? "http://localhost:8000"
+    ```
+    
+    **Source:** `src/AppConfig.js:2`
+  </Step>
+</Steps>
+
+### Step 5: Environment Configuration
+
+<Steps>
+  <Step title="Update Django Settings for Development">
+    Edit `app/src/peisol/settings.py`:
+    
+    ```python
+    # SECURITY WARNING: keep the secret key used in production secret!
+    SECRET_KEY = 'your-secret-key-here'  # Change this!
+    
+    # SECURITY WARNING: don't run with debug turned on in production!
+    DEBUG = True  # Set to False in production
+    
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']  # Add your domain in production
+    ```
+    
+    <Warning>
+      **Production Security:**
+      - Generate a new `SECRET_KEY` using `django.core.management.utils.get_random_secret_key()`
+      - Set `DEBUG = False`
+      - Configure specific `ALLOWED_HOSTS`
+      - Use environment variables for sensitive data
+      
+      **Source:** `peisol/settings.py:21-26`
+    </Warning>
+  </Step>
+
+  <Step title="Configure CORS">
+    CORS is already configured for local development:
+    
+    ```python
+    CSRF_TRUSTED_ORIGINS = [
+        'http://localhost',
+        'http://127.0.0.1',
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+        'http://localhost:5173',  # Vite dev server
+    ]
+    ```
+    
+    Add your production domain to this list.
+    
+    **Source:** `peisol/settings.py:68-84`
+  </Step>
+
+  <Step title="Configure Static Files for Production">
+    ```bash
+    cd app/src
+    python manage.py collectstatic
+    ```
+    
+    This collects all static files into `static_django/` for serving by Nginx or another web server.
+    
+    **Source:** `peisol/settings.py:157-162`
+  </Step>
+</Steps>
+
+### Step 6: Running Locally
+
+<Steps>
+  <Step title="Start the Django Backend">
+    ```bash
+    # From app/src directory
+    cd app/src
+    python manage.py runserver
+    ```
+    
+    The backend will start at `http://localhost:8000`
+    
+    <Note>
+      For production, use Gunicorn instead:
+      ```bash
+      gunicorn peisol.wsgi:application --bind 0.0.0.0:8000
+      ```
+      **Source:** `requeriments.txt:24`
+    </Note>
+  </Step>
+
+  <Step title="Start the Vue.js Frontend">
+    Open a new terminal:
+    
+    ```bash
+    # From app/client/mantis directory
+    cd app/client/mantis
+    npm run dev
+    ```
+    
+    The frontend will start at `http://localhost:5173`
+    
+    **Source:** `package.json:10`
+  </Step>
+
+  <Step title="Access the Application">
+    - **Frontend**: `http://localhost:5173`
+    - **Backend API**: `http://localhost:8000/api/`
+    - **Django Admin**: `http://localhost:8000/admin/`
+    
+    Login with your superuser credentials.
+  </Step>
+</Steps>
+
+## Production Deployment
+
+### Building the Frontend
+
+<Steps>
+  <Step title="Build for Production">
+    ```bash
+    cd app/client/mantis
+    npm run build
+    ```
+    
+    This:
+    1. Compiles Vue components
+    2. Bundles with Vite
+    3. Copies assets to Django's static directories:
+       - JavaScript → `app/src/static/js/app/app-projects.js`
+       - CSS → `app/src/static/css/app/app-projects.css`
+    
+    **Source:** `package.json:11`
+  </Step>
+
+  <Step title="Serve with Django">
+    The built files are automatically integrated with Django templates and served as static files.
+    
+    **Source:** `vite.config.js:1-21`
+  </Step>
+</Steps>
+
+### System Service Configuration
+
+<Steps>
+  <Step title="Create Systemd Service (Linux)">
+    Create `/etc/systemd/system/mantis.service`:
+    
+    ```ini
+    [Unit]
+    Description=Mantis Django Application
+    After=network.target postgresql.service
+    
+    [Service]
+    User=your_user
+    Group=your_group
+    WorkingDirectory=/path/to/mantis/app/src
+    Environment="PATH=/path/to/mantis/app/venv/bin"
+    ExecStart=/path/to/mantis/app/venv/bin/gunicorn \
+        --workers 3 \
+        --bind 0.0.0.0:8000 \
+        peisol.wsgi:application
+    
+    [Install]
+    WantedBy=multi-user.target
+    ```
+  </Step>
+
+  <Step title="Start and Enable Service">
+    ```bash
+    sudo systemctl daemon-reload
+    sudo systemctl start mantis.service
+    sudo systemctl enable mantis.service
+    sudo systemctl status mantis.service
+    ```
+    
+    **Source:** `README.md:31-33`
+  </Step>
+</Steps>
+
+### Nginx Configuration
+
+<Steps>
+  <Step title="Install Nginx">
+    ```bash
+    sudo apt install nginx
+    ```
+  </Step>
+
+  <Step title="Configure Nginx as Reverse Proxy">
+    Create `/etc/nginx/sites-available/mantis`:
+    
+    ```nginx
+    server {
+        listen 80;
+        server_name your-domain.com;
+        
+        client_max_body_size 100M;
+        
+        # Static files
+        location /static/ {
+            alias /path/to/mantis/app/src/static_django/;
+            expires 30d;
+        }
+        
+        # Media files
+        location /media/ {
+            alias /path/to/mantis/app/src/media/;
+            expires 30d;
+        }
+        
+        # Proxy to Gunicorn
+        location / {
+            proxy_pass http://127.0.0.1:8000;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+        }
+    }
+    ```
+  </Step>
+
+  <Step title="Enable and Restart Nginx">
+    ```bash
+    sudo ln -s /etc/nginx/sites-available/mantis /etc/nginx/sites-enabled/
+    sudo nginx -t
+    sudo systemctl restart nginx
+    ```
+  </Step>
+</Steps>
+
+## Verification
+
+<Steps>
+  <Step title="Check Backend">
+    ```bash
+    curl http://localhost:8000/admin/
+    ```
+    
+    Should return the Django admin login page.
+  </Step>
+
+  <Step title="Check Database Connection">
+    ```bash
+    cd app/src
+    python manage.py dbshell
+    ```
+    
+    Should connect to PostgreSQL. Try:
+    ```sql
+    \dt  -- List all tables
+    \q   -- Quit
+    ```
+  </Step>
+
+  <Step title="Check Frontend Build">
+    Verify built files exist:
+    ```bash
+    ls -la app/src/static/js/app/
+    ls -la app/src/static/css/app/
+    ```
+    
+    Should see `app-projects.js` and `app-projects.css`
+  </Step>
+</Steps>
+
+## Troubleshooting
+
+### Common Issues
+
+<Warning>
+  **Database Connection Errors**
+  
+  ```
+  django.db.utils.OperationalError: could not connect to server
+  ```
+  
+  **Solution:**
+  - Verify PostgreSQL is running: `sudo systemctl status postgresql`
+  - Check database credentials in `common/secrets.py`
+  - Ensure database exists: `psql -U postgres -l`
+</Warning>
+
+<Warning>
+  **CORS Errors in Browser**
+  
+  ```
+  Access to XMLHttpRequest has been blocked by CORS policy
+  ```
+  
+  **Solution:**
+  - Add your frontend URL to `CSRF_TRUSTED_ORIGINS` in `settings.py`
+  - Ensure `CORS_ORIGIN_ALLOW_ALL = True` for development
+  - Restart Django server after changes
+  
+  **Source:** `peisol/settings.py:66-84`
+</Warning>
+
+<Warning>
+  **Migration Errors**
+  
+  ```
+  django.db.migrations.exceptions.InconsistentMigrationHistory
+  ```
+  
+  **Solution:**
+  - Drop and recreate the database (development only!)
+  - Run migrations in correct order: `accounts`, `equipment`, `projects`
+  - Use `python manage.py showmigrations` to check status
+</Warning>
+
+<Warning>
+  **Node.js Version Mismatch**
+  
+  ```
+  error Unsupported engine
+  ```
+  
+  **Solution:**
+  - Use Node.js 20.19.0+ or 22.12.0+
+  - Use nvm to manage Node versions: `nvm install 20 && nvm use 20`
+  
+  **Source:** `package.json:6-8`
+</Warning>
+
+### Data Import/Export
+
+<CodeGroup>
+```bash Export Data
+# Export all data to JSON
+python manage.py dumpdata \
+  --natural-foreign \
+  --natural-primary \
+  --exclude auth.permission \
+  --exclude contenttypes \
+  --exclude admin.logentry \
+  > data.json
+```
+
+```bash Import Data
+# Import data from JSON
+python manage.py loaddata data.json
+
+# Or from specific file
+python manage.py loaddata /path/to/data.json -v 3
+```
+</CodeGroup>
+
+**Source:** `README.md:42-55`
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quickstart Guide" icon="rocket" href="/quickstart">
+    Create your first project and work order
+  </Card>
+  <Card title="Configuration" icon="gear" href="/admin/configuration">
+    Customize Mantis settings
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/introduction">
+    Explore available endpoints
+  </Card>
+  <Card title="Deployment Best Practices" icon="shield" href="/admin/deployment">
+    Production security and optimization
+  </Card>
+</CardGroup>
+
+## Additional Resources
+
+- **Django Documentation**: https://docs.djangoproject.com/
+- **Vue.js Guide**: https://vuejs.org/guide/
+- **PostgreSQL Manual**: https://www.postgresql.org/docs/
+- **Tailwind CSS**: https://tailwindcss.com/docs
+- **DaisyUI Components**: https://daisyui.com/components/
+
+<Note>
+  For questions or issues, refer to the source code documentation in `docs/manuals/` or check the Django admin interface for model details.
+</Note>

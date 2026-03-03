@@ -1,0 +1,528 @@
+---
+title: "Document Tree"
+description: "Retrieve hierarchical document structures for the entire system or specific projects"
+---
+
+## Overview
+
+The document tree APIs provide a hierarchical view of all documents in the system, organized by category and relationships. This is useful for building file browsers, navigation interfaces, and document management dashboards.
+
+## Get System Document Tree
+
+<CodeGroup>
+```bash GET /api/load_files/tree/
+curl "https://api.mantis.example/api/load_files/tree/"
+```
+</CodeGroup>
+
+Returns the complete document tree for the entire system, grouped by major categories: technicals, vehicles, equipment, and projects.
+
+### Response Structure
+
+<ResponseField name="success" type="boolean">
+  Indicates if the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <ResponseField name="technicals" type="array">
+    Array of technical personnel with their associated documents
+    <ResponseField name="id" type="integer">
+      Technical ID
+    </ResponseField>
+    <ResponseField name="label" type="string">
+      Full name of the technical (last name, first name)
+    </ResponseField>
+    <ResponseField name="dni" type="string">
+      National ID number
+    </ResponseField>
+    <ResponseField name="detail_url" type="string">
+      URL to view technical details
+    </ResponseField>
+    <ResponseField name="files" type="array">
+      Array of file field objects for the technical (dni_file, license_file, vaccine_certificate_file)
+    </ResponseField>
+    <ResponseField name="children" type="array">
+      Array of child documents (passes and vaccination records)
+    </ResponseField>
+  </ResponseField>
+
+  <ResponseField name="vehicles" type="array">
+    Array of vehicles with their associated documents
+    <ResponseField name="id" type="integer">
+      Vehicle ID
+    </ResponseField>
+    <ResponseField name="label" type="string">
+      Vehicle identification (plate - brand model)
+    </ResponseField>
+    <ResponseField name="detail_url" type="string">
+      URL to view vehicle details
+    </ResponseField>
+    <ResponseField name="files" type="array">
+      Array of file field objects (vehicle_image, poliza_file, matricula_file, rev_tec_file)
+    </ResponseField>
+    <ResponseField name="children" type="array">
+      Array of child documents (passes and certifications)
+    </ResponseField>
+  </ResponseField>
+
+  <ResponseField name="equipment" type="array">
+    Array of equipment items with their images
+    <ResponseField name="id" type="integer">
+      Equipment ID
+    </ResponseField>
+    <ResponseField name="label" type="string">
+      Equipment name and code
+    </ResponseField>
+    <ResponseField name="detail_url" type="string">
+      URL to view equipment details
+    </ResponseField>
+    <ResponseField name="files" type="array">
+      Array of file field objects (resource_image, resource_image_2)
+    </ResponseField>
+  </ResponseField>
+
+  <ResponseField name="projects" type="array">
+    Hierarchical array of projects with sheets, custody chains, and shipping guides
+    <ResponseField name="id" type="integer">
+      Project ID
+    </ResponseField>
+    <ResponseField name="label" type="string">
+      Partner name or project identifier
+    </ResponseField>
+    <ResponseField name="detail_url" type="string">
+      URL to view project details
+    </ResponseField>
+    <ResponseField name="children" type="array">
+      Array containing sheet projects and shipping guides
+    </ResponseField>
+  </ResponseField>
+</ResponseField>
+
+### File Field Object
+
+Each file in the tree contains:
+
+<ResponseField name="field_name" type="string">
+  The database field name (e.g., "dni_file", "custody_chain_file")
+</ResponseField>
+
+<ResponseField name="field_label" type="string">
+  Human-readable label for the field (e.g., "Cédula", "Archivo Cadena de Custodia")
+</ResponseField>
+
+<ResponseField name="has_file" type="boolean">
+  Whether a file exists for this field
+</ResponseField>
+
+<ResponseField name="file_name" type="string" nullable>
+  Filename if a file exists
+</ResponseField>
+
+<ResponseField name="file_url" type="string" nullable>
+  URL to access the file
+</ResponseField>
+
+<ResponseField name="model_type" type="string">
+  The model type (technical, vehicle, custody_chain, etc.)
+</ResponseField>
+
+<ResponseField name="object_id" type="integer">
+  The ID of the parent object
+</ResponseField>
+
+<ResponseExample>
+```json Document Tree Response
+{
+  "success": true,
+  "data": {
+    "technicals": [
+      {
+        "id": 15,
+        "label": "García Juan",
+        "dni": "12345678",
+        "detail_url": "/tecnicos/15/",
+        "files": [
+          {
+            "field_name": "dni_file",
+            "field_label": "Cédula",
+            "has_file": true,
+            "file_name": "dni_garcia.pdf",
+            "file_url": "/media/technicals/dni/dni_garcia.pdf",
+            "model_type": "technical",
+            "object_id": 15
+          },
+          {
+            "field_name": "license_file",
+            "field_label": "Licencia",
+            "has_file": false,
+            "file_name": null,
+            "file_url": null,
+            "model_type": "technical",
+            "object_id": 15
+          }
+        ],
+        "children": [
+          {
+            "id": 45,
+            "label": "Pase - Bloque A",
+            "type": "pass_technical",
+            "files": [
+              {
+                "field_name": "pass_file",
+                "field_label": "Pase",
+                "has_file": true,
+                "file_name": "pase_45.pdf",
+                "file_url": "/media/passes/pase_45.pdf",
+                "model_type": "pass_technical",
+                "object_id": 45
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "vehicles": [...],
+    "equipment": [...],
+    "projects": [
+      {
+        "id": 10,
+        "label": "Cliente ABC",
+        "detail_url": "/projects/10/",
+        "children": [
+          {
+            "id": 25,
+            "label": "Planilla #25 (2024-01-01 → 2024-01-31)",
+            "type": "sheet_project",
+            "files": [
+              {
+                "field_name": "sheet_project_file",
+                "field_label": "Archivo de Planilla",
+                "has_file": true,
+                "file_name": "planilla_25.pdf",
+                "file_url": "/media/sheets/planilla_25.pdf",
+                "model_type": "sheet_project",
+                "object_id": 25
+              }
+            ],
+            "children": [
+              {
+                "id": 101,
+                "label": "Cadena #001 - 2024-01-15",
+                "type": "custody_chain",
+                "files": [
+                  {
+                    "field_name": "custody_chain_file",
+                    "field_label": "Archivo Cadena de Custodia",
+                    "has_file": true,
+                    "file_name": "custody_001.pdf",
+                    "file_url": "/media/custody/custody_001.pdf",
+                    "model_type": "custody_chain",
+                    "object_id": 101
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 50,
+            "label": "Guía #GR-001 - 2024-01-20",
+            "type": "shipping_guide",
+            "files": [
+              {
+                "field_name": "shipping_guide_file",
+                "field_label": "Guía de Remisión",
+                "has_file": true,
+                "file_name": "guia_001.pdf",
+                "file_url": "/media/guides/guia_001.pdf",
+                "model_type": "shipping_guide",
+                "object_id": 50
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
+```
+</ResponseExample>
+
+## Get Project Document Tree
+
+<CodeGroup>
+```bash GET /api/load_files/project/<project_id>/tree/
+curl "https://api.mantis.example/api/load_files/project/45/tree/"
+```
+</CodeGroup>
+
+Returns a detailed document tree for a specific project, including all sheets, custody chains, and shipping guides with file statistics.
+
+### Path Parameters
+
+<ParamField path="project_id" type="integer" required>
+  The ID of the project
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <ResponseField name="project" type="object">
+    Basic project information
+    <ResponseField name="id" type="integer">
+      Project ID
+    </ResponseField>
+    <ResponseField name="label" type="string">
+      Project name (partner name)
+    </ResponseField>
+    <ResponseField name="detail_url" type="string">
+      URL to view project details
+    </ResponseField>
+  </ResponseField>
+
+  <ResponseField name="sheets" type="array">
+    Array of sheet projects with their custody chains
+    <ResponseField name="id" type="integer">
+      Sheet ID
+    </ResponseField>
+    <ResponseField name="label" type="string">
+      Sheet identifier
+    </ResponseField>
+    <ResponseField name="period" type="string">
+      Sheet period range
+    </ResponseField>
+    <ResponseField name="type" type="string">
+      Always "sheet_project"
+    </ResponseField>
+    <ResponseField name="files" type="array">
+      Array of file objects for the sheet
+    </ResponseField>
+    <ResponseField name="custody_chains" type="array">
+      Array of custody chain objects
+      <ResponseField name="id" type="integer">
+        Chain ID
+      </ResponseField>
+      <ResponseField name="label" type="string">
+        Chain identifier with consecutive number
+      </ResponseField>
+      <ResponseField name="date" type="string">
+        Activity date
+      </ResponseField>
+      <ResponseField name="files" type="array">
+        Array of file objects for the chain
+      </ResponseField>
+    </ResponseField>
+  </ResponseField>
+
+  <ResponseField name="shipping_guides" type="array">
+    Array of shipping guides for the project
+    <ResponseField name="id" type="integer">
+      Guide ID
+    </ResponseField>
+    <ResponseField name="label" type="string">
+      Guide identifier with number
+    </ResponseField>
+    <ResponseField name="date" type="string">
+      Issue date
+    </ResponseField>
+    <ResponseField name="files" type="array">
+      Array of file objects for the guide
+    </ResponseField>
+  </ResponseField>
+
+  <ResponseField name="stats" type="object">
+    Document statistics for the project
+    <ResponseField name="total" type="integer">
+      Total number of file fields in the project
+    </ResponseField>
+    <ResponseField name="loaded" type="integer">
+      Number of file fields that have files uploaded
+    </ResponseField>
+  </ResponseField>
+</ResponseField>
+
+<ResponseExample>
+```json Project Tree Response
+{
+  "success": true,
+  "data": {
+    "project": {
+      "id": 45,
+      "label": "Cliente ABC",
+      "detail_url": "/projects/45/"
+    },
+    "sheets": [
+      {
+        "id": 12,
+        "label": "Planilla #12",
+        "period": "2024-01-01 → 2024-01-31",
+        "type": "sheet_project",
+        "files": [
+          {
+            "field_name": "sheet_project_file",
+            "field_label": "Archivo de Planilla",
+            "has_file": true,
+            "file_name": "planilla_12.pdf",
+            "file_url": "/media/sheets/planilla_12.pdf",
+            "model_type": "sheet_project",
+            "object_id": 12
+          },
+          {
+            "field_name": "certificate_final_disposition_file",
+            "field_label": "Certificado Disposición Final",
+            "has_file": false,
+            "file_name": null,
+            "file_url": null,
+            "model_type": "sheet_project",
+            "object_id": 12
+          },
+          {
+            "field_name": "invoice_file",
+            "field_label": "Archivo de Factura",
+            "has_file": true,
+            "file_name": "invoice_12.pdf",
+            "file_url": "/media/invoices/invoice_12.pdf",
+            "model_type": "sheet_project",
+            "object_id": 12
+          }
+        ],
+        "custody_chains": [
+          {
+            "id": 101,
+            "label": "Cadena #001",
+            "date": "2024-01-15",
+            "type": "custody_chain",
+            "files": [
+              {
+                "field_name": "custody_chain_file",
+                "field_label": "Archivo Cadena de Custodia",
+                "has_file": true,
+                "file_name": "custody_001.pdf",
+                "file_url": "/media/custody/custody_001.pdf",
+                "model_type": "custody_chain",
+                "object_id": 101
+              }
+            ]
+          },
+          {
+            "id": 102,
+            "label": "Cadena #002",
+            "date": "2024-01-16",
+            "type": "custody_chain",
+            "files": [
+              {
+                "field_name": "custody_chain_file",
+                "field_label": "Archivo Cadena de Custodia",
+                "has_file": false,
+                "file_name": null,
+                "file_url": null,
+                "model_type": "custody_chain",
+                "object_id": 102
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "shipping_guides": [
+      {
+        "id": 50,
+        "label": "Guía #GR-001",
+        "date": "2024-01-20",
+        "type": "shipping_guide",
+        "files": [
+          {
+            "field_name": "shipping_guide_file",
+            "field_label": "Guía de Remisión",
+            "has_file": true,
+            "file_name": "guide_001.pdf",
+            "file_url": "/media/guides/guide_001.pdf",
+            "model_type": "shipping_guide",
+            "object_id": 50
+          }
+        ]
+      }
+    ],
+    "stats": {
+      "total": 5,
+      "loaded": 4
+    }
+  }
+}
+```
+</ResponseExample>
+
+## Hierarchy Structure
+
+The document tree follows these hierarchical relationships:
+
+### Technicals Hierarchy
+```
+Technical
+├── dni_file
+├── license_file
+├── vaccine_certificate_file
+└── Children
+    ├── Pass Technical (pass_file)
+    └── Vaccination Record (vaccine_file)
+```
+
+### Vehicles Hierarchy
+```
+Vehicle
+├── vehicle_image
+├── poliza_file
+├── matricula_file
+├── rev_tec_file
+└── Children
+    ├── Pass Vehicle (pass_file)
+    └── Certification Vehicle (certification_file)
+```
+
+### Projects Hierarchy
+```
+Project
+└── Children
+    ├── Sheet Project
+    │   ├── sheet_project_file
+    │   ├── certificate_final_disposition_file
+    │   ├── invoice_file
+    │   └── Children
+    │       └── Custody Chain (custody_chain_file)
+    └── Shipping Guide (shipping_guide_file)
+```
+
+## Use Cases
+
+### Build a File Browser UI
+Use the system-wide tree to create a navigation interface that allows users to browse all documents organized by category.
+
+### Project Document Dashboard
+Use the project-specific tree to show document upload progress and identify missing files.
+
+### Document Completion Report
+Use the `stats` object from the project tree to calculate completion percentage:
+```javascript
+const completionRate = (data.stats.loaded / data.stats.total) * 100;
+```
+
+### Integrate with File Upload
+Combine tree endpoints with the [file upload API](/api/documents/upload) to build complete document management interfaces:
+```javascript
+// Get the tree to show current state
+const tree = await fetch('/api/load_files/project/45/tree/');
+
+// Upload a missing file
+const formData = new FormData();
+formData.append('model_type', 'custody_chain');
+formData.append('object_id', '101');
+formData.append('field_name', 'custody_chain_file');
+formData.append('file', file);
+await fetch('/api/load_files/', { method: 'POST', body: formData });
+
+// Refresh the tree to show updated state
+const updatedTree = await fetch('/api/load_files/project/45/tree/');
+```

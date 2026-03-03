@@ -1,80 +1,373 @@
 ---
-title: "Quickstart"
-description: "Start building awesome documentation in minutes"
+title: Quickstart Guide
+description: Get up and running with Mantis in under 10 minutes
 ---
 
-## Get started in three steps
+# Quickstart Guide
 
-Get your documentation site running locally and make your first customization.
-
-### Step 1: Set up your local environment
-
-<AccordionGroup>
-  <Accordion icon="copy" title="Clone your docs locally">
-    During the onboarding process, you created a GitHub repository with your docs content if you didn't already have one. You can find a link to this repository in your [dashboard](https://dashboard.mintlify.com).
-    
-    To clone the repository locally so that you can make and preview changes to your docs, follow the [Cloning a repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) guide in the GitHub docs.
-  </Accordion>
-  <Accordion icon="rectangle-terminal" title="Start the preview server">
-    1. Install the Mintlify CLI: `npm i -g mint`
-    2. Navigate to your docs directory and run: `mint dev`
-    3. Open `http://localhost:3000` to see your docs live!
-    
-    <Tip>Your preview updates automatically as you edit files.</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 2: Deploy your changes
-
-<AccordionGroup>
-  <Accordion icon="github" title="Install our GitHub app">
-    Install the Mintlify GitHub app from your [dashboard](https://dashboard.mintlify.com/settings/organization/github-app).
-    
-    Our GitHub app automatically deploys your changes to your docs site, so you don't need to manage deployments yourself.
-</Accordion>
-<Accordion icon="palette" title="Update your site name and colors">
-    For a first change, let's update the name and colors of your docs site.
-
-    1. Open `docs.json` in your editor.
-    2. Change the `"name"` field to your project name.
-    3. Update the `"colors"` to match your brand.
-    4. Save and see your changes instantly at `http://localhost:3000`.
-
-    <Tip>Try changing the primary color to see an immediate difference!</Tip>
-  </Accordion>
-</AccordionGroup>
-
-### Step 3: Go live
-
-<Accordion icon="rocket" title="Publish your docs">
-  1. Commit and push your changes.
-  2. Your docs will update and be live in moments!
-</Accordion>
-
-## Next steps
-
-Now that you have your docs running, explore these key features:
-
-<CardGroup cols={2}>
-
-<Card title="Write Content" icon="pen-to-square" href="/essentials/markdown">
-  Learn MDX syntax and start writing your documentation.
-</Card>
-
-<Card title="Customize style" icon="palette" href="/essentials/settings">
-  Make your docs match your brand perfectly.
-</Card>
-
-<Card title="Add code examples" icon="square-code" href="/essentials/code">
-  Include syntax-highlighted code blocks.
-</Card>
-
-<Card title="API documentation" icon="code" href="/api-reference/introduction">
-  Auto-generate API docs from OpenAPI specs.
-</Card>
-
-</CardGroup>
+This guide will help you get started with Mantis quickly. You'll create your first project, add equipment resources, and generate a work order.
 
 <Note>
-  **Need help?** See our [full documentation](https://mintlify.com/docs) or join our [community](https://mintlify.com/community).
+  This guide assumes you already have Mantis installed and running. If not, see the [Installation Guide](/installation) first.
+</Note>
+
+## Prerequisites
+
+- Mantis backend running at `http://localhost:8000`
+- Mantis frontend running at `http://localhost:5173`
+- User account created (superuser recommended for first-time setup)
+
+## Step 1: Access the Application
+
+<Steps>
+  <Step title="Navigate to Mantis">
+    Open your browser and go to `http://localhost:5173`
+    
+    <Note>
+      The frontend will automatically connect to the Django backend at `http://localhost:8000`
+    </Note>
+  </Step>
+
+  <Step title="Login">
+    Use the credentials you created during installation:
+    
+    - Email: Your superuser email
+    - Password: Your superuser password
+    
+    **Source:** `accounts/models/CustomUserModel.py` (Custom user model with email authentication)
+  </Step>
+</Steps>
+
+## Step 2: Create Your First Partner
+
+Partners are the clients or companies for whom you manage projects.
+
+<Steps>
+  <Step title="Access Django Admin">
+    Navigate to `http://localhost:8000/admin` and log in with your superuser credentials.
+  </Step>
+
+  <Step title="Create a Partner">
+    1. Click on **Partners** under the **Projects** section
+    2. Click **Add Partner**
+    3. Fill in the partner details:
+       - **Name**: Client company name
+       - **RUC/ID**: Tax identification number
+       - **Contact information**: Email, phone, address
+    4. Click **Save**
+    
+    **Source:** `projects/models/Partner.py`
+  </Step>
+</Steps>
+
+## Step 3: Create Equipment Resources
+
+Before assigning resources to projects, you need to add equipment to your inventory.
+
+<Steps>
+  <Step title="Navigate to Equipment">
+    In Django Admin, go to **Equipment** > **Resource Items**
+  </Step>
+
+  <Step title="Add a Resource">
+    Click **Add Resource Item** and fill in the required fields:
+    
+    <CodeGroup>
+    ```json Example: Portable Toilet
+    {
+      "code": "BSH-001",
+      "name": "Bateria Sanitaria Hombre",
+      "serial_number": "PEISOL-BSH-2024-001",
+      "equipment_type": "BATHROOM_MEN",
+      "brand": "PEISOL",
+      "model": "Standard 2024",
+      "status": "DISPONIBLE",
+      "date_purchase": "2024-01-15",
+      "base_price": "150.00",
+      "height": 220,
+      "width": 120,
+      "depth": 120,
+      "weight": 85
+    }
+    ```
+    
+    ```json Example: Water Treatment Plant
+    {
+      "code": "PTA-001",
+      "name": "Planta de Tratamiento 15M3",
+      "serial_number": "PEISOL-PTA-2024-001",
+      "equipment_type": "WATER_TREATMENT_PLANT",
+      "brand": "PEISOL",
+      "capacity": "15M3",
+      "status": "DISPONIBLE",
+      "date_purchase": "2024-02-01",
+      "base_price": "500.00"
+    }
+    ```
+    </CodeGroup>
+    
+    <Note>
+      Equipment status options: `DISPONIBLE`, `RENTADO`, `EN REPARACION`, `FUERA DE SERVICIO`
+      
+      **Source:** `equipment/models/ResourceItem.py`
+    </Note>
+  </Step>
+
+  <Step title="Add Type-Specific Details">
+    Different equipment types have specific fields:
+    
+    **Bathrooms** (Bateria Sanitaria):
+    - Paper dispenser, soap dispenser, urinals, seats, etc.
+    
+    **Water Treatment Plants**:
+    - Plant capacity, blower motor type, electrical panel, motor guard
+    
+    **Tanks**:
+    - Capacity in cubic meters, material, pressure rating
+    
+    **Source:** `docs/EquiposDocs.md:28-50`
+  </Step>
+</Steps>
+
+## Step 4: Create Your First Project
+
+<Steps>
+  <Step title="Navigate to Projects">
+    In Django Admin, go to **Projects** > **Projects**
+  </Step>
+
+  <Step title="Create the Project">
+    Click **Add Project** and fill in the details:
+    
+    ```json Example Project
+    {
+      "partner": "Select the partner you created",
+      "location": "Campamento Norte",
+      "cardinal_point": "NORTE",
+      "contact_name": "Juan Perez",
+      "contact_phone": "0987654321",
+      "start_date": "2024-03-01",
+      "end_date": "2024-12-31",
+      "is_closed": false
+    }
+    ```
+    
+    <Warning>
+      Projects marked as `is_closed = true` cannot have new resources added. They preserve historical data without allowing modifications.
+      
+      **Source:** `projects/models/Project.py:80`
+    </Warning>
+  </Step>
+</Steps>
+
+## Step 5: Assign Resources to Project
+
+Now let's add equipment to your project using the API.
+
+<Steps>
+  <Step title="Open the Mantis Application">
+    Navigate to `http://localhost:5173` and select your project from the projects list.
+  </Step>
+
+  <Step title="Add Resources via UI">
+    1. Click on the **Recursos** (Resources) tab
+    2. Click **Agregar Recurso** (Add Resource)
+    3. Fill in the resource form:
+       - **Resource**: Select from available equipment
+       - **Start Date**: When the equipment will be deployed
+       - **End Date**: When it will be returned (optional)
+       - **Rental Cost**: Monthly or daily rental price
+       - **Maintenance Cost**: Cost per maintenance cycle
+       - **Maintenance Frequency**: Days between maintenance
+    4. Click **Guardar** (Save)
+    
+    **Source:** `components/projects/ResourceForm.vue:8`
+  </Step>
+
+  <Step title="Alternative: Use the API">
+    You can also add resources via the REST API:
+    
+    <CodeGroup>
+    ```bash cURL
+    curl -X POST http://localhost:8000/api/projects/resources/add/ \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+      -d '{
+        "id_project": 1,
+        "id_resource": 1,
+        "start_date": "2024-03-15",
+        "end_date": "2024-12-31",
+        "maintenance_cost": "50.00",
+        "renting_cost": "150.00",
+        "maintenance_frequency": 30
+      }'
+    ```
+    
+    ```python Python (requests)
+    import requests
+    
+    response = requests.post(
+        'http://localhost:8000/api/projects/resources/add/',
+        headers={
+            'Authorization': f'Bearer {jwt_token}',
+            'Content-Type': 'application/json'
+        },
+        json={
+            'id_project': 1,
+            'id_resource': 1,
+            'start_date': '2024-03-15',
+            'end_date': '2024-12-31',
+            'maintenance_cost': '50.00',
+            'renting_cost': '150.00',
+            'maintenance_frequency': 30
+        }
+    )
+    ```
+    </CodeGroup>
+    
+    **Source:** `api/projects.py:18` (AddResourceProjectAPI)
+  </Step>
+
+  <Step title="Verify Resource Assignment">
+    The resource status will automatically change:
+    - **Status**: `DISPONIBLE` → `RENTADO`
+    - **Location**: Updated to project location
+    - **Project ID**: Set to current project
+    - **Dates**: Start and end dates recorded
+    
+    **Source:** `api/projects/AddResourceProjectAPI.py`
+  </Step>
+</Steps>
+
+## Step 6: Create a Work Order
+
+Work orders (Sheet Projects) track daily activities and equipment usage.
+
+<Steps>
+  <Step title="Navigate to Work Sheets">
+    In the Mantis application, click on the **Planillas** (Work Sheets) tab for your project.
+  </Step>
+
+  <Step title="Create Work Sheet">
+    1. Click **Nueva Planilla** (New Work Sheet)
+    2. Fill in the work sheet details:
+       - **Date**: Work order date
+       - **Observations**: Any notes about the work
+       - **Resources**: Select which equipment was used
+       - **Days**: Number of days for each resource
+    3. Click **Guardar** (Save)
+    
+    **Source:** `views/sheet_projects/SheetProjectForm.vue:7`
+  </Step>
+
+  <Step title="Generate PDF Report">
+    Once saved, you can generate a PDF report:
+    
+    ```bash
+    GET http://localhost:8000/reports/worksheet/{sheet_id}/
+    ```
+    
+    This generates a formatted worksheet PDF for printing or client delivery.
+    
+    **Source:** `AppConfig.js:33`
+  </Step>
+</Steps>
+
+## Step 7: Create a Custody Chain
+
+Custody chains document equipment handoffs between parties.
+
+<Steps>
+  <Step title="Navigate to Custody Chains">
+    From the work sheet view, you can create custody chains for equipment transfers.
+  </Step>
+
+  <Step title="Create Custody Chain">
+    Use the API to create a custody chain:
+    
+    ```bash
+    POST http://localhost:8000/api/workorders/custody_chain/create/
+    ```
+    
+    Required fields:
+    - `sheet_project_id`: Associated work sheet
+    - `transfer_date`: Date of equipment transfer
+    - `delivered_by`: Person delivering equipment
+    - `received_by`: Person receiving equipment
+    - `details`: Array of equipment items with quantities
+    
+    **Source:** `api/workorders/CreateCustodyChain.py:32`
+  </Step>
+
+  <Step title="Generate Custody Chain PDF">
+    Generate the official custody chain document:
+    
+    ```bash
+    GET http://localhost:8000/reports/custody-chain/{custody_chain_id}/
+    ```
+    
+    **Source:** `AppConfig.js:31`
+  </Step>
+</Steps>
+
+## Quick Reference: Common API Endpoints
+
+<CodeGroup>
+```bash Get Available Resources
+GET /api/projects/resources/available/
+?search=BSH
+&equipment_type=BATHROOM_MEN
+&status=DISPONIBLE
+```
+
+```bash Get Project Resources
+GET /api/projects/{project_id}/resources/
+```
+
+```bash Get All Work Sheets for Project
+GET /api/workorders/sheets/project/{project_id}/
+```
+
+```bash Release Resource from Project
+POST /api/projects/resources/release/
+{
+  "id_project_resource": 1,
+  "reason": "Project completed"
+}
+```
+</CodeGroup>
+
+**Source:** `api/urls.py:18-41`
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Core Concepts" icon="book" href="/core-concepts/architecture">
+    Learn about projects, resources, and work orders in depth
+  </Card>
+  <Card title="API Reference" icon="code" href="/api/introduction">
+    Explore all available API endpoints
+  </Card>
+  <Card title="Configuration" icon="gear" href="/admin/configuration">
+    Customize Mantis for your organization
+  </Card>
+  <Card title="Deployment" icon="rocket" href="/admin/deployment">
+    Deploy Mantis to production
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<Warning>
+  **Common Issues:**
+  
+  - **CORS errors**: Ensure your frontend URL is in `CSRF_TRUSTED_ORIGINS` in settings.py
+  - **Resource already rented**: Check the resource status before assigning to a project
+  - **Cannot close project**: Verify all work sheets are completed and custody chains are finalized
+  
+  **Source:** `peisol/settings.py:68-84`
+</Warning>
+
+<Note>
+  For production deployment, see the [Installation Guide](/installation) for proper database configuration, secret key management, and environment variables.
 </Note>

@@ -1,0 +1,543 @@
+---
+title: 'Calendar Events'
+description: 'API endpoints for managing calendar events, scheduled activities, and resource planning'
+---
+
+## Overview
+
+Calendar events are used to schedule and track maintenance, installations, inspections, and other activities related to equipment and projects. Events can include multiple resource items and support drag-and-drop rescheduling.
+
+## List Calendar Events
+
+<CodeGroup>
+```bash GET /api/calendar/events/
+GET /api/calendar/events/?project_id=123&month=3&year=2024
+```
+</CodeGroup>
+
+Retrieve all calendar events for a specific project, optionally filtered by month and year.
+
+### Query Parameters
+
+<ParamField query="project_id" type="integer" required>
+  ID of the project to filter events
+</ParamField>
+
+<ParamField query="month" type="integer">
+  Month to filter events (1-12)
+</ParamField>
+
+<ParamField query="year" type="integer">
+  Year to filter events
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the request was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of calendar event objects
+  
+  <Expandable title="Event object properties">
+    <ResponseField name="id" type="integer">
+      Unique identifier for the event
+    </ResponseField>
+    
+    <ResponseField name="project_id" type="integer">
+      ID of the associated project
+    </ResponseField>
+    
+    <ResponseField name="project_name" type="string">
+      Name of the project partner/client
+    </ResponseField>
+    
+    <ResponseField name="title" type="string">
+      Event title
+    </ResponseField>
+    
+    <ResponseField name="description" type="string">
+      Detailed description of the event
+    </ResponseField>
+    
+    <ResponseField name="event_type" type="string">
+      Type of event. Options: `MAINTENANCE`, `INSTALLATION`, `REMOVAL`, `INSPECTION`, `OTHER`
+    </ResponseField>
+    
+    <ResponseField name="priority" type="string">
+      Event priority. Options: `LOW`, `MEDIUM`, `HIGH`, `URGENT`
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+      Current status. Options: `SCHEDULED`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`
+    </ResponseField>
+    
+    <ResponseField name="start_date" type="string">
+      Event start date (ISO 8601 format)
+    </ResponseField>
+    
+    <ResponseField name="end_date" type="string">
+      Event end date (ISO 8601 format)
+    </ResponseField>
+    
+    <ResponseField name="start_time" type="string">
+      Event start time (HH:MM format)
+    </ResponseField>
+    
+    <ResponseField name="end_time" type="string">
+      Event end time (HH:MM format)
+    </ResponseField>
+    
+    <ResponseField name="responsible_technical_id" type="integer">
+      ID of the responsible technical person
+    </ResponseField>
+    
+    <ResponseField name="responsible_technical_name" type="string">
+      Full name of the responsible technical person
+    </ResponseField>
+    
+    <ResponseField name="color" type="string">
+      Color code for calendar display (hex format)
+    </ResponseField>
+    
+    <ResponseField name="notes" type="string">
+      Additional notes
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl -X GET "https://api.example.com/api/calendar/events/?project_id=123&month=3&year=2024" \
+  -H "Content-Type: application/json"
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": [
+    {
+      "id": 89,
+      "project_id": 123,
+      "project_name": "Petroamazonas EP",
+      "title": "Preventive Maintenance - Rig 05",
+      "description": "Scheduled preventive maintenance for hydraulic systems",
+      "event_type": "MAINTENANCE",
+      "event_type_display": "Mantenimiento",
+      "priority": "HIGH",
+      "priority_display": "Alta",
+      "status": "SCHEDULED",
+      "status_display": "Programado",
+      "start_date": "2024-03-20",
+      "end_date": "2024-03-21",
+      "start_time": "08:00",
+      "end_time": "17:00",
+      "responsible_technical_id": 15,
+      "responsible_technical_name": "Maria Lopez",
+      "color": "#FF6B6B",
+      "notes": "Coordinate with field supervisor 24h in advance"
+    }
+  ]
+}
+```
+</ResponseExample>
+
+---
+
+## Get Calendar Event
+
+<CodeGroup>
+```bash GET /api/calendar/events/{event_id}/
+GET /api/calendar/events/89/
+```
+</CodeGroup>
+
+Retrieve a single calendar event by ID with full details including associated resources.
+
+### Path Parameters
+
+<ParamField path="event_id" type="integer" required>
+  ID of the event to retrieve
+</ParamField>
+
+### Response
+
+Returns a single event object including a `details` array with resource information.
+
+<ResponseField name="details" type="array">
+  Array of event detail objects (resources/equipment involved)
+  
+  <Expandable title="Detail object properties">
+    <ResponseField name="id" type="integer">
+      Detail record ID
+    </ResponseField>
+    
+    <ResponseField name="resource_item_id" type="integer">
+      ID of the resource/equipment
+    </ResponseField>
+    
+    <ResponseField name="resource_item_name" type="string">
+      Name of the resource/equipment
+    </ResponseField>
+    
+    <ResponseField name="resource_item_code" type="string">
+      Equipment code
+    </ResponseField>
+    
+    <ResponseField name="description" type="string">
+      Description of work to be performed on this resource
+    </ResponseField>
+    
+    <ResponseField name="cost" type="number">
+      Associated cost for this resource
+    </ResponseField>
+    
+    <ResponseField name="is_completed" type="boolean">
+      Whether work on this resource is completed
+    </ResponseField>
+    
+    <ResponseField name="completed_date" type="string">
+      Date when work was completed (ISO 8601 format)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl -X GET "https://api.example.com/api/calendar/events/89/" \
+  -H "Content-Type: application/json"
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": {
+    "id": 89,
+    "title": "Preventive Maintenance - Rig 05",
+    "event_type": "MAINTENANCE",
+    "start_date": "2024-03-20",
+    "details": [
+      {
+        "id": 201,
+        "resource_item_id": 345,
+        "resource_item_name": "Hydraulic Pump HP-2000",
+        "resource_item_code": "EQ-2024-345",
+        "description": "Oil change and seal inspection",
+        "cost": 250.00,
+        "is_completed": false,
+        "completed_date": null
+      }
+    ]
+  }
+}
+```
+</ResponseExample>
+
+---
+
+## Create Calendar Event
+
+<CodeGroup>
+```bash POST /api/calendar/events/
+POST /api/calendar/events/
+```
+</CodeGroup>
+
+Create a new calendar event with optional resource details.
+
+### Body Parameters
+
+<ParamField body="project_id" type="integer" required>
+  ID of the project for this event
+</ParamField>
+
+<ParamField body="title" type="string" required>
+  Event title
+</ParamField>
+
+<ParamField body="start_date" type="string" required>
+  Event start date (format: YYYY-MM-DD)
+</ParamField>
+
+<ParamField body="end_date" type="string">
+  Event end date (format: YYYY-MM-DD)
+</ParamField>
+
+<ParamField body="description" type="string">
+  Detailed description of the event
+</ParamField>
+
+<ParamField body="event_type" type="string" default="MAINTENANCE">
+  Type of event. Options: `MAINTENANCE`, `INSTALLATION`, `REMOVAL`, `INSPECTION`, `OTHER`
+</ParamField>
+
+<ParamField body="priority" type="string" default="MEDIUM">
+  Event priority. Options: `LOW`, `MEDIUM`, `HIGH`, `URGENT`
+</ParamField>
+
+<ParamField body="start_time" type="string">
+  Event start time (format: HH:MM or HH:MM:SS)
+</ParamField>
+
+<ParamField body="end_time" type="string">
+  Event end time (format: HH:MM or HH:MM:SS)
+</ParamField>
+
+<ParamField body="responsible_technical_id" type="integer">
+  ID of the technical person responsible for this event
+</ParamField>
+
+<ParamField body="color" type="string">
+  Color code for calendar display (e.g., "#FF6B6B")
+</ParamField>
+
+<ParamField body="notes" type="string">
+  Additional notes
+</ParamField>
+
+<ParamField body="details" type="array">
+  Array of resource/equipment items involved in this event
+  
+  <Expandable title="Detail object properties">
+    <ParamField body="resource_item_id" type="integer" required>
+      ID of the resource/equipment
+    </ParamField>
+    
+    <ParamField body="project_resource_item_id" type="integer">
+      ID of the project resource item (if linking to project assignment)
+    </ParamField>
+    
+    <ParamField body="description" type="string">
+      Description of work to be performed
+    </ParamField>
+    
+    <ParamField body="cost" type="number" default="0">
+      Associated cost
+    </ParamField>
+    
+    <ParamField body="is_completed" type="boolean" default="false">
+      Whether work is completed
+    </ParamField>
+    
+    <ParamField body="completed_date" type="string">
+      Completion date (format: YYYY-MM-DD)
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the event was created successfully
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success message
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  The created event object
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl -X POST "https://api.example.com/api/calendar/events/" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_id": 123,
+    "title": "Preventive Maintenance - Rig 05",
+    "description": "Scheduled preventive maintenance for hydraulic systems",
+    "event_type": "MAINTENANCE",
+    "priority": "HIGH",
+    "start_date": "2024-03-20",
+    "end_date": "2024-03-21",
+    "start_time": "08:00",
+    "end_time": "17:00",
+    "responsible_technical_id": 15,
+    "color": "#FF6B6B",
+    "details": [
+      {
+        "resource_item_id": 345,
+        "description": "Oil change and seal inspection",
+        "cost": 250.00
+      }
+    ]
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json 201 Created
+{
+  "success": true,
+  "message": "Evento de calendario creado exitosamente",
+  "data": {
+    "id": 89,
+    "title": "Preventive Maintenance - Rig 05",
+    "status": "SCHEDULED",
+    "start_date": "2024-03-20",
+    "details": [
+      {
+        "id": 201,
+        "resource_item_id": 345,
+        "description": "Oil change and seal inspection",
+        "cost": 250.00
+      }
+    ]
+  }
+}
+```
+
+```json 400 Error
+{
+  "success": false,
+  "error": "El campo project_id es requerido"
+}
+```
+</ResponseExample>
+
+---
+
+## Update Calendar Event
+
+<CodeGroup>
+```bash PUT /api/calendar/events/{event_id}/
+PUT /api/calendar/events/89/
+```
+</CodeGroup>
+
+Update an existing calendar event and its details.
+
+### Path Parameters
+
+<ParamField path="event_id" type="integer" required>
+  ID of the event to update
+</ParamField>
+
+### Body Parameters
+
+All parameters from the create endpoint are optional. Only provided fields will be updated.
+
+<RequestExample>
+```bash cURL
+curl -X PUT "https://api.example.com/api/calendar/events/89/" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "priority": "URGENT",
+    "notes": "Equipment failure requires immediate attention",
+    "status": "IN_PROGRESS"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "message": "Evento de calendario actualizado exitosamente",
+  "data": {
+    "id": 89,
+    "priority": "URGENT",
+    "status": "IN_PROGRESS"
+  }
+}
+```
+</ResponseExample>
+
+---
+
+## Move Calendar Event (Drag & Drop)
+
+<CodeGroup>
+```bash PATCH /api/calendar/events/{event_id}/move/
+PATCH /api/calendar/events/89/move/
+```
+</CodeGroup>
+
+Move an event to a different date while preserving duration. This endpoint is optimized for drag-and-drop calendar operations.
+
+### Path Parameters
+
+<ParamField path="event_id" type="integer" required>
+  ID of the event to move
+</ParamField>
+
+### Body Parameters
+
+<ParamField body="start_date" type="string" required>
+  New start date (format: YYYY-MM-DD)
+</ParamField>
+
+<ParamField body="end_date" type="string">
+  New end date (format: YYYY-MM-DD). If not provided, duration is preserved automatically.
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X PATCH "https://api.example.com/api/calendar/events/89/move/" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "start_date": "2024-03-25"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "message": "Evento movido exitosamente",
+  "data": {
+    "id": 89,
+    "start_date": "2024-03-25",
+    "end_date": "2024-03-26"
+  }
+}
+```
+</ResponseExample>
+
+---
+
+## Delete Calendar Event
+
+<CodeGroup>
+```bash DELETE /api/calendar/events/{pk}/delete/
+DELETE /api/calendar/events/89/delete/
+```
+</CodeGroup>
+
+Soft delete a calendar event (marks as deleted, doesn't remove from database). Only events with status `SCHEDULED` or `CANCELLED` can be deleted.
+
+### Path Parameters
+
+<ParamField path="pk" type="integer" required>
+  ID of the event to delete
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X DELETE "https://api.example.com/api/calendar/events/89/delete/" \
+  -H "Content-Type: application/json"
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "message": "Evento \"Preventive Maintenance - Rig 05\" eliminado exitosamente"
+}
+```
+
+```json 400 Error
+{
+  "success": false,
+  "error": "No se puede eliminar un evento en estado Completado. Solo eventos Programados o Cancelados pueden eliminarse."
+}
+```
+</ResponseExample>

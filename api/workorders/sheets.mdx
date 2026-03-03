@@ -1,0 +1,439 @@
+---
+title: Work Order Sheets
+description: Endpoints for managing work order sheets (planillas)
+---
+
+## Get All Sheets by Project
+
+Retrieve all work order sheets for a specific project.
+
+<CodeGroup>
+```bash cURL
+curl -X GET https://api.mantis.com/api/workorders/sheets/project/{project_id}/ \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+</CodeGroup>
+
+### Path Parameters
+
+<ParamField path="project_id" type="integer" required>
+  ID of the project
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the request was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of sheet objects
+  
+  <Expandable title="Sheet Object">
+    <ResponseField name="id" type="integer">
+      Unique identifier for the sheet
+    </ResponseField>
+    
+    <ResponseField name="series_code" type="string">
+      Auto-generated series code (e.g., "HT-001-2024-0001")
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+      Sheet status: `IN_PROGRESS`, `LIQUIDATED`, `INVOICED`, or `CANCELLED`
+    </ResponseField>
+    
+    <ResponseField name="issue_date" type="string">
+      ISO 8601 date when the sheet was issued
+    </ResponseField>
+    
+    <ResponseField name="period_start" type="string">
+      ISO 8601 start date of the billing period
+    </ResponseField>
+    
+    <ResponseField name="period_end" type="string">
+      ISO 8601 end date of the billing period
+    </ResponseField>
+    
+    <ResponseField name="service_type" type="string">
+      Type of service provided
+    </ResponseField>
+    
+    <ResponseField name="total_gallons" type="number">
+      Total gallons processed
+    </ResponseField>
+    
+    <ResponseField name="total_barrels" type="number">
+      Total barrels processed
+    </ResponseField>
+    
+    <ResponseField name="total_cubic_meters" type="number">
+      Total cubic meters processed
+    </ResponseField>
+    
+    <ResponseField name="subtotal" type="number">
+      Subtotal amount before tax
+    </ResponseField>
+    
+    <ResponseField name="tax_amount" type="number">
+      Tax amount (15%)
+    </ResponseField>
+    
+    <ResponseField name="total" type="number">
+      Total amount including tax
+    </ResponseField>
+    
+    <ResponseField name="contact_reference" type="string">
+      Contact person reference
+    </ResponseField>
+    
+    <ResponseField name="contact_phone_reference" type="string">
+      Contact phone reference
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Create Work Sheet
+
+Create a new work order sheet for a project.
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.mantis.com/api/workorders/sheets/create/ \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "project_id": 1,
+    "period_start": "2024-01-01",
+    "period_end": "2024-01-31",
+    "service_type": "ALQUILER Y MANTENIMIENTO",
+    "contact_reference": "John Doe",
+    "contact_phone_reference": "+593-99-123-4567",
+    "details": [
+      {
+        "resource_item_id": 5,
+        "project_resource_id": 12,
+        "type_resource": "EQUIPO",
+        "detailed_description": "Vacuum Truck",
+        "cost": 150.00
+      }
+    ]
+  }'
+```
+</CodeGroup>
+
+### Request Body
+
+<ParamField body="project_id" type="integer" required>
+  ID of the project
+</ParamField>
+
+<ParamField body="period_start" type="string" required>
+  Start date of billing period (YYYY-MM-DD format)
+</ParamField>
+
+<ParamField body="period_end" type="string" required>
+  End date of billing period (YYYY-MM-DD format). Must be after `period_start` and cannot exceed project end date.
+</ParamField>
+
+<ParamField body="service_type" type="string" default="ALQUILER Y MANTENIMIENTO">
+  Type of service being provided
+</ParamField>
+
+<ParamField body="status" type="string" default="IN_PROGRESS">
+  Initial status: `IN_PROGRESS`, `LIQUIDATED`, `INVOICED`, or `CANCELLED`
+</ParamField>
+
+<ParamField body="issue_date" type="string">
+  Date when the sheet was issued (YYYY-MM-DD)
+</ParamField>
+
+<ParamField body="client_po_reference" type="string">
+  Client purchase order reference number
+</ParamField>
+
+<ParamField body="contact_reference" type="string">
+  Contact person name
+</ParamField>
+
+<ParamField body="contact_phone_reference" type="string">
+  Contact phone number
+</ParamField>
+
+<ParamField body="final_disposition_reference" type="string">
+  Final disposition reference
+</ParamField>
+
+<ParamField body="invoice_reference" type="string">
+  Invoice reference number
+</ParamField>
+
+<ParamField body="details" type="array">
+  Array of resource items to include in the sheet
+  
+  <Expandable title="Detail Object">
+    <ParamField body="resource_item_id" type="integer" required>
+      ID of the resource item
+    </ParamField>
+    
+    <ParamField body="project_resource_id" type="integer">
+      ID of the project resource item (if applicable)
+    </ParamField>
+    
+    <ParamField body="type_resource" type="string">
+      Type of resource: `EQUIPO` or `SERVICIO`
+    </ParamField>
+    
+    <ParamField body="detailed_description" type="string">
+      Detailed description of the resource/service
+    </ParamField>
+    
+    <ParamField body="cost" type="number">
+      Unit price/cost for the resource
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the sheet was created successfully
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success or error message
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Created sheet information
+  
+  <Expandable title="Data Object">
+    <ResponseField name="id" type="integer">
+      Unique identifier for the created sheet
+    </ResponseField>
+    
+    <ResponseField name="series_code" type="string">
+      Auto-generated series code
+    </ResponseField>
+    
+    <ResponseField name="project_id" type="integer">
+      Associated project ID
+    </ResponseField>
+    
+    <ResponseField name="period_start" type="string">
+      Start date of billing period
+    </ResponseField>
+    
+    <ResponseField name="period_end" type="string">
+      End date of billing period
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+      Current status of the sheet
+    </ResponseField>
+    
+    <ResponseField name="details_count" type="integer">
+      Number of detail items created
+    </ResponseField>
+    
+    <ResponseField name="details" type="array">
+      Array of created detail items with their IDs and information
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Update Work Sheet
+
+Update an existing work order sheet.
+
+<CodeGroup>
+```bash cURL
+curl -X PUT https://api.mantis.com/api/workorders/sheets/update/ \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": 1,
+    "period_start": "2024-01-01",
+    "period_end": "2024-01-31",
+    "service_type": "ALQUILER Y MANTENIMIENTO",
+    "status": "LIQUIDATED",
+    "contact_reference": "Jane Smith"
+  }'
+```
+</CodeGroup>
+
+### Request Body
+
+<ParamField body="id" type="integer" required>
+  ID of the sheet to update
+</ParamField>
+
+<ParamField body="period_start" type="string">
+  Updated start date of billing period
+</ParamField>
+
+<ParamField body="period_end" type="string">
+  Updated end date of billing period
+</ParamField>
+
+<ParamField body="service_type" type="string">
+  Updated service type
+</ParamField>
+
+<ParamField body="status" type="string">
+  Update status: `IN_PROGRESS`, `LIQUIDATED`, `INVOICED`, or `CANCELLED`. When changing to `LIQUIDATED`, all DRAFT custody chains, maintenance sheets, and shipping guides will be closed.
+</ParamField>
+
+<ParamField body="contact_reference" type="string">
+  Updated contact person
+</ParamField>
+
+<ParamField body="contact_phone_reference" type="string">
+  Updated contact phone
+</ParamField>
+
+<ParamField body="client_po_reference" type="string">
+  Updated client PO reference
+</ParamField>
+
+<ParamField body="final_disposition_reference" type="string">
+  Updated final disposition reference
+</ParamField>
+
+<ParamField body="series_code" type="string">
+  Updated series code
+</ParamField>
+
+<ParamField body="details" type="array">
+  Array of resource details. Existing details not included will be removed (if they have no custody chains).
+  
+  <Expandable title="Detail Object">
+    <ParamField body="detail_id" type="integer">
+      ID of existing detail (0 or omitted for new details)
+    </ParamField>
+    
+    <ParamField body="resource_item_id" type="integer">
+      ID of the resource item (required for new details)
+    </ParamField>
+    
+    <ParamField body="project_resource_id" type="integer">
+      ID of the project resource item
+    </ParamField>
+    
+    <ParamField body="type_resource" type="string">
+      Type: `EQUIPO` or `SERVICIO`
+    </ParamField>
+    
+    <ParamField body="detailed_description" type="string">
+      Resource description
+    </ParamField>
+    
+    <ParamField body="cost" type="number">
+      Unit price
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Response
+
+Same structure as Create Work Sheet response.
+
+### Validation Rules
+
+- Cannot update sheets with status `INVOICED` or `CANCELLED`
+- Cannot update closed sheets (`is_closed = true`)
+- Cannot modify details if status is `LIQUIDATED` (only headers can be updated)
+- Cannot remove details that have associated custody chains
+- Period dates cannot exceed project end date
+- `period_start` must be before `period_end`
+
+---
+
+## Delete Work Sheet
+
+Soft delete a work order sheet.
+
+<CodeGroup>
+```bash cURL
+curl -X DELETE "https://api.mantis.com/api/workorders/sheets/delete/?id=1" \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+</CodeGroup>
+
+### Query Parameters
+
+<ParamField query="id" type="integer" required>
+  ID of the sheet to delete
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the sheet was deleted successfully
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success or error message
+</ResponseField>
+
+### Validation Rules
+
+- Cannot delete sheets with status `INVOICED`, `CANCELLED`, or `LIQUIDATED`
+- Only performs soft delete (sets `is_active = false`)
+
+---
+
+## Reopen Work Sheet
+
+Reopen a liquidated sheet, returning it to IN_PROGRESS status.
+
+<CodeGroup>
+```bash cURL
+curl -X PUT https://api.mantis.com/api/workorders/sheets/reopen/ \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"id": 1}'
+```
+</CodeGroup>
+
+### Request Body
+
+<ParamField body="id" type="integer" required>
+  ID of the sheet to reopen
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the sheet was reopened successfully
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success or error message
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Reopened sheet information
+  
+  <Expandable title="Data Object">
+    <ResponseField name="id" type="integer">
+      Sheet ID
+    </ResponseField>
+    
+    <ResponseField name="series_code" type="string">
+      Series code
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+      New status (will be `IN_PROGRESS`)
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Validation Rules
+
+- Can only reopen sheets with status `LIQUIDATED`
+- Cannot reopen closed sheets (`is_closed = true`)

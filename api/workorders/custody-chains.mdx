@@ -1,0 +1,539 @@
+---
+title: Custody Chains
+description: Endpoints for managing equipment custody chains (cadenas de custodia)
+---
+
+## Create Custody Chain
+
+Create a new custody chain for equipment tracking and service documentation.
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.mantis.com/api/workorders/custody_chain/create/ \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "technical_id": 5,
+    "vehicle_id": 3,
+    "project_id": 10,
+    "resources": [12, 15, 18],
+    "activity_date": "2024-01-15",
+    "location": "Guayaquil Plant",
+    "start_time": "08:00:00",
+    "end_time": "16:00:00",
+    "duration_hours": 8.0,
+    "total_gallons": 1500.0,
+    "black_water": true,
+    "have_logistic": "YES",
+    "contact_name": "Carlos Mendez",
+    "dni_contact": "0912345678"
+  }'
+```
+</CodeGroup>
+
+### Request Body
+
+<ParamField body="technical_id" type="integer" required>
+  ID of the technical/operator assigned to this custody chain
+</ParamField>
+
+<ParamField body="vehicle_id" type="integer" required>
+  ID of the vehicle used for the service
+</ParamField>
+
+<ParamField body="project_id" type="integer" required>
+  ID of the project. The system will automatically link to the most recent active sheet.
+</ParamField>
+
+<ParamField body="resources" type="array" required>
+  Array of project resource item IDs to include in this custody chain. Must contain at least one resource.
+</ParamField>
+
+<ParamField body="consecutive" type="integer">
+  Consecutive number (auto-generated if not provided)
+</ParamField>
+
+<ParamField body="activity_date" type="string">
+  Date when the activity occurred (YYYY-MM-DD)
+</ParamField>
+
+<ParamField body="issue_date" type="string">
+  Date when the custody chain was issued (YYYY-MM-DD)
+</ParamField>
+
+<ParamField body="status" type="string" default="DRAFT">
+  Status of the custody chain: `DRAFT` or `CLOSE`
+</ParamField>
+
+<ParamField body="start_time" type="string">
+  Service start time (HH:MM:SS format)
+</ParamField>
+
+<ParamField body="end_time" type="string">
+  Service end time (HH:MM:SS format)
+</ParamField>
+
+<ParamField body="duration_hours" type="number">
+  Duration in hours
+</ParamField>
+
+<ParamField body="location" type="string">
+  Service location
+</ParamField>
+
+<ParamField body="contact_name" type="string">
+  Name of the contact person at the service location
+</ParamField>
+
+<ParamField body="dni_contact" type="string">
+  DNI/ID of the contact person
+</ParamField>
+
+<ParamField body="contact_position" type="string">
+  Position/role of the contact person
+</ParamField>
+
+<ParamField body="date_contact" type="string">
+  Date when contact signed (YYYY-MM-DD)
+</ParamField>
+
+<ParamField body="driver_name" type="string">
+  Name of the driver
+</ParamField>
+
+<ParamField body="dni_driver" type="string">
+  DNI/ID of the driver
+</ParamField>
+
+<ParamField body="driver_position" type="string">
+  Position of the driver
+</ParamField>
+
+<ParamField body="driver_date" type="string">
+  Date when driver signed (YYYY-MM-DD)
+</ParamField>
+
+<ParamField body="total_gallons" type="number" default="0">
+  Total gallons processed
+</ParamField>
+
+<ParamField body="total_barrels" type="number" default="0">
+  Total barrels processed
+</ParamField>
+
+<ParamField body="total_cubic_meters" type="number" default="0">
+  Total cubic meters processed
+</ParamField>
+
+<ParamField body="black_water" type="boolean" default="false">
+  Whether black water was processed
+</ParamField>
+
+<ParamField body="grey_water" type="boolean" default="false">
+  Whether grey water was processed
+</ParamField>
+
+<ParamField body="clean_water" type="boolean" default="false">
+  Whether clean water was processed
+</ParamField>
+
+<ParamField body="activated_sludge" type="boolean" default="false">
+  Whether activated sludge was processed
+</ParamField>
+
+<ParamField body="treated_wastewater" type="boolean" default="false">
+  Whether treated wastewater was processed
+</ParamField>
+
+<ParamField body="organic_grease" type="boolean" default="false">
+  Whether organic grease was processed
+</ParamField>
+
+<ParamField body="have_logistic" type="string" default="NA">
+  Logistics status: `YES`, `NO`, or `NA`
+</ParamField>
+
+<ParamField body="notes" type="string">
+  Additional notes or observations
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the custody chain was created successfully
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success or error message
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Created custody chain information
+  
+  <Expandable title="Data Object">
+    <ResponseField name="custody_chain" type="object">
+      Main custody chain data with all submitted fields
+    </ResponseField>
+    
+    <ResponseField name="technical" type="object">
+      Technical/operator information (id, first_name, last_name)
+    </ResponseField>
+    
+    <ResponseField name="vehicle" type="object">
+      Vehicle information (id, no_plate, brand, model)
+    </ResponseField>
+    
+    <ResponseField name="details" type="array">
+      Array of custody chain detail items for each resource
+      
+      <Expandable title="Detail Item">
+        <ResponseField name="id" type="integer">
+          Detail item ID
+        </ResponseField>
+        
+        <ResponseField name="project_resource_id" type="integer">
+          Associated project resource ID
+        </ResponseField>
+        
+        <ResponseField name="code_equipment" type="string">
+          Full equipment code
+        </ResponseField>
+        
+        <ResponseField name="equipment" type="string">
+          Equipment abbreviation
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    
+    <ResponseField name="details_count" type="integer">
+      Number of resources included
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Validation Rules
+
+- Cannot create custody chains for projects without an active sheet
+- Cannot create custody chains if the sheet status is `LIQUIDATED`, `INVOICED`, or `CANCELLED`
+- Cannot create custody chains if the sheet is closed
+- All resources must be active and belong to the specified project
+- At least one resource must be selected
+
+---
+
+## Get Custody Chain Detail
+
+Retrieve complete details of a custody chain including all related data.
+
+<CodeGroup>
+```bash cURL
+curl -X GET https://api.mantis.com/api/workorders/custody_chain/detail/1/ \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+</CodeGroup>
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  ID of the custody chain
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the request was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Complete custody chain information
+  
+  <Expandable title="Data Object">
+    <ResponseField name="custody_chain" type="object">
+      Full custody chain data including all fields and metadata (created_at, updated_at, is_active, notes)
+    </ResponseField>
+    
+    <ResponseField name="technical" type="object">
+      Complete technical information including certifications, licenses, and personal details
+    </ResponseField>
+    
+    <ResponseField name="vehicle" type="object">
+      Complete vehicle information including registration, insurance, and inspection dates
+    </ResponseField>
+    
+    <ResponseField name="sheet_project" type="object">
+      Associated work order sheet information with totals and status
+    </ResponseField>
+    
+    <ResponseField name="details" type="array">
+      Array of custody chain details with full project resource information
+      
+      <Expandable title="Detail Item">
+        <ResponseField name="id" type="integer">
+          Detail ID
+        </ResponseField>
+        
+        <ResponseField name="equipment" type="string">
+          Equipment abbreviation
+        </ResponseField>
+        
+        <ResponseField name="code_equipment" type="string">
+          Full equipment code
+        </ResponseField>
+        
+        <ResponseField name="project_resource" type="object">
+          Complete project resource data including project, partner, resource item details, costs, and operation dates
+        </ResponseField>
+        
+        <ResponseField name="meta" type="object">
+          Metadata (notes, timestamps, user tracking)
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+---
+
+## Edit Custody Chain
+
+Update an existing custody chain and its resource details.
+
+<CodeGroup>
+```bash cURL
+curl -X PUT https://api.mantis.com/api/workorders/custody_chain/1/edit/ \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "custody_chain": {
+      "status": "CLOSE",
+      "location": "Updated Location",
+      "total_gallons": 2000.0,
+      "meta": {
+        "notes": "Service completed"
+      }
+    },
+    "details": [
+      {"project_resource_id": 12},
+      {"project_resource_id": 15}
+    ]
+  }'
+```
+</CodeGroup>
+
+### Path Parameters
+
+<ParamField path="id" type="integer" required>
+  ID of the custody chain to edit
+</ParamField>
+
+### Request Body
+
+<ParamField body="custody_chain" type="object">
+  Custody chain fields to update
+  
+  <Expandable title="Custody Chain Fields">
+    <ParamField body="technical_id" type="integer">
+      Updated technical ID
+    </ParamField>
+    
+    <ParamField body="vehicle_id" type="integer">
+      Updated vehicle ID
+    </ParamField>
+    
+    <ParamField body="sheet_project_id" type="integer">
+      Updated sheet project ID
+    </ParamField>
+    
+    <ParamField body="consecutive" type="integer">
+      Updated consecutive number
+    </ParamField>
+    
+    <ParamField body="activity_date" type="string">
+      Updated activity date (YYYY-MM-DD)
+    </ParamField>
+    
+    <ParamField body="location" type="string">
+      Updated location
+    </ParamField>
+    
+    <ParamField body="issue_date" type="string">
+      Updated issue date (YYYY-MM-DD)
+    </ParamField>
+    
+    <ParamField body="status" type="string">
+      Updated status: `DRAFT` or `CLOSE`
+    </ParamField>
+    
+    <ParamField body="start_time" type="string">
+      Updated start time (HH:MM:SS)
+    </ParamField>
+    
+    <ParamField body="end_time" type="string">
+      Updated end time (HH:MM:SS)
+    </ParamField>
+    
+    <ParamField body="time_duration" type="number">
+      Updated duration in hours
+    </ParamField>
+    
+    <ParamField body="have_logistic" type="string">
+      Updated logistics status
+    </ParamField>
+    
+    <ParamField body="total_gallons" type="number">
+      Updated total gallons
+    </ParamField>
+    
+    <ParamField body="total_barrels" type="number">
+      Updated total barrels
+    </ParamField>
+    
+    <ParamField body="total_cubic_meters" type="number">
+      Updated total cubic meters
+    </ParamField>
+    
+    <ParamField body="black_water" type="boolean">
+      Updated black water flag
+    </ParamField>
+    
+    <ParamField body="grey_water" type="boolean">
+      Updated grey water flag
+    </ParamField>
+    
+    <ParamField body="clean_water" type="boolean">
+      Updated clean water flag
+    </ParamField>
+    
+    <ParamField body="activated_sludge" type="boolean">
+      Updated activated sludge flag
+    </ParamField>
+    
+    <ParamField body="treated_wastewater" type="boolean">
+      Updated treated wastewater flag
+    </ParamField>
+    
+    <ParamField body="organic_grease" type="boolean">
+      Updated organic grease flag
+    </ParamField>
+    
+    <ParamField body="contact_name" type="string">
+      Updated contact name
+    </ParamField>
+    
+    <ParamField body="dni_contact" type="string">
+      Updated contact DNI
+    </ParamField>
+    
+    <ParamField body="contact_position" type="string">
+      Updated contact position
+    </ParamField>
+    
+    <ParamField body="date_contact" type="string">
+      Updated contact date (YYYY-MM-DD)
+    </ParamField>
+    
+    <ParamField body="driver_name" type="string">
+      Updated driver name
+    </ParamField>
+    
+    <ParamField body="dni_driver" type="string">
+      Updated driver DNI
+    </ParamField>
+    
+    <ParamField body="driver_position" type="string">
+      Updated driver position
+    </ParamField>
+    
+    <ParamField body="driver_date" type="string">
+      Updated driver date (YYYY-MM-DD)
+    </ParamField>
+    
+    <ParamField body="meta" type="object">
+      Metadata fields
+      
+      <Expandable title="Meta Fields">
+        <ParamField body="notes" type="string">
+          Updated notes
+        </ParamField>
+        
+        <ParamField body="id_user_updated" type="integer">
+          ID of user making the update
+        </ParamField>
+      </Expandable>
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+<ParamField body="details" type="array">
+  Array of project resource IDs to associate with this custody chain. Resources not in this list will be deactivated.
+  
+  <Expandable title="Detail Object">
+    <ParamField body="project_resource_id" type="integer" required>
+      ID of the project resource
+    </ParamField>
+  </Expandable>
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the custody chain was updated successfully
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success or error message
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  Updated custody chain information
+  
+  <Expandable title="Data Object">
+    <ResponseField name="id" type="integer">
+      Custody chain ID
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+### Validation Rules
+
+- Cannot edit custody chains for closed sheets
+- Cannot edit custody chains if sheet status is `LIQUIDATED`, `INVOICED`, or `CANCELLED`
+- Resources not included in the update will be soft-deleted (deactivated)
+- Previously deactivated resources will be reactivated if included again
+
+---
+
+## Regenerate Equipment Codes
+
+Regenerate equipment codes for all active custody chain details. Useful after equipment updates.
+
+<CodeGroup>
+```bash cURL
+curl -X POST https://api.mantis.com/api/workorders/custody_chain/regenerate-codes/ \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+</CodeGroup>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the regeneration was successful
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success message with summary
+</ResponseField>
+
+<ResponseField name="updated" type="integer">
+  Number of custody chain details updated with new codes
+</ResponseField>
+
+<ResponseField name="skipped" type="integer">
+  Number of details skipped (no equipment code available)
+</ResponseField>
+
+### Notes
+
+- This endpoint processes all active custody chain details in the system
+- Only updates details where a valid equipment code can be determined
+- Equipment codes are extracted from the physical equipment associated with each project resource

@@ -1,0 +1,528 @@
+---
+title: 'Maintenance Sheets'
+description: 'API endpoints for managing equipment maintenance records and service sheets'
+---
+
+## Overview
+
+Maintenance sheets track preventive and corrective maintenance activities performed on equipment and resources. These endpoints support creating, updating, listing, and managing maintenance records with detailed information about work performed, costs, and technical staff.
+
+## List Maintenance Sheets
+
+<CodeGroup>
+```bash GET /api/maintenance/sheets/
+GET /api/maintenance/sheets/?sheet_project_id=456
+```
+</CodeGroup>
+
+Retrieve all maintenance sheets for a specific sheet project.
+
+### Query Parameters
+
+<ParamField query="sheet_project_id" type="integer" required>
+  ID of the sheet project to filter maintenance sheets
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the request was successful
+</ResponseField>
+
+<ResponseField name="data" type="array">
+  Array of maintenance sheet objects
+  
+  <Expandable title="Maintenance sheet properties">
+    <ResponseField name="id" type="integer">
+      Unique identifier for the maintenance sheet
+    </ResponseField>
+    
+    <ResponseField name="sheet_number" type="string">
+      Auto-generated maintenance sheet number
+    </ResponseField>
+    
+    <ResponseField name="id_sheet_project" type="integer">
+      ID of the parent sheet project
+    </ResponseField>
+    
+    <ResponseField name="status" type="string">
+      Current status. Options: `DRAFT`, `CLOSED`, `VOID`
+    </ResponseField>
+    
+    <ResponseField name="maintenance_type" type="string">
+      Type of maintenance. Options: `PREVENTIVO`, `CORRECTIVO`
+    </ResponseField>
+    
+    <ResponseField name="start_date" type="string">
+      Maintenance start date/time (ISO 8601 format)
+    </ResponseField>
+    
+    <ResponseField name="end_date" type="string">
+      Maintenance end date/time (ISO 8601 format)
+    </ResponseField>
+    
+    <ResponseField name="responsible_technical_id" type="integer">
+      ID of the responsible technical person
+    </ResponseField>
+    
+    <ResponseField name="responsible_technical_name" type="string">
+      Full name of the responsible technical person
+    </ResponseField>
+    
+    <ResponseField name="resource_item_id" type="integer">
+      ID of the equipment/resource being maintained
+    </ResponseField>
+    
+    <ResponseField name="resource_item_name" type="string">
+      Name of the equipment/resource
+    </ResponseField>
+    
+    <ResponseField name="requested_by" type="string">
+      Person who requested the maintenance
+    </ResponseField>
+    
+    <ResponseField name="rig" type="string">
+      Rig or location identifier
+    </ResponseField>
+    
+    <ResponseField name="code" type="string">
+      Equipment code
+    </ResponseField>
+    
+    <ResponseField name="location" type="string">
+      Physical location of the equipment
+    </ResponseField>
+    
+    <ResponseField name="total_days" type="integer">
+      Total days of maintenance work
+    </ResponseField>
+    
+    <ResponseField name="cost_day" type="number">
+      Cost per day of maintenance
+    </ResponseField>
+    
+    <ResponseField name="cost_total" type="number">
+      Total maintenance cost
+    </ResponseField>
+    
+    <ResponseField name="cost_logistics" type="number">
+      Logistics costs
+    </ResponseField>
+    
+    <ResponseField name="maintenance_description" type="string">
+      Description of maintenance performed
+    </ResponseField>
+    
+    <ResponseField name="fault_description" type="string">
+      Description of the fault or issue
+    </ResponseField>
+    
+    <ResponseField name="possible_causes" type="string">
+      Possible causes of the fault
+    </ResponseField>
+    
+    <ResponseField name="replaced_parts" type="string">
+      Parts that were replaced
+    </ResponseField>
+    
+    <ResponseField name="observations" type="string">
+      General observations
+    </ResponseField>
+  </Expandable>
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl -X GET "https://api.example.com/api/maintenance/sheets/?sheet_project_id=456" \
+  -H "Content-Type: application/json"
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "data": [
+    {
+      "id": 78,
+      "sheet_number": "MNT-2024-001",
+      "id_sheet_project": 456,
+      "status": "CLOSED",
+      "status_display": "Cerrada",
+      "maintenance_type": "PREVENTIVO",
+      "maintenance_type_display": "Preventivo",
+      "start_date": "2024-03-15T08:00:00",
+      "end_date": "2024-03-15T17:00:00",
+      "responsible_technical_id": 12,
+      "responsible_technical_name": "Carlos Mendez",
+      "resource_item_id": 234,
+      "resource_item_name": "Hydraulic Pump Model XYZ",
+      "requested_by": "Field Supervisor",
+      "rig": "Rig-05",
+      "total_days": 1,
+      "cost_day": 500.00,
+      "cost_total": 500.00,
+      "maintenance_description": "Routine preventive maintenance and oil change",
+      "replaced_parts": "Hydraulic oil filters (2 units)"
+    }
+  ]
+}
+```
+</ResponseExample>
+
+---
+
+## Get Maintenance Sheet
+
+<CodeGroup>
+```bash GET /api/maintenance/sheets/{sheet_id}/
+GET /api/maintenance/sheets/78/
+```
+</CodeGroup>
+
+Retrieve a single maintenance sheet by ID with full details.
+
+### Path Parameters
+
+<ParamField path="sheet_id" type="integer" required>
+  ID of the maintenance sheet to retrieve
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X GET "https://api.example.com/api/maintenance/sheets/78/" \
+  -H "Content-Type: application/json"
+```
+</RequestExample>
+
+---
+
+## Create Maintenance Sheet
+
+<CodeGroup>
+```bash POST /api/maintenance/sheets/
+POST /api/maintenance/sheets/
+```
+</CodeGroup>
+
+Create a new maintenance sheet record.
+
+### Body Parameters
+
+<ParamField body="id_sheet_project" type="integer" required>
+  ID of the parent sheet project
+</ParamField>
+
+<ParamField body="start_date" type="string" required>
+  Maintenance start date/time (format: YYYY-MM-DD or YYYY-MM-DDTHH:MM)
+</ParamField>
+
+<ParamField body="end_date" type="string">
+  Maintenance end date/time (format: YYYY-MM-DD or YYYY-MM-DDTHH:MM)
+</ParamField>
+
+<ParamField body="responsible_technical_id" type="integer">
+  ID of the technical person responsible for the maintenance
+</ParamField>
+
+<ParamField body="resource_item_id" type="integer">
+  ID of the equipment/resource being maintained
+</ParamField>
+
+<ParamField body="requested_by" type="string">
+  Person who requested the maintenance
+</ParamField>
+
+<ParamField body="rig" type="string">
+  Rig or location identifier
+</ParamField>
+
+<ParamField body="code" type="string">
+  Equipment code
+</ParamField>
+
+<ParamField body="location" type="string">
+  Physical location of the equipment
+</ParamField>
+
+<ParamField body="maintenance_type" type="string" default="PREVENTIVO">
+  Type of maintenance. Options: `PREVENTIVO`, `CORRECTIVO`
+</ParamField>
+
+<ParamField body="total_days" type="integer" default="0">
+  Total days of maintenance work
+</ParamField>
+
+<ParamField body="cost_day" type="number" default="0">
+  Cost per day of maintenance
+</ParamField>
+
+<ParamField body="cost_total" type="number" default="0">
+  Total maintenance cost
+</ParamField>
+
+<ParamField body="cost_logistics" type="number" default="0">
+  Logistics costs (transport, accommodation, etc.)
+</ParamField>
+
+<ParamField body="sheet_project_maintenance_concept" type="string" default="SERVICIO TÉCNICO ESPECIALIZADO">
+  Maintenance service concept for billing
+</ParamField>
+
+<ParamField body="sheet_project_logistics_concept" type="string">
+  Logistics service concept for billing
+</ParamField>
+
+<ParamField body="maintenance_description" type="string">
+  Detailed description of maintenance work performed
+</ParamField>
+
+<ParamField body="fault_description" type="string">
+  Description of the fault or issue found
+</ParamField>
+
+<ParamField body="possible_causes" type="string">
+  Analysis of possible causes of the fault
+</ParamField>
+
+<ParamField body="replaced_parts" type="string">
+  List of parts that were replaced during maintenance
+</ParamField>
+
+<ParamField body="observations" type="string">
+  General observations and notes
+</ParamField>
+
+<ParamField body="performed_by" type="string">
+  Name of the person who performed the work
+</ParamField>
+
+<ParamField body="performed_by_position" type="string">
+  Job title/position of the person who performed the work
+</ParamField>
+
+<ParamField body="approved_by" type="string">
+  Name of the person who approved the work
+</ParamField>
+
+<ParamField body="approved_by_position" type="string">
+  Job title/position of the approver
+</ParamField>
+
+<ParamField body="notes" type="string">
+  Additional notes
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the sheet was created successfully
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Success message
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  The created maintenance sheet object
+</ResponseField>
+
+<RequestExample>
+```bash cURL
+curl -X POST "https://api.example.com/api/maintenance/sheets/" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id_sheet_project": 456,
+    "start_date": "2024-03-15T08:00",
+    "end_date": "2024-03-15T17:00",
+    "responsible_technical_id": 12,
+    "resource_item_id": 234,
+    "maintenance_type": "PREVENTIVO",
+    "requested_by": "Field Supervisor",
+    "rig": "Rig-05",
+    "total_days": 1,
+    "cost_day": 500.00,
+    "cost_total": 500.00,
+    "maintenance_description": "Routine preventive maintenance and oil change",
+    "replaced_parts": "Hydraulic oil filters (2 units)",
+    "performed_by": "Carlos Mendez",
+    "performed_by_position": "Senior Technician"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json 201 Created
+{
+  "success": true,
+  "message": "Hoja de mantenimiento creada exitosamente",
+  "data": {
+    "id": 78,
+    "sheet_number": "MNT-2024-001",
+    "status": "DRAFT",
+    "maintenance_type": "PREVENTIVO",
+    "start_date": "2024-03-15T08:00:00"
+  }
+}
+```
+
+```json 400 Error
+{
+  "success": false,
+  "error": "El campo id_sheet_project es requerido"
+}
+```
+</ResponseExample>
+
+---
+
+## Update Maintenance Sheet
+
+<CodeGroup>
+```bash PUT /api/maintenance/sheets/
+PUT /api/maintenance/sheets/
+```
+</CodeGroup>
+
+Update an existing maintenance sheet. Only sheets in `DRAFT` status can be edited.
+
+### Body Parameters
+
+<ParamField body="id" type="integer" required>
+  ID of the maintenance sheet to update
+</ParamField>
+
+All other parameters from the create endpoint are optional and will only update if provided.
+
+<RequestExample>
+```bash cURL
+curl -X PUT "https://api.example.com/api/maintenance/sheets/" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": 78,
+    "end_date": "2024-03-16T12:00",
+    "total_days": 2,
+    "cost_total": 1000.00,
+    "observations": "Required additional day for thorough inspection"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "message": "Hoja de mantenimiento actualizada exitosamente",
+  "data": {
+    "id": 78,
+    "total_days": 2,
+    "cost_total": 1000.00
+  }
+}
+```
+
+```json 400 Error
+{
+  "success": false,
+  "error": "No se puede editar una hoja en estado Cerrada. Solo hojas en BORRADOR son editables."
+}
+```
+</ResponseExample>
+
+---
+
+## Update Sheet Status
+
+<CodeGroup>
+```bash PATCH /api/maintenance/sheets/
+PATCH /api/maintenance/sheets/
+```
+</CodeGroup>
+
+Change the status of a maintenance sheet. Valid status transitions:
+- `DRAFT` → `CLOSED` or `VOID`
+- `CLOSED` → `VOID`
+- `VOID` → (no transitions allowed)
+
+### Body Parameters
+
+<ParamField body="id" type="integer" required>
+  ID of the maintenance sheet
+</ParamField>
+
+<ParamField body="status" type="string" required>
+  New status. Options: `DRAFT`, `CLOSED`, `VOID`
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X PATCH "https://api.example.com/api/maintenance/sheets/" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "id": 78,
+    "status": "CLOSED"
+  }'
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "message": "Estado actualizado a Cerrada",
+  "data": {
+    "id": 78,
+    "status": "CLOSED",
+    "status_display": "Cerrada"
+  }
+}
+```
+
+```json 400 Error
+{
+  "success": false,
+  "error": "No se puede cambiar de Cerrada a DRAFT. Transiciones permitidas: ['VOID']"
+}
+```
+</ResponseExample>
+
+---
+
+## Delete Maintenance Sheet
+
+<CodeGroup>
+```bash DELETE /api/maintenance/sheets/{pk}/delete/
+DELETE /api/maintenance/sheets/78/delete/
+```
+</CodeGroup>
+
+Soft delete a maintenance sheet (marks as deleted, doesn't remove from database). Only sheets in `DRAFT` status can be deleted.
+
+### Path Parameters
+
+<ParamField path="pk" type="integer" required>
+  ID of the maintenance sheet to delete
+</ParamField>
+
+<RequestExample>
+```bash cURL
+curl -X DELETE "https://api.example.com/api/maintenance/sheets/78/delete/" \
+  -H "Content-Type: application/json"
+```
+</RequestExample>
+
+<ResponseExample>
+```json 200 Success
+{
+  "success": true,
+  "message": "Hoja de mantenimiento #MNT-2024-001 eliminada exitosamente"
+}
+```
+
+```json 400 Error
+{
+  "success": false,
+  "error": "No se puede eliminar una hoja en estado Cerrada. Solo hojas en BORRADOR pueden eliminarse."
+}
+```
+</ResponseExample>

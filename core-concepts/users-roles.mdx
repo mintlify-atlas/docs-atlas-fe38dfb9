@@ -1,0 +1,356 @@
+---
+title: Users & Roles
+description: User management, roles, permissions, and authentication in Mantis
+---
+
+Mantis uses a custom user model with role-based access control to manage system access and permissions.
+
+## User Model
+
+The `CustomUserModel` extends Django's `AbstractUser` with custom fields and email-based authentication.
+
+### Authentication
+
+<Info>
+Mantis uses **email addresses** as the primary authentication identifier instead of usernames.
+</Info>
+
+<ParamField path="email" type="email" required unique>
+  User's email address, used for login
+  
+  - Must be unique across all users
+  - Replaces the traditional `username` field
+</ParamField>
+
+<ParamField path="password" type="string" required>
+  Hashed password (inherited from `AbstractUser`)
+</ParamField>
+
+### User Profile
+
+<ParamField path="first_name" type="string" default="">
+  User's first name (inherited from `AbstractUser`)
+</ParamField>
+
+<ParamField path="last_name" type="string" default="">
+  User's last name (inherited from `AbstractUser`)
+</ParamField>
+
+<ParamField path="picture" type="image" default="null">
+  Profile picture image
+  
+  Upload path: `accounts/pictures/`
+</ParamField>
+
+<ParamField path="notes" type="text" default="">
+  Optional notes about the user
+</ParamField>
+
+### Account Status
+
+<ParamField path="is_confirmed_mail" type="boolean" default="false">
+  Indicates whether the user has confirmed their email address
+</ParamField>
+
+<ParamField path="is_active" type="boolean" default="true">
+  Indicates whether the user account is active
+  
+  - Inherited from `AbstractUser`
+  - Inactive users cannot log in
+</ParamField>
+
+<ParamField path="is_staff" type="boolean" default="false">
+  Indicates whether the user can access the Django admin interface
+  
+  - Inherited from `AbstractUser`
+</ParamField>
+
+<ParamField path="is_superuser" type="boolean" default="false">
+  Indicates whether the user has all permissions
+  
+  - Inherited from `AbstractUser`
+</ParamField>
+
+## User Roles
+
+Mantis implements a role-based access control system with two primary roles:
+
+<ParamField path="role" type="string" default="TECNICO" required>
+  User's system role
+  
+  **Choices:**
+  - `ADMINISTRATIVO` - Administrative role
+  - `TECNICO` - Technical role
+</ParamField>
+
+### Role Descriptions
+
+<CardGroup cols={2}>
+  <Card title="ADMINISTRATIVO" icon="user-tie">
+    **Administrative Role**
+    
+    Typically for office staff and managers:
+    - Project management
+    - Client/partner management
+    - Billing and invoicing
+    - User management
+    - System configuration
+  </Card>
+  
+  <Card title="TECNICO" icon="user-helmet-safety">
+    **Technical Role**
+    
+    Typically for field technicians:
+    - Equipment maintenance
+    - Field operations
+    - Status updates
+    - Maintenance logs
+  </Card>
+</CardGroup>
+
+<Note>
+The default role for new users is `TECNICO`. Administrators should update this as needed.
+</Note>
+
+## Digital Signatures
+
+Users can have digital signature information for document signing:
+
+<ParamField path="siganture_name" type="string" default="null">
+  Name to display on signed documents (max 100 characters)
+  
+  Note: Field name has a typo in the model (`siganture` instead of `signature`)
+</ParamField>
+
+<ParamField path="siganture_role" type="string" default="null">
+  Role/title to display on signed documents
+  
+  Note: Field name has a typo in the model (`siganture` instead of `signature`)
+</ParamField>
+
+## Model Methods
+
+<ResponseField name="get" type="classmethod">
+  Retrieve a user by email address
+  
+  ```python
+  user = CustomUserModel.get('user@example.com')
+  ```
+  
+  Returns `None` if user does not exist
+</ResponseField>
+
+<ResponseField name="__str__" type="method">
+  Returns the user's email address as the string representation
+  
+  ```python
+  str(user)  # Returns: "user@example.com"
+  ```
+</ResponseField>
+
+## User Manager
+
+Mantis uses a `CustomUserManager` to handle user creation with email-based authentication.
+
+### Creating Users
+
+<CodeGroup>
+```python Create Regular User
+from accounts.models import CustomUserModel
+
+user = CustomUserModel.objects.create_user(
+    email='tech@example.com',
+    password='securepassword',
+    first_name='John',
+    last_name='Doe',
+    role='TECNICO'
+)
+```
+
+```python Create Superuser
+user = CustomUserModel.objects.create_superuser(
+    email='admin@example.com',
+    password='securepassword',
+    first_name='Admin',
+    last_name='User'
+)
+# Superuser automatically gets is_staff=True and is_superuser=True
+```
+</CodeGroup>
+
+## Authentication Flow
+
+<Steps>
+  <Step title="User Registration">
+    Create user account with email and password
+    
+    - Default role: `TECNICO`
+    - Email confirmation required: `is_confirmed_mail = False`
+  </Step>
+  
+  <Step title="Email Confirmation">
+    User confirms email address
+    
+    - Set `is_confirmed_mail = True`
+  </Step>
+  
+  <Step title="Role Assignment">
+    Administrator assigns appropriate role
+    
+    - Update `role` field to `ADMINISTRATIVO` if needed
+  </Step>
+  
+  <Step title="Login">
+    User authenticates with email and password
+    
+    - Email serves as `USERNAME_FIELD`
+    - Account must have `is_active = True`
+  </Step>
+</Steps>
+
+## Permissions Strategy
+
+<Tabs>
+  <Tab title="Role-Based">
+    Use the `role` field to control feature access:
+    
+    ```python
+    if user.role == 'ADMINISTRATIVO':
+        # Grant access to admin features
+        pass
+    elif user.role == 'TECNICO':
+        # Grant access to technical features
+        pass
+    ```
+  </Tab>
+  
+  <Tab title="Django Permissions">
+    Leverage Django's built-in permission system:
+    
+    ```python
+    from django.contrib.auth.decorators import permission_required
+    
+    @permission_required('projects.add_project')
+    def create_project(request):
+        pass
+    ```
+  </Tab>
+  
+  <Tab title="Staff & Superuser">
+    Use Django's staff and superuser flags:
+    
+    ```python
+    if user.is_superuser:
+        # Full system access
+        pass
+    elif user.is_staff:
+        # Admin interface access
+        pass
+    ```
+  </Tab>
+</Tabs>
+
+## Audit Trail Integration
+
+User IDs are tracked across all models via `BaseModel`:
+
+<CodeGroup>
+```python Creation Tracking
+project = Project.objects.create(
+    partner=partner,
+    contact_name='Site Manager'
+)
+# Automatically sets:
+# project.id_user_created = current_user.id
+```
+
+```python Update Tracking
+project.location = 'New Location'
+project.save()
+# Automatically updates:
+# project.id_user_updated = current_user.id
+```
+</CodeGroup>
+
+<Info>
+The `crum` (Current Request User Middleware) package automatically tracks the current user for audit fields.
+</Info>
+
+## Security Best Practices
+
+<AccordionGroup>
+  <Accordion title="Email Verification" icon="envelope-circle-check">
+    Require email confirmation before granting full access:
+    
+    ```python
+    if not user.is_confirmed_mail:
+        # Restrict access until email confirmed
+        return redirect('confirm_email')
+    ```
+  </Accordion>
+  
+  <Accordion title="Password Policies" icon="lock">
+    Implement strong password requirements:
+    
+    - Minimum length
+    - Complexity requirements
+    - Password history
+    - Regular password rotation
+  </Accordion>
+  
+  <Accordion title="Session Management" icon="clock">
+    Configure appropriate session timeouts:
+    
+    - Shorter timeouts for administrative users
+    - Automatic logout on inactivity
+  </Accordion>
+  
+  <Accordion title="Account Deactivation" icon="user-slash">
+    Use `is_active` flag instead of deleting users:
+    
+    ```python
+    user.is_active = False
+    user.save()
+    # Preserves audit trail while preventing login
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Common Queries
+
+<CodeGroup>
+```python Get All Active Users
+active_users = CustomUserModel.objects.filter(is_active=True)
+```
+
+```python Get Administrative Users
+admins = CustomUserModel.objects.filter(
+    role='ADMINISTRATIVO',
+    is_active=True
+)
+```
+
+```python Get Technical Users
+techs = CustomUserModel.objects.filter(
+    role='TECNICO',
+    is_active=True
+)
+```
+
+```python Get Users with Confirmed Email
+confirmed_users = CustomUserModel.objects.filter(
+    is_confirmed_mail=True
+)
+```
+</CodeGroup>
+
+## Related Documentation
+
+<CardGroup cols={2}>
+  <Card title="Architecture" icon="diagram-project" href="/core-concepts/architecture">
+    Learn about the BaseModel audit trail
+  </Card>
+  <Card title="Projects" icon="folder" href="/core-concepts/projects">
+    Understand user tracking in projects
+  </Card>
+</CardGroup>

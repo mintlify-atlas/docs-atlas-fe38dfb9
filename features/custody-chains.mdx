@@ -1,0 +1,348 @@
+---
+title: Custody Chains
+description: Document waste collection activities, track volumes, and maintain chain of custody records
+---
+
+Custody Chains (Cadenas de Custodia) document the collection, transport, and disposition of wastewater and waste materials from project sites. These records are critical for compliance, billing, and environmental tracking.
+
+## What is a Custody Chain?
+
+A Custody Chain is a legal document that records:
+
+- **Activity Details**: Date, time, location, and duration of waste collection
+- **Volume Collected**: Gallons, barrels, and cubic meters of different waste types
+- **Waste Types**: Black water, grey water, clean water, sludge, grease, treated wastewater
+- **Personnel**: Technical personnel, drivers, and client contacts
+- **Equipment Used**: Vehicles and equipment involved in collection
+- **Signatures**: Chain of custody with contact person and transporter signatures
+
+## Understanding Custody Chain Status
+
+Custody chains progress through these statuses:
+
+- **DRAFT** (Borrador): Being created or edited
+- **CLOSE** (Cerrado): Finalized and included in work order sheet
+- **CANCELLED** (Cancelado): Cancelled, not used
+- **INVOICE** (Facturado): Billed to client via work order
+
+<Note>
+  You cannot delete a custody chain that has status CLOSE. This preserves the legal chain of custody.
+</Note>
+
+## Creating a Custody Chain
+
+<Steps>
+  <Step title="Navigate to Work Order Sheet">
+    Select the work order sheet (planilla) where this custody chain will be included.
+  </Step>
+  
+  <Step title="Click Create Custody Chain">
+    Select "New Custody Chain" or "Add Custody Chain".
+  </Step>
+  
+  <Step title="Enter Basic Information">
+    Fill in the activity details:
+    
+    **Automatic Fields:**
+    - **Consecutive**: Auto-generated 7-digit number (e.g., 0000123)
+    - **Sheet Project**: Linked to current work order
+    
+    **Date and Time:**
+    - **Activity Date**: Date waste collection occurred
+    - **Issue Date**: Date the document is created
+    - **Start Time**: When collection began
+    - **End Time**: When collection ended
+    - **Time Duration**: Automatically calculated total hours
+    
+    **Location:**
+    - **Location**: Specific site or camp location
+  </Step>
+  
+  <Step title="Assign Personnel and Equipment">
+    Select the resources involved:
+    
+    **Technical Personnel:**
+    - Choose the responsible technician from your team
+    
+    **Vehicle:**
+    - Select the vacuum truck or transport vehicle used
+  </Step>
+  
+  <Step title="Specify Waste Types Collected">
+    Check all applicable waste types:
+    
+    - **Black Water** (Aguas Negras): Sewage and toilet waste
+    - **Grey Water** (Aguas Grises): Sink and shower wastewater
+    - **Clean Water** (Aguas Limpias): Non-contaminated water
+    - **Activated Sludge** (Lodos Activados): Treatment plant sludge
+    - **Treated Wastewater** (Aguas Residuales Tratadas): Processed effluent
+    - **Organic Grease** (Grasa Orgánica): Grease trap contents
+  </Step>
+  
+  <Step title="Enter Volume Totals">
+    Record the quantities collected:
+    
+    - **Total Gallons**: Volume in gallons
+    - **Total Barrels**: Volume in barrels (if applicable)
+    - **Total Cubic Meters**: Volume in cubic meters
+    
+    <Tip>
+      You can enter volumes in any or all units. The system tracks all three separately for different reporting needs.
+    </Tip>
+  </Step>
+  
+  <Step title="Configure Logistics">
+    Indicate if logistics services were provided:
+    
+    - **SI**: Logistics were performed
+    - **NO**: No logistics
+    - **NA**: Not applicable
+  </Step>
+  
+  <Step title="Save as Draft">
+    Click Save. The custody chain is created with status DRAFT.
+  </Step>
+</Steps>
+
+## Adding Equipment Details
+
+After creating the custody chain, add the equipment used:
+
+<Steps>
+  <Step title="Access Custody Chain Details">
+    Open the custody chain you just created.
+  </Step>
+  
+  <Step title="Add Equipment Line Item">
+    Click "Add Equipment" or "Add Detail".
+  </Step>
+  
+  <Step title="Select Project Resource">
+    Choose from resources assigned to the project:
+    - Treatment plants
+    - Tanks
+    - Vacuum trucks
+    - Related equipment
+  </Step>
+  
+  <Step title="Enter Equipment Description">
+    Provide:
+    - **Equipment**: Type or name (e.g., "BT LV OT")
+    - **Code Equipment**: Detailed equipment identifier or notes
+  </Step>
+  
+  <Step title="Save Equipment Detail">
+    The equipment is linked to this custody chain.
+  </Step>
+</Steps>
+
+<Note>
+  Multiple equipment items can be added to a single custody chain to document all resources used during the collection activity.
+</Note>
+
+## Completing the Custody Chain
+
+### Adding Contact Information
+
+Document the client representative who received the service:
+
+<Steps>
+  <Step title="Client Contact Section">
+    Enter information for the person who witnessed/approved the collection:
+    
+    - **Contact Name**: Full name of client representative
+    - **DNI Contact**: ID card number
+    - **Contact Position**: Job title or role
+    - **Date Contact**: Date of signature
+  </Step>
+  
+  <Step title="Driver/Transporter Section">
+    Enter driver information:
+    
+    - **Driver Name**: Name of the driver/operator
+    - **DNI Driver**: Driver's ID number
+    - **Driver Position**: Role (e.g., "Operator", "Driver")
+    - **Driver Date**: Date of signature
+  </Step>
+</Steps>
+
+### Uploading Documentation
+
+<Steps>
+  <Step title="Generate PDF">
+    Create the custody chain PDF document with all information and signatures.
+  </Step>
+  
+  <Step title="Upload File">
+    Click "Upload" in the custody chain file section.
+  </Step>
+  
+  <Step title="Select PDF">
+    Choose the signed custody chain PDF (validated to be PDF format only).
+  </Step>
+  
+  <Step title="Confirm Upload">
+    The file is stored and linked to the custody chain record.
+  </Step>
+</Steps>
+
+<Warning>
+  Only PDF files are accepted for custody chain documentation to ensure consistency and legal compliance.
+</Warning>
+
+## Closing the Custody Chain
+
+When all information is complete and verified:
+
+<Steps>
+  <Step title="Review All Fields">
+    Ensure:
+    - All dates and times are accurate
+    - Volumes are correctly entered
+    - All equipment is listed
+    - Contact information is complete
+    - PDF is uploaded
+  </Step>
+  
+  <Step title="Set Status to CLOSE">
+    Click "Close" or change status to CLOSE.
+  </Step>
+  
+  <Step title="System Actions">
+    When closed:
+    - Status changes to CLOSE (Cerrado)
+    - Cannot be deleted (preservation of legal record)
+    - Can be edited if needed (before invoicing)
+    - Becomes available for inclusion in work order sheet
+  </Step>
+</Steps>
+
+## Editing Custody Chains
+
+You can edit a custody chain if:
+- Status is DRAFT or CLOSE
+- Has not been included in an invoiced work order
+
+<Steps>
+  <Step title="Open Custody Chain">
+    Navigate to the custody chain in the work order sheet.
+  </Step>
+  
+  <Step title="Click Edit">
+    Modify any fields as needed.
+  </Step>
+  
+  <Step title="Save Changes">
+    Updates are tracked with modified timestamp.
+  </Step>
+</Steps>
+
+<Note>
+  Even closed custody chains can be edited if necessary. However, once the work order is invoiced, the custody chain should not be modified to maintain billing integrity.
+</Note>
+
+## Custody Chain in Billing
+
+### How Custody Chains Appear in Work Orders
+
+When a custody chain is closed and the work order sheet is compiled:
+
+1. **Service Line Items**: Created for the collection service
+   - Description includes waste types collected
+   - Quantity based on volume and hours
+   - Cost based on project resource rates
+
+2. **Equipment Line Items**: For each equipment detail
+   - Links to project resource used
+   - References custody chain consecutive number
+
+3. **Volume Totals**: Aggregated in work order sheet
+   - Sum of all custody chain volumes in the period
+   - Displayed as total gallons, barrels, cubic meters
+
+## Viewing and Tracking
+
+### Custody Chain List
+
+From the work order sheet view:
+- See all custody chains for that sheet
+- Filter by status (DRAFT, CLOSE, CANCELLED)
+- Sort by date or consecutive number
+- Quick view of volumes and dates
+
+### Project Summary
+
+From project dashboard:
+- **Total Custody Chains**: Count across all work orders
+- **Recent Activity**: Latest custody chain records
+- **Volume Trends**: Totals over time
+
+## Best Practices
+
+### Documentation Best Practices
+
+- **Immediate Recording**: Create custody chain same day as collection
+- **Accurate Volumes**: Verify measurements from truck gauges
+- **Complete Signatures**: Obtain all required signatures before closing
+- **Clear Location**: Specify exact location within camp or site
+- **Photo Evidence**: Keep photos with external records (not stored in system)
+
+### Data Entry Best Practices
+
+- **Consistent Naming**: Use standard equipment codes and descriptions
+- **Time Accuracy**: Record actual start and end times for labor billing
+- **Waste Type Selection**: Be specific about which waste types were collected
+- **Volume Units**: Use gallons as primary unit, add others if contract requires
+
+### Compliance Best Practices
+
+- **Legal Requirements**: Ensure custody chains meet local regulatory requirements
+- **Signature Authority**: Verify client contact has authority to sign
+- **Document Retention**: Uploaded PDFs serve as legal records
+- **Chain Integrity**: Never delete closed custody chains
+
+## Common Scenarios
+
+### Scenario 1: Standard Daily Collection
+
+1. Arrive on site at 08:00
+2. Begin collection from treatment plant
+3. Collect 500 gallons of treated wastewater
+4. Complete at 10:30 (2.5 hours)
+5. Obtain client signature
+6. Create custody chain with all details
+7. Close and include in monthly work order
+
+### Scenario 2: Emergency Grease Trap Service
+
+1. Emergency call for grease trap overflow
+2. Deploy vacuum truck and technician
+3. Collect organic grease (special waste type)
+4. Document emergency nature in equipment detail
+5. Obtain customer acknowledgment
+6. Create custody chain marked for expedited billing
+7. Include in next work order for immediate invoicing
+
+### Scenario 3: Multi-Equipment Collection
+
+1. Service multiple treatment plants in one trip
+2. Create one custody chain for the visit
+3. Add separate equipment detail lines for each plant
+4. Record combined volumes
+5. Total time covers all collection activities
+6. Single document covers entire route
+
+## Consecutive Number Format
+
+Custody chains use a global consecutive number:
+
+**Format**: 7 digits, zero-padded
+
+Examples:
+- First custody chain: `0000001`
+- Hundredth: `0000100`
+- Thousandth: `0001000`
+
+<Tip>
+  The consecutive number is unique across all projects and never resets. This ensures each custody chain has a globally unique identifier.
+</Tip>

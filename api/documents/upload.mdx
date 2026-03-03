@@ -1,0 +1,339 @@
+---
+title: "File Upload"
+description: "Upload, retrieve, and delete files for various models in the Mantis system"
+---
+
+## Overview
+
+The centralized file management API allows you to upload, retrieve, and delete files across multiple models in the system including technicals, vehicles, equipment, projects, and more.
+
+## Upload or Replace File
+
+<CodeGroup>
+```bash POST /api/load_files/
+curl -X POST https://api.mantis.example/api/load_files/ \
+  -H "Content-Type: multipart/form-data" \
+  -F "model_type=technical" \
+  -F "object_id=123" \
+  -F "field_name=dni_file" \
+  -F "file=@/path/to/document.pdf"
+```
+</CodeGroup>
+
+### Request Parameters
+
+<ParamField body="model_type" type="string" required>
+  The type of model to upload the file to. Valid options:
+  - `technical` - Technical personnel
+  - `vaccination_record` - Vaccination records
+  - `pass_technical` - Technical passes
+  - `certification_vehicle` - Vehicle certifications
+  - `pass_vehicle` - Vehicle passes
+  - `vehicle` - Vehicles
+  - `custody_chain` - Custody chains
+  - `sheet_project` - Project sheets
+  - `shipping_guide` - Shipping guides
+  - `resource_item` - Equipment items
+</ParamField>
+
+<ParamField body="object_id" type="integer" required>
+  The primary key (ID) of the model instance
+</ParamField>
+
+<ParamField body="field_name" type="string" required>
+  The name of the file field. Valid fields depend on the `model_type`. Use the [Get File Fields](#get-file-fields) endpoint to retrieve available fields for each model.
+</ParamField>
+
+<ParamField body="file" type="file" required>
+  The file to upload (multipart/form-data)
+</ParamField>
+
+<ParamField body="invoice_reference" type="string">
+  Special parameter only for `sheet_project` with `field_name=invoice_file`. Sets the invoice reference number and updates status to INVOICED.
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the operation was successful
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Human-readable message describing the result
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <ResponseField name="model_type" type="string">
+    The model type that was updated
+  </ResponseField>
+  
+  <ResponseField name="object_id" type="integer">
+    The ID of the model instance
+  </ResponseField>
+  
+  <ResponseField name="field_name" type="string">
+    The field name that was updated
+  </ResponseField>
+  
+  <ResponseField name="file_name" type="string">
+    The filename of the uploaded file
+  </ResponseField>
+  
+  <ResponseField name="file_url" type="string">
+    The URL to access the uploaded file
+  </ResponseField>
+</ResponseField>
+
+<ResponseExample>
+```json Success Response
+{
+  "success": true,
+  "message": "Archivo subido correctamente al campo 'dni_file'.",
+  "data": {
+    "model_type": "technical",
+    "object_id": 123,
+    "field_name": "dni_file",
+    "file_name": "document.pdf",
+    "file_url": "/media/technicals/dni/document.pdf"
+  }
+}
+```
+</ResponseExample>
+
+## Get File Information
+
+<CodeGroup>
+```bash GET /api/load_files/
+curl "https://api.mantis.example/api/load_files/?model_type=technical&object_id=123&field_name=dni_file"
+```
+</CodeGroup>
+
+### Query Parameters
+
+<ParamField query="model_type" type="string" required>
+  The type of model
+</ParamField>
+
+<ParamField query="object_id" type="integer" required>
+  The ID of the model instance
+</ParamField>
+
+<ParamField query="field_name" type="string" required>
+  The name of the file field
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <ResponseField name="model_type" type="string">
+    The model type
+  </ResponseField>
+  
+  <ResponseField name="object_id" type="integer">
+    The ID of the model instance
+  </ResponseField>
+  
+  <ResponseField name="field_name" type="string">
+    The field name
+  </ResponseField>
+  
+  <ResponseField name="has_file" type="boolean">
+    Whether a file exists for this field
+  </ResponseField>
+  
+  <ResponseField name="file_name" type="string" nullable>
+    The filename if a file exists
+  </ResponseField>
+  
+  <ResponseField name="file_url" type="string" nullable>
+    The URL to access the file if it exists
+  </ResponseField>
+</ResponseField>
+
+<ResponseExample>
+```json Success Response
+{
+  "success": true,
+  "data": {
+    "model_type": "technical",
+    "object_id": 123,
+    "field_name": "dni_file",
+    "has_file": true,
+    "file_name": "document.pdf",
+    "file_url": "/media/technicals/dni/document.pdf"
+  }
+}
+```
+</ResponseExample>
+
+## Delete File
+
+<CodeGroup>
+```bash DELETE /api/load_files/
+curl -X DELETE "https://api.mantis.example/api/load_files/?model_type=technical&object_id=123&field_name=dni_file"
+```
+</CodeGroup>
+
+### Query Parameters
+
+<ParamField query="model_type" type="string" required>
+  The type of model
+</ParamField>
+
+<ParamField query="object_id" type="integer" required>
+  The ID of the model instance
+</ParamField>
+
+<ParamField query="field_name" type="string" required>
+  The name of the file field to clear
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the operation was successful
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Human-readable message describing the result
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  <ResponseField name="model_type" type="string">
+    The model type that was updated
+  </ResponseField>
+  
+  <ResponseField name="object_id" type="integer">
+    The ID of the model instance
+  </ResponseField>
+  
+  <ResponseField name="field_name" type="string">
+    The field name that was cleared
+  </ResponseField>
+</ResponseField>
+
+<ResponseExample>
+```json Success Response
+{
+  "success": true,
+  "message": "Archivo eliminado del campo 'dni_file'.",
+  "data": {
+    "model_type": "technical",
+    "object_id": 123,
+    "field_name": "dni_file"
+  }
+}
+```
+</ResponseExample>
+
+## Get File Fields
+
+<CodeGroup>
+```bash GET /api/load_files/fields/
+curl "https://api.mantis.example/api/load_files/fields/?model_type=technical"
+```
+</CodeGroup>
+
+Retrieve the available file fields for a specific model type, or all model types if no parameter is provided.
+
+### Query Parameters
+
+<ParamField query="model_type" type="string">
+  Optional. The type of model to get fields for. If omitted, returns fields for all model types.
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  Indicates if the operation was successful
+</ResponseField>
+
+<ResponseField name="data" type="object">
+  When querying a specific model type, returns an object with `model_type` and `fields` array. When querying all models, returns a mapping of model types to their field arrays.
+</ResponseField>
+
+<ResponseExample>
+```json Single Model Response
+{
+  "success": true,
+  "data": {
+    "model_type": "technical",
+    "fields": [
+      "dni_file",
+      "license_file",
+      "vaccine_certificate_file"
+    ]
+  }
+}
+```
+
+```json All Models Response
+{
+  "success": true,
+  "data": {
+    "technical": [
+      "dni_file",
+      "license_file",
+      "vaccine_certificate_file"
+    ],
+    "vehicle": [
+      "vehicle_image",
+      "poliza_file",
+      "matricula_file",
+      "rev_tec_file"
+    ],
+    "custody_chain": [
+      "custody_chain_file"
+    ]
+  }
+}
+```
+</ResponseExample>
+
+## Validation Rules
+
+### Closed Sheet Protection
+
+Files associated with closed project sheets (`sheet_project.is_closed = true`) have special restrictions:
+
+- Cannot **replace** existing files
+- Cannot **delete** existing files
+- Can only **add** files to empty fields
+
+This also applies to custody chains (`custody_chain`) when their associated sheet project is closed.
+
+### Error Responses
+
+<ResponseExample>
+```json Invalid Model Type
+{
+  "success": false,
+  "error": "Tipo de modelo 'invalid_type' no válido. Opciones: technical, vehicle, ..."
+}
+```
+
+```json Invalid Field Name
+{
+  "success": false,
+  "error": "Campo 'invalid_field' no permitido para 'technical'. Campos válidos: dni_file, license_file, vaccine_certificate_file"
+}
+```
+
+```json Closed Sheet Restriction
+{
+  "success": false,
+  "error": "No se puede modificar archivos de una planilla cerrada. Solo se pueden agregar archivos en campos vacíos."
+}
+```
+
+```json Missing File
+{
+  "success": false,
+  "error": "No se envió ningún archivo (campo 'file')."
+}
+```
+</ResponseExample>

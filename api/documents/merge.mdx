@@ -1,0 +1,296 @@
+---
+title: "PDF Merging"
+description: "Generate merged PDF documents from project files and custody chains"
+---
+
+## Overview
+
+The PDF merge API allows you to combine multiple project documents into a single PDF file. You can merge all documents, or filter by specific scopes like custody chains, sheet files, or shipping guides.
+
+## Merge Project Documents
+
+<CodeGroup>
+```bash GET /api/load_files/project/<project_id>/merge/
+curl "https://api.mantis.example/api/load_files/project/45/merge/" \
+  -o merged_documents.pdf
+```
+
+```bash Filter by Scope
+curl "https://api.mantis.example/api/load_files/project/45/merge/?scope=custody_chains" \
+  -o custody_chains.pdf
+```
+
+```bash Filter by Sheet
+curl "https://api.mantis.example/api/load_files/project/45/merge/?scope=custody_chains&sheet_id=12" \
+  -o sheet_12_custody.pdf
+```
+</CodeGroup>
+
+### Path Parameters
+
+<ParamField path="project_id" type="integer" required>
+  The ID of the project whose documents you want to merge
+</ParamField>
+
+### Query Parameters
+
+<ParamField query="scope" type="string" default="all">
+  The scope of documents to include in the merge:
+  - `all` - All project documents (default)
+  - `custody_chains` - Only custody chain files
+  - `sheet_files` - Only sheet project files (sheet_project_file, certificate_final_disposition_file, invoice_file)
+  - `shipping_guides` - Only shipping guide files
+</ParamField>
+
+<ParamField query="sheet_id" type="integer">
+  Optional. Filter documents to only those associated with a specific sheet project. Works with `custody_chains` and `sheet_files` scopes.
+</ParamField>
+
+### Response
+
+Returns a binary PDF file with Content-Type: `application/pdf`.
+
+The filename follows the pattern: `Documentos_{partner_name}_{scope}.pdf`
+
+### Document Order
+
+Documents are merged in the following order:
+
+1. **Sheet files** (if included in scope):
+   - Sheet project file
+   - Certificate of final disposition
+   - Invoice file
+   - Ordered by sheet period_start date
+
+2. **Custody chains** (if included in scope):
+   - Grouped by sheet
+   - Ordered by activity_date and consecutive number
+
+3. **Shipping guides** (if included in scope):
+   - Ordered by issue_date
+
+### Error Handling
+
+If a specific PDF file is corrupted or cannot be read, it will be skipped and noted in the merged PDF metadata. The merge process will continue with the remaining files.
+
+<ResponseExample>
+```json No Files Found
+{
+  "success": false,
+  "error": "No hay archivos PDF para combinar en el alcance seleccionado."
+}
+```
+
+```json Project Not Found
+{
+  "success": false,
+  "error": "Proyecto no encontrado."
+}
+```
+</ResponseExample>
+
+## Bulk Upload Custody Chains
+
+<CodeGroup>
+```bash POST /api/load_files/project/<project_id>/bulk_custody/
+curl -X POST https://api.mantis.example/api/load_files/project/45/bulk_custody/ \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@/path/to/custody_chains.pdf" \
+  -F 'chain_ids=[101, 102, 103]'
+```
+</CodeGroup>
+
+Upload a multi-page PDF where each page corresponds to a custody chain. The PDF is automatically split and each page is assigned to the corresponding chain in order.
+
+### Path Parameters
+
+<ParamField path="project_id" type="integer" required>
+  The ID of the project
+</ParamField>
+
+### Request Parameters
+
+<ParamField body="file" type="file" required>
+  A PDF file where each page represents one custody chain document. The number of pages must exactly match the number of chain IDs provided.
+</ParamField>
+
+<ParamField body="chain_ids" type="array" required>
+  JSON array of custody chain IDs in the order they appear in the PDF. Example: `[101, 102, 103]`
+  
+  Requirements:
+  - Must contain at least one ID
+  - All chains must belong to the specified project
+  - All chains must be active
+</ParamField>
+
+### Response
+
+<ResponseField name="success" type="boolean">
+  `true` if all pages were saved successfully, `false` if any errors occurred
+</ResponseField>
+
+<ResponseField name="saved" type="integer">
+  Number of custody chain files successfully saved
+</ResponseField>
+
+<ResponseField name="errors_count" type="integer">
+  Number of errors that occurred
+</ResponseField>
+
+<ResponseField name="message" type="string">
+  Human-readable summary of the operation
+</ResponseField>
+
+<ResponseField name="details" type="array">
+  Array of objects for each successfully saved file
+  <ResponseField name="chain_id" type="integer">
+    The custody chain ID
+  </ResponseField>
+  <ResponseField name="consecutive" type="string">
+    The consecutive number of the custody chain
+  </ResponseField>
+  <ResponseField name="page" type="integer">
+    The page number from the source PDF (1-indexed)
+  </ResponseField>
+  <ResponseField name="filename" type="string">
+    The generated filename for this custody chain
+  </ResponseField>
+</ResponseField>
+
+<ResponseField name="errors" type="array">
+  Array of objects for each error that occurred
+  <ResponseField name="chain_id" type="integer">
+    The custody chain ID that failed
+  </ResponseField>
+  <ResponseField name="consecutive" type="string">
+    The consecutive number
+  </ResponseField>
+  <ResponseField name="page" type="integer">
+    The page number that failed
+  </ResponseField>
+  <ResponseField name="error" type="string">
+    Error description
+  </ResponseField>
+</ResponseField>
+
+<ResponseExample>
+```json Success Response
+{
+  "success": true,
+  "saved": 3,
+  "errors_count": 0,
+  "details": [
+    {
+      "chain_id": 101,
+      "consecutive": "001",
+      "page": 1,
+      "filename": "CadenaCustodia_001_Cliente_ABC.pdf"
+    },
+    {
+      "chain_id": 102,
+      "consecutive": "002",
+      "page": 2,
+      "filename": "CadenaCustodia_002_Cliente_ABC.pdf"
+    },
+    {
+      "chain_id": 103,
+      "consecutive": "003",
+      "page": 3,
+      "filename": "CadenaCustodia_003_Cliente_ABC.pdf"
+    }
+  ],
+  "errors": [],
+  "message": "Se asignaron 3 archivo(s) correctamente."
+}
+```
+
+```json Validation Error - Page Count Mismatch
+{
+  "success": false,
+  "error": "El PDF tiene 5 página(s) pero se seleccionaron 3 cadena(s) de custodia. Deben coincidir exactamente."
+}
+```
+
+```json Validation Error - Invalid Chains
+{
+  "success": false,
+  "error": "Las siguientes cadenas no pertenecen al proyecto o no existen: [999, 888]"
+}
+```
+
+```json Validation Error - Invalid PDF
+{
+  "success": false,
+  "error": "El archivo no es un PDF válido o está corrupto."
+}
+```
+
+```json Partial Success
+{
+  "success": false,
+  "saved": 2,
+  "errors_count": 1,
+  "details": [
+    {
+      "chain_id": 101,
+      "consecutive": "001",
+      "page": 1,
+      "filename": "CadenaCustodia_001_Cliente_ABC.pdf"
+    },
+    {
+      "chain_id": 102,
+      "consecutive": "002",
+      "page": 2,
+      "filename": "CadenaCustodia_002_Cliente_ABC.pdf"
+    }
+  ],
+  "errors": [
+    {
+      "chain_id": 103,
+      "consecutive": "003",
+      "page": 3,
+      "error": "Permission denied"
+    }
+  ],
+  "message": "Se asignaron 2 archivo(s) correctamente. 1 error(es)."
+}
+```
+</ResponseExample>
+
+## File Naming Conventions
+
+### Merged Documents
+Format: `Documentos_{partner_name}_{scope}.pdf`
+
+Examples:
+- `Documentos_Cliente_ABC_all.pdf`
+- `Documentos_Cliente_ABC_custody_chains.pdf`
+- `Documentos_Proyecto_45_shipping_guides.pdf`
+
+### Individual Custody Chains
+Format: `CadenaCustodia_{consecutive}_{project_name}.pdf`
+
+Examples:
+- `CadenaCustodia_001_Cliente_ABC.pdf`
+- `CadenaCustodia_025_Cliente_ABC.pdf`
+
+## Use Cases
+
+### Generate Complete Project Archive
+```bash
+curl "https://api.mantis.example/api/load_files/project/45/merge/?scope=all" \
+  -o complete_project_45.pdf
+```
+
+### Export Only Custody Chains for a Specific Sheet
+```bash
+curl "https://api.mantis.example/api/load_files/project/45/merge/?scope=custody_chains&sheet_id=12" \
+  -o sheet_12_custody_chains.pdf
+```
+
+### Upload Scanned Custody Chains in Bulk
+```bash
+curl -X POST https://api.mantis.example/api/load_files/project/45/bulk_custody/ \
+  -F "file=@scanned_custody_chains.pdf" \
+  -F 'chain_ids=[201, 202, 203, 204, 205]'
+```
