@@ -3,6 +3,70 @@ title: "Close Project"
 description: "Validate and close projects with automatic resource release"
 ---
 
+## Get All Project Information
+
+<api-endpoint method="GET" path="/api/projects/all-info/{project_id}/" />
+
+Retrieve comprehensive information about a project including all resources, work sheets, custody chains, and related data.
+
+### Authentication
+
+Requires authentication via session or token.
+
+### Path Parameters
+
+<ParamField path="project_id" type="integer" required>
+  ID of the project to retrieve information for.
+</ParamField>
+
+### Response
+
+<ResponseField name="project" type="object">
+  Complete project information including all resources and work orders.
+  
+  <ResponseField name="id" type="integer">
+    Project ID.
+  </ResponseField>
+  
+  <ResponseField name="partner" type="object">
+    Client/partner information.
+  </ResponseField>
+  
+  <ResponseField name="location" type="string">
+    Project location/camp name.
+  </ResponseField>
+  
+  <ResponseField name="resources" type="array">
+    All resources (equipment and services) assigned to the project.
+  </ResponseField>
+  
+  <ResponseField name="work_sheets" type="array">
+    All work order sheets for the project.
+  </ResponseField>
+  
+  <ResponseField name="custody_chains" type="array">
+    All custody chain records for the project.
+  </ResponseField>
+  
+  <ResponseField name="shipping_guides" type="array">
+    All shipping guides for the project.
+  </ResponseField>
+</ResponseField>
+
+### Error Codes
+
+- `404` - Project not found
+- `500` - Internal server error
+
+### Example Request
+
+```bash
+curl -X GET https://mantis.peisol.com.ec/api/projects/all-info/123/ \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+---
+
 ## Validate Project Closure
 
 <api-endpoint method="GET" path="/api/projects/{project_id}/close/" />

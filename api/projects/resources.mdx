@@ -3,6 +3,70 @@ title: "Project Resources"
 description: "Manage resources assigned to projects including equipment and services"
 ---
 
+## Get Available Resources
+
+<api-endpoint method="GET" path="/api/projects/resources/available/" />
+
+Retrieve a list of all available resources (equipment and services) that can be assigned to projects. Returns resources that are not currently rented or retired.
+
+### Authentication
+
+Requires authentication via session or token.
+
+### Query Parameters
+
+<ParamField query="project_id" type="integer">
+  Optional. Filter to show resources available for a specific project.
+</ParamField>
+
+### Response
+
+<ResponseField name="data" type="array">
+  Array of available resource items.
+  
+  <ResponseField name="id" type="integer">
+    Unique identifier of the resource item.
+  </ResponseField>
+  
+  <ResponseField name="code" type="string">
+    Resource code identifier.
+  </ResponseField>
+  
+  <ResponseField name="name" type="string">
+    Resource name or description.
+  </ResponseField>
+  
+  <ResponseField name="type_equipment" type="string">
+    Equipment type code (e.g., SERVIC, LVMNOS, BTSNHM, PTRTAP).
+  </ResponseField>
+  
+  <ResponseField name="is_service" type="boolean">
+    Whether this is a service (true) or physical equipment (false).
+  </ResponseField>
+  
+  <ResponseField name="stst_disponibility" type="string">
+    Availability status: `DISPONIBLE` or `RENTADO`.
+  </ResponseField>
+  
+  <ResponseField name="stst_status_equipment" type="string">
+    Equipment condition: `FUNCIONANDO`, `DAÑADO`, `INCOMPLETO`, `EN REPARACION`.
+  </ResponseField>
+</ResponseField>
+
+### Error Codes
+
+- `401` - Unauthorized
+- `500` - Internal server error
+
+### Example Request
+
+```bash
+curl -X GET https://mantis.peisol.com.ec/api/projects/resources/available/ \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+---
+
 ## Add Resource to Project
 
 <api-endpoint method="POST" path="/api/projects/resources/add/" />
